@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "composite": true,               // Required for project references
+    "declaration": true,              // Emit .d.ts files
+    "declarationMap": true,           // Emit source maps for declarations
+    "outDir": "dist",                 // Output directory for compiled files
+    "rootDir": "src",                 // Root directory for source files
+    "module": "CommonJS",
+    "target": "ES2020",
+    "strict": true,
+    "esModuleInterop": true
+  },
+  "include": ["src"],                 // Only include files in the `src` folder
+  "exclude": ["node_modules", "dist"],
+  "references": []
+}
