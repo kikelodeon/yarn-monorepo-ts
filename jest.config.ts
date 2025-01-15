@@ -5,8 +5,8 @@ module.exports = {
     // Si quieres buscar tests en distintas carpetas a la vez
     // "projects" te permite indicar distintos subproyectos:
     // projects: [
-    //   "<rootDir>/packages/authentication-service",
-    //   "<rootDir>/packages/mailing-service",
+    //   "<rootDir>/packages/service-authentication",
+    //   "<rootDir>/packages/service-mailing",
     //   "<rootDir>/packages/shared"
     // ],
   };

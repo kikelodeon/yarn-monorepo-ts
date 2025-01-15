@@ -5,7 +5,7 @@
     "packages/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --all run build ",
+    "build": "yarn workspaces foreach --all --topological-dev run build ",
     "buildasync": "yarn workspaces foreach -p --all run build",
     "test": "jest --passWithNoTests",
     "lint": "yarn workspaces foreach run lint"
@@ -15,8 +15,5 @@
     "jest": "^29.7.0",
     "ts-jest": "^29.2.5",
     "typescript": "^5.7.3"
-  },
-  "dependencies": {
-    "@custom/shared": "workspace:*"
   }
 }

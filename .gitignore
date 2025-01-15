@@ -1,0 +1,54 @@
+# Node.js
+node_modules
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# TypeScript
+dist
+*.tsbuildinfo
+
+# Logs
+logs
+*.log
+logs/*.log
+
+# OS generated files
+.DS_Store
+Thumbs.db
+
+# Build output
+*.js
+*.d.ts
+*.js.map
+*.d.ts.map
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Jest
+coverage
+.cache
+jest.config.js
+jest.config.ts
+.vscode-test
+
+# VSCode
+.vscode
+.history
+
+# Lint and formatting
+.eslintcache
+.prettierignore
+.prettiercache
+
+# macOS system files
+**/.DS_Store
+
+# Linux system files
+*~
+
+# Windows system files
+Thumbs.db
