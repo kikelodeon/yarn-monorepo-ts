@@ -1,6 +1,6 @@
 {
   "name": "@kikerepo/lib",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -26,13 +26,30 @@
       "import": "./dist/index.js",
       "types": "./dist/index.d.ts"
     },
-    "./domain/errors": {
-      "import": "./dist/domain/errors/index.js",
-      "types": "./dist/domain/errors/index.d.ts"
+    "./application": {
+      "require": "./dist/application/index.js",
+      "import": "./dist/application/index.js",
+      "types": "./dist/application/index.d.ts"
+    },
+    "./domain": {
+      "require": "./dist/domain/index.js",
+      "import": "./dist/domain/index.js",
+      "types": "./dist/domain/index.d.ts"
     },
     "./errors": {
+      "require": "./dist/errors/index.js",
       "import": "./dist/errors/index.js",
       "types": "./dist/errors/index.d.ts"
+    },
+    "./infrastructure": {
+      "require": "./dist/infrastructure/index.js",
+      "import": "./dist/infrastructure/index.js",
+      "types": "./dist/infrastructure/index.d.ts"
+    },
+    "./utils": {
+      "require": "./dist/infrastructure/index.js",
+      "import": "./dist/infrastructure/index.js",
+      "types": "./dist/infrastructure/index.d.ts"
     }
   }
 }

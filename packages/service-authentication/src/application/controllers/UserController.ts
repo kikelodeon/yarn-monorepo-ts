@@ -1,9 +1,8 @@
 import { UserService } from '../../infrastructure/services/UserService';
 import { Request, Response, NextFunction } from 'express';
-import { ValidationError, NotFoundError } from '@kikerepo/lib';
 import { IUser } from '@kikerepo/lib/domain/interfaces/IUser';
 
-
+import { ValidationError,NotFoundError } from '@kikerepo/lib/errors';
 export class UserController {
   constructor(private userService: UserService) {}
 

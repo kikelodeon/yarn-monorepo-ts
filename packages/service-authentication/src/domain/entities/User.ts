@@ -1,7 +1,6 @@
 // packages/service-authentication/src/domain/entities/User.ts
 
-import { AggregateRoot } from '@kikerepo/lib/domain/aggregateRoots/AggregateRoot';
-import { UserId } from '@kikerepo/lib/domain/valueObjects/UserId';
+import { AggregateRoot, UserId } from '@kikerepo/lib/domain';
 /**
  * User Entity representing an authenticated user in the system.
  */

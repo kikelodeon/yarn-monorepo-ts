@@ -1,4 +1,4 @@
 // shared/src/domain/entities/index.ts
 
-export { Entity } from './Entity';
+export { AggregateRoot } from './AggregateRoot';
 // Export other entities as needed

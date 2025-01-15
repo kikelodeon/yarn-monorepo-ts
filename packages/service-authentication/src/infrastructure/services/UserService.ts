@@ -3,8 +3,8 @@
 
 
 import { User } from '../../domain/entities/User';
-import { UserId } from '@kikerepo/lib/domain/valueObjects/UserId';
-import { DatabaseConnectionError } from'@kikerepo/lib/src/infrastructure/errors';
+import { UserId } from '@kikerepo/lib/domain';
+import { DatabaseConnectionError } from'@kikerepo/lib/errors';
 /**
  * Service responsible for managing User entities.
  */

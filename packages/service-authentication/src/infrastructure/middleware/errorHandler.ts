@@ -1,5 +1,5 @@
 import { Request, Response, NextFunction } from 'express';
-import { BaseError } from '@kikerepo/lib/errors/BaseError';
+import { BaseError } from '@kikerepo/lib/errors';
 import { ValidationError } from '@kikerepo/lib/errors';
 import { IErrorResponse } from '@kikerepo/lib/errors';
 export const errorHandler = (
