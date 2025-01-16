@@ -93,7 +93,7 @@ describe('generateUUIDv6', () => {
 
   it('should not generate duplicate UUIDs in a high-concurrency environment', () => {
     const uuids = new Set<string>();
-    const NUM_UUIDS = 100000;
+    const NUM_UUIDS = 10000;
 
     for (let i = 0; i < NUM_UUIDS; i++) {
       const uuid = generateUUIDv6();

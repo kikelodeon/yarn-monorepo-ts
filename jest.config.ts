@@ -1,13 +1,14 @@
-// jest.config.js (raíz)
-module.exports = {
-    preset: 'ts-jest',
-    testEnvironment: 'node',
-    // Si quieres buscar tests en distintas carpetas a la vez
-    // "projects" te permite indicar distintos subproyectos:
-    // projects: [
-    //   "<rootDir>/packages/service-authentication",
-    //   "<rootDir>/packages/service-mailing",
-    //   "<rootDir>/packages/shared"
-    // ],
-  };
-  
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'], // Match .spec.ts or .test.ts files
+  moduleFileExtensions: ['ts', 'js'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '.*/dist/'], // Ignore all dist folders
+  transform: {
+    '^.+\\.ts$': 'ts-jest', // Use ts-jest to transform TypeScript files
+  },
+};
+
+export default config;
