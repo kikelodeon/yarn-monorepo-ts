@@ -2,9 +2,9 @@
 
 
 
-import { User } from '../../domain/entities/User';
-import { UserId } from '@kikerepo/lib/domain';
-import { DatabaseConnectionError } from'@kikerepo/lib/errors';
+import { User } from '../../domain/aggregateRoots/User';
+import { Email, Password, UserId } from '@kikerepo/lib/domain';
+import { DatabaseConnectionError } from '@kikerepo/lib/errors';
 /**
  * Service responsible for managing User entities.
  */
@@ -32,8 +32,16 @@ export class UserService {
    */
   private async mockDatabaseFind(userId: string): Promise<User | null> {
     const mockUsers: Record<string, User> = {
-      '1': new User(new UserId('1'), 'Alice', 'alice@example.com'),
-      '2': new User(new UserId('2'), 'Bob', 'bob@example.com'),
+      '1': new User(new UserId('1'), new Email('alice@example.com'), new Password('passwordExample')),
+      '2': new User(new UserId('2'), new Email('bob@example.com'), new Password('passwordExample')),
+      '3': new User(new UserId('3'), new Email('charlie@example.com'), new Password('passwordExample')),
+      '4': new User(new UserId('4'), new Email('david@example.com'), new Password('passwordExample')),
+      '5': new User(new UserId('5'), new Email('eve@example.com'), new Password('passwordExample')),
+      '6': new User(new UserId('6'), new Email('frank@example.com'), new Password('passwordExample')),
+      '7': new User(new UserId('7'), new Email('george@example.com'), new Password('passwordExample')),
+      '8': new User(new UserId('8'), new Email('harry@example.com'), new Password('passwordExample')),
+      '9': new User(new UserId('9'), new Email('ian@example.com'), new Password('passwordExample')),
+      '10': new User(new UserId('10'), new Email('john@example.com'), new Password('passwordExample')),
     };
 
     return mockUsers[userId] || null;
