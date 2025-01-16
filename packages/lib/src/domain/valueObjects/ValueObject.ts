@@ -1,39 +1,38 @@
-// packages/shared/src/domain/valueObjects/ValueObject.ts
-
-/**
- * Base class for all Value Objects.
- * Ensures immutability and provides equality logic.
- */
 export abstract class ValueObject<T> {
-    protected readonly props: T;
-  
-    constructor(props: T) {
-      this.props = props;
-      Object.freeze(this); // Ensures immutability
+  private readonly _value: T;
+
+  constructor(value: T) {
+    if (value === null || value === undefined) {
+      throw new Error('ValueObject cannot be null or undefined');
     }
-  
-    /**
-     * Returns the properties of the Value Object.
-     */
-    public getProps(): T {
-      return this.props;
-    }
-  
-    /**
-     * Checks equality with another Value Object.
-     * @param vo - The other Value Object to compare with.
-     * @returns `true` if equal, `false` otherwise.
-     */
-    public equals(vo?: ValueObject<T>): boolean {
-      if (vo === null || vo === undefined) {
-        return false;
-      }
-  
-      if (vo.constructor !== this.constructor) {
-        return false;
-      }
-  
-      return JSON.stringify(vo.getProps()) === JSON.stringify(this.getProps());
-    }
+    this._value = Object.freeze(value); // Make the value immutable
   }
-  
+
+  /**
+   * Gets the encapsulated value.
+   */
+  get value(): T {
+    return this._value;
+  }
+
+  /**
+   * Checks equality between two value objects.
+   * @param other - The other value object to compare.
+   * @returns True if the values are equal, false otherwise.
+   */
+  public equals(other: ValueObject<T>): boolean {
+    if (other === null || other === undefined) {
+      return false;
+    }
+
+    return JSON.stringify(this._value) === JSON.stringify(other.value);
+  }
+
+  /**
+   * Converts the value to a string.
+   * @returns The string representation of the encapsulated value.
+   */
+  public toString(): string {
+    return String(this._value);
+  }
+}

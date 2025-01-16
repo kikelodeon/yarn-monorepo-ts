@@ -1,35 +1,28 @@
 // packages/shared/src/domain/valueObjects/UserId.ts
 
 import { ValueObject } from './ValueObject';
-import { generateUUIDv6 } from '../../utils'
+import { generateUUIDv6 } from '../../utils';
 
 /**
  * Value Object representing the ID of a User Entity.
  */
 export class UserId extends ValueObject<string> {
-  /**
-   * Constructs a new UserId.
-   * @param id - Optional. If not provided, a new UUID v6 is generated.
-   */
   constructor(id?: string) {
-    super(id ?? generateUUIDv6());
+    super(id ? id : generateUUIDv6());
+
+    if (!this.isValidUUID(this.value)) {
+      throw new Error('Invalid UserId: Must be a valid UUID.');
+    }
   }
 
   /**
-   * Returns the string representation of the UserId.
+   * Validates whether the provided ID is a valid UUID.
+   * @param id - The ID to validate.
+   * @returns True if the ID is valid, false otherwise.
    */
-  public toString(): string {
-    return this.props;
-  }
-
-  /**
-   * Static factory method to create a UserId from a string.
-   * Useful for reconstructing UserId from persistence layers.
-   * @param id - The ID string.
-   * @returns A new UserId instance.
-   */
-  public static fromString(id: string): UserId {
-    // You can add validation here if necessary
-    return new UserId(id);
+  private isValidUUID(id: string): boolean {
+    const uuidRegex =
+      /^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+    return uuidRegex.test(id);
   }
 }
