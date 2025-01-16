@@ -1,30 +1,33 @@
-import { AggregateRoot, UserId, Email,Password,Phone, UserCreatedEvent } from '@kikerepo/lib/domain';
+import { AggregateRoot, UserId, Email,Password,Phone, UserCreatedEvent, IUser } from '@kikerepo/lib/domain';
 
 
-export class User extends AggregateRoot<UserId> {
-  private readonly email: Email;
-  private readonly password: Password;
-  private readonly phone?: Phone;
+export class User extends AggregateRoot<UserId> implements IUser{
+  private readonly _email: Email;
+  private readonly _password: Password;
+  private readonly _phone?: Phone;
 
   constructor(id: UserId, email: Email, password: Password, phone?: Phone) {
     super(id);
-    this.email = email;
-    this.password = password;
-    this.phone = phone;
+    this._email = email;
+    this._password = password;
+    this._phone = phone;
 
     // Emit domain event upon creation
     this.addDomainEvent(new UserCreatedEvent(id.value, email.value, phone?.value));
   }
 
-  public getEmail(): Email {
-    return this.email;
-  }
+ // Expose email via a getter
+ get email(): Email {
+  return this._email;
+}
 
-  public getPassword(): Password {
-    return this.password;
-  }
+// Expose password via a getter
+get password(): Password {
+  return this._password;
+}
 
-  public getPhone(): Phone | undefined {
-    return this.phone;
-  }
+// Expose phone via a getter
+get phone(): Phone | undefined {
+  return this._phone;
+}
 }

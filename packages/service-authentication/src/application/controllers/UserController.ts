@@ -1,8 +1,7 @@
 import { UserService } from '../../infrastructure/services/UserService';
 import { Request, Response, NextFunction } from 'express';
-import { IUser } from '@kikerepo/lib/domain/interfaces/IUser';
-
 import { ValidationError,NotFoundError } from '@kikerepo/lib/errors';
+import { User } from 'src/domain/aggregateRoots/User';
 export class UserController {
   constructor(private userService: UserService) {}
 
@@ -14,7 +13,7 @@ export class UserController {
         throw new ValidationError('User ID is required', ['id is missing']);
       }
 
-      const user: IUser | null = await this.userService.findById(userId);
+      const user: User | null = await this.userService.findById(userId);
 
       if (!user) {
         throw new NotFoundError(`User with ID ${userId} not found`);

@@ -1,12 +1,9 @@
+import { Email, Phone } from "../valueObjects";
 import { UserId } from "../valueObjects/UserId";
 
 export interface IUser {
-    id: UserId;           // UUID v6
-    name: string;
-    email: string;
-    
-    // Define any methods or behaviors if necessary
-    updateEmail(newEmail: string): void;
-    updateName(newName: string): void;
+    phone?: Phone;
+    email: Email;
+
   }
   
