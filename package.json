@@ -2,17 +2,22 @@
   "name": "my-monorepo",
   "private": true,
   "workspaces": [
-    "packages/*"
+    "packages/*/**",
+    "services/*"
   ],
   "scripts": {
     "build": "yarn workspaces foreach --all --topological-dev run build ",
     "buildasync": "yarn workspaces foreach -p --all run build",
     "test": "jest --passWithNoTests",
+    "clean": "yarn workspaces foreach --all run clean",
+    "clear": "yarn workspaces foreach --all run clear && rimraf node_modules",
+    "uninstall": "yarn workspaces foreach --all run uninstall && rimraf node_modules",
     "lint": "yarn workspaces foreach run lint"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "jest": "^29.7.0",
+    "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
     "typescript": "^5.7.3"

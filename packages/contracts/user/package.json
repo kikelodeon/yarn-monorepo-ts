@@ -1,0 +1,19 @@
+{
+  "name": "@kikerepo/contracts-user",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/domain-common": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0"
+  }
+}

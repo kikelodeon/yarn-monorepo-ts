@@ -11,9 +11,20 @@
     "esModuleInterop": true,
     "baseUrl": "."
   },
-  "include": ["packages/**/*"],
+  "files": [],
+  "include": [],
   "references": [
-    { "path": "./packages/lib" },
-    { "path": "./packages/service-authentication" }
+    { "path": "./packages/utils/uuid6" },
+    { "path": "./packages/domain/_common" },
+    { "path": "./packages/domain/user" },
+    { "path": "./packages/domain/session" },
+    { "path": "./packages/infrastructure/_common" },
+    { "path": "./packages/infrastructure/user" },
+    { "path": "./packages/infrastructure/session" },
+    { "path": "./packages/contracts/_common" },
+    { "path": "./packages/contracts/user" },
+    { "path": "./packages/contracts/session" },
+    { "path": "./services/service-authentication" },
+    { "path": "./services/service-mailing" }
   ]
 }
