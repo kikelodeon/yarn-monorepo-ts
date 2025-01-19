@@ -14,17 +14,26 @@
   "files": [],
   "include": [],
   "references": [
+    //Utils
+    { "path": "./packages/utils/env" },
     { "path": "./packages/utils/uuid6" },
+    //Common
     { "path": "./packages/domain/_common" },
-    { "path": "./packages/domain/user" },
-    { "path": "./packages/domain/session" },
     { "path": "./packages/infrastructure/_common" },
-    { "path": "./packages/infrastructure/user" },
-    { "path": "./packages/infrastructure/session" },
     { "path": "./packages/contracts/_common" },
+    { "path": "./packages/application/_common" },
+    //User
+    { "path": "./packages/domain/user" },
+    { "path": "./packages/infrastructure/user" },
     { "path": "./packages/contracts/user" },
+    { "path": "./packages/application/user" },
+    //Session
+  /*  { "path": "./packages/domain/session" },
+    { "path": "./packages/infrastructure/session" },
     { "path": "./packages/contracts/session" },
+    { "path": "./packages/application/session" },*/
+    //Services
     { "path": "./services/service-authentication" },
-    { "path": "./services/service-mailing" }
+    //{ "path": "./services/service-mailing" }
   ]
 }

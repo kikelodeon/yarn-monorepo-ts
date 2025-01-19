@@ -1,0 +1,15 @@
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+  ]
+}

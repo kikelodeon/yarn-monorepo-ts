@@ -1,15 +1,15 @@
 {
   "extends": "../../tsconfig.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "rootDir": "src",
     "outDir": "dist",
     "baseUrl": ".",
-"paths": {
-  "@kikerepo/lib": ["../lib"],
-  "@kikerepo/lib/*": ["../lib/dist/*"]
-}
-
   },
   "include": ["src"],
-  "exclude": ["node_modules", "dist"]
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
 }

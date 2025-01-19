@@ -11,7 +11,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/domain-common": "^1.0.0"
+    "@kikerepo/domain-user": "^1.0.0",
+    "@kikerepo/infrastructure-common": "^1.0.0",
+    "mongoose": "^6.8.0",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0"
   },
   "devDependencies": {
     "typescript": "^4.9.0"

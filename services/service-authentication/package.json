@@ -11,12 +11,21 @@
     "lint": "eslint 'src/**/*.ts'"
   },
   "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
     "eslint": "^8.0.0",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
     "typescript": "^4.9.0"
   },
   "dependencies": {
-    "@kikerepo/domain-user": "workspace:*"
+    "@kikerepo/application-user": "workspace:*",
+    "@kikerepo/contracts-user": "workspace:*",
+    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/infrastructure-user": "workspace:*",
+    "@kikerepo/utils-env": "workspace:*",
+    "dotenv": "^16.4.7",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0"
   }
 }

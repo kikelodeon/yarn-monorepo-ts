@@ -1,0 +1,12 @@
+
+@DOMAIN = localhost
+@PORT = 3000
+@URL = http://{{DOMAIN}}:{{PORT}}/login
+
+POST {{@URL}}
+Content-Type: application/json
+
+{
+  "email": "test@test.com",
+  "password": "test123"
+}

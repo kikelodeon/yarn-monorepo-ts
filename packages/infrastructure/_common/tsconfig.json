@@ -10,6 +10,6 @@
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../../utils/uuid6" } // Explicit dependency on @kikerepo/utils-uuid6
+    { "path": "../../contracts/_common" } // Uses compiled @kikerepo/contracts-common
   ]
 }

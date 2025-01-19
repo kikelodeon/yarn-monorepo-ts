@@ -1,0 +1,21 @@
+{
+  "name": "@kikerepo/application-user",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/application-common": "^1.0.0",
+    "@kikerepo/domain-user": "^1.0.0",
+    "@kikerepo/infrastructure-user": "^1.0.0"
+  },
+  "devDependencies": {
+    "typescript": "^4.9.0"
+  }
+}
