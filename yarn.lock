@@ -1284,8 +1284,6 @@ __metadata:
 "@kikerepo/application-common@npm:^1.0.0, @kikerepo/application-common@workspace:packages/application/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/application-common@workspace:packages/application/_common"
-  dependencies:
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1294,7 +1292,6 @@ __metadata:
   resolution: "@kikerepo/application-session@workspace:packages/application/session"
   dependencies:
     "@kikerepo/domain-common": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1305,15 +1302,12 @@ __metadata:
     "@kikerepo/application-common": "npm:^1.0.0"
     "@kikerepo/domain-user": "npm:^1.0.0"
     "@kikerepo/infrastructure-user": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
 "@kikerepo/contracts-common@npm:^1.0.0, @kikerepo/contracts-common@workspace:packages/contracts/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/contracts-common@workspace:packages/contracts/_common"
-  dependencies:
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1322,7 +1316,6 @@ __metadata:
   resolution: "@kikerepo/contracts-session@workspace:packages/contracts/session"
   dependencies:
     "@kikerepo/domain-common": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1331,7 +1324,6 @@ __metadata:
   resolution: "@kikerepo/contracts-user@workspace:packages/contracts/user"
   dependencies:
     "@kikerepo/domain-common": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1340,7 +1332,6 @@ __metadata:
   resolution: "@kikerepo/domain-common@workspace:packages/domain/_common"
   dependencies:
     "@kikerepo/utils-uuid6": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1349,7 +1340,6 @@ __metadata:
   resolution: "@kikerepo/domain-session@workspace:packages/domain/session"
   dependencies:
     "@kikerepo/domain-common": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1358,7 +1348,6 @@ __metadata:
   resolution: "@kikerepo/domain-user@workspace:packages/domain/user"
   dependencies:
     "@kikerepo/domain-common": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1368,7 +1357,6 @@ __metadata:
   dependencies:
     "@kikerepo/contracts-common": "npm:^1.0.0"
     jsonwebtoken: "npm:^9.0.2"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1377,7 +1365,6 @@ __metadata:
   resolution: "@kikerepo/infrastructure-session@workspace:packages/infrastructure/session"
   dependencies:
     "@kikerepo/infrastructure-common": "npm:^1.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1387,10 +1374,10 @@ __metadata:
   dependencies:
     "@kikerepo/domain-user": "npm:^1.0.0"
     "@kikerepo/infrastructure-common": "npm:^1.0.0"
+    "@prisma/client": "npm:^6.2.1"
     mongoose: "npm:^6.8.0"
     reflect-metadata: "npm:^0.2.2"
     tsyringe: "npm:^4.8.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1411,7 +1398,6 @@ __metadata:
     ts-node-dev: "npm:^2.0.0"
     tsconfig-paths: "npm:^4.2.0"
     tsyringe: "npm:^4.8.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1421,7 +1407,6 @@ __metadata:
   dependencies:
     eslint: "npm:^8.0.0"
     ts-node-dev: "npm:^2.0.0"
-    typescript: "npm:^4.9.0"
   languageName: unknown
   linkType: soft
 
@@ -1429,7 +1414,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kikerepo/utils-env@workspace:packages/utils/env"
   dependencies:
-    typescript: "npm:^4.9.0"
     uuid: "npm:^11.0.5"
   languageName: unknown
   linkType: soft
@@ -1438,7 +1422,6 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kikerepo/utils-uuid6@workspace:packages/utils/uuid6"
   dependencies:
-    typescript: "npm:^4.9.0"
     uuid: "npm:^11.0.5"
   languageName: unknown
   linkType: soft
@@ -1505,6 +1488,64 @@ __metadata:
   version: 0.11.0
   resolution: "@pkgjs/parseargs@npm:0.11.0"
   checksum: 10c0/5bd7576bb1b38a47a7fc7b51ac9f38748e772beebc56200450c4a817d712232b8f1d3ef70532c80840243c657d491cf6a6be1e3a214cff907645819fdc34aadd
+  languageName: node
+  linkType: hard
+
+"@prisma/client@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/client@npm:6.2.1"
+  peerDependencies:
+    prisma: "*"
+  peerDependenciesMeta:
+    prisma:
+      optional: true
+  checksum: 10c0/d6313da2408f2034bfcda1fa3500e6e9fdf13b8ca68d0f31804d6e540e9fedfd4c556bd2258488e5928fa383e5e3a43aa6469c819f8f8bed6250ef983feee5f6
+  languageName: node
+  linkType: hard
+
+"@prisma/debug@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/debug@npm:6.2.1"
+  checksum: 10c0/08b3ad0b29c87cc3d8d7778c019dbc168d7779587dd3b686388ca261edd07778e20b72e68936e6884d1746587c91ab63c28311866a98351cb2add0edcb1a6664
+  languageName: node
+  linkType: hard
+
+"@prisma/engines-version@npm:6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69":
+  version: 6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69
+  resolution: "@prisma/engines-version@npm:6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69"
+  checksum: 10c0/37c05d2a4b35b7ed8589e17f5b8820962453e55720c7b01753b4e248ebd53a1df71271e8e16ffbcddacf332bf01c53f691c3d7ec3fd1790c45ac7378c82eef75
+  languageName: node
+  linkType: hard
+
+"@prisma/engines@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/engines@npm:6.2.1"
+  dependencies:
+    "@prisma/debug": "npm:6.2.1"
+    "@prisma/engines-version": "npm:6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69"
+    "@prisma/fetch-engine": "npm:6.2.1"
+    "@prisma/get-platform": "npm:6.2.1"
+  checksum: 10c0/8ab84560374ee66f56f08f0e8b63e16715933617cda7e3aa95238555dba2b7af0445c114a634b70716e76bbac776911ee6dd7d2dfdc439435f2261d03649550d
+  languageName: node
+  linkType: hard
+
+"@prisma/fetch-engine@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/fetch-engine@npm:6.2.1"
+  dependencies:
+    "@prisma/debug": "npm:6.2.1"
+    "@prisma/engines-version": "npm:6.2.0-14.4123509d24aa4dede1e864b46351bf2790323b69"
+    "@prisma/get-platform": "npm:6.2.1"
+  checksum: 10c0/0a50655f17be92cac2b0e8f235ae6a2700669ccc13ae2b43a62ccbc6525050b90c00183620a4ae22ac793d2a9894654f4545ef0db52a21fd575e89ad076a34ab
+  languageName: node
+  linkType: hard
+
+"@prisma/get-platform@npm:6.2.1":
+  version: 6.2.1
+  resolution: "@prisma/get-platform@npm:6.2.1"
+  dependencies:
+    "@prisma/debug": "npm:6.2.1"
+  checksum: 10c0/d7be2d973cfef8ca62cf2283b190d6bf07b1afe03358f5f42744f41e4493ed96b33ae46fa5802e6570b1bd6c63d8e3d677439abb091ac3029265a07343ef122d
   languageName: node
   linkType: hard
 
@@ -3240,7 +3281,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
+"fsevents@npm:2.3.3, fsevents@npm:^2.3.2, fsevents@npm:~2.3.2":
   version: 2.3.3
   resolution: "fsevents@npm:2.3.3"
   dependencies:
@@ -3250,7 +3291,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"fsevents@patch:fsevents@npm%3A^2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>":
+"fsevents@patch:fsevents@npm%3A2.3.3#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A^2.3.2#optional!builtin<compat/fsevents>, fsevents@patch:fsevents@npm%3A~2.3.2#optional!builtin<compat/fsevents>":
   version: 2.3.3
   resolution: "fsevents@patch:fsevents@npm%3A2.3.3#optional!builtin<compat/fsevents>::version=2.3.3&hash=df0bf1"
   dependencies:
@@ -4710,9 +4751,11 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "my-monorepo@workspace:."
   dependencies:
+    "@prisma/client": "npm:^6.2.1"
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.4.5"
     jest: "npm:^29.7.0"
+    prisma: "npm:^6.2.1"
     rimraf: "npm:^6.0.1"
     ts-jest: "npm:^29.2.5"
     ts-node: "npm:^10.9.2"
@@ -4998,6 +5041,21 @@ __metadata:
     ansi-styles: "npm:^5.0.0"
     react-is: "npm:^18.0.0"
   checksum: 10c0/edc5ff89f51916f036c62ed433506b55446ff739358de77207e63e88a28ca2894caac6e73dcb68166a606e51c8087d32d400473e6a9fdd2dbe743f46c9c0276f
+  languageName: node
+  linkType: hard
+
+"prisma@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "prisma@npm:6.2.1"
+  dependencies:
+    "@prisma/engines": "npm:6.2.1"
+    fsevents: "npm:2.3.3"
+  dependenciesMeta:
+    fsevents:
+      optional: true
+  bin:
+    prisma: build/index.js
+  checksum: 10c0/814734faeac3b36ef571732b65d90a915c9375e3f2cb230da50ac33f2d1b88ccbd3497c5878a7326b74161fd94c70c56cb63d9f88df28a662579da7980ded8f2
   languageName: node
   linkType: hard
 
@@ -5743,16 +5801,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"typescript@npm:^4.9.0":
-  version: 4.9.5
-  resolution: "typescript@npm:4.9.5"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/5f6cad2e728a8a063521328e612d7876e12f0d8a8390d3b3aaa452a6a65e24e9ac8ea22beb72a924fd96ea0a49ea63bb4e251fb922b12eedfb7f7a26475e5c56
-  languageName: node
-  linkType: hard
-
 "typescript@npm:^5.7.3":
   version: 5.7.3
   resolution: "typescript@npm:5.7.3"
@@ -5760,16 +5808,6 @@ __metadata:
     tsc: bin/tsc
     tsserver: bin/tsserver
   checksum: 10c0/b7580d716cf1824736cc6e628ab4cd8b51877408ba2be0869d2866da35ef8366dd6ae9eb9d0851470a39be17cbd61df1126f9e211d8799d764ea7431d5435afa
-  languageName: node
-  linkType: hard
-
-"typescript@patch:typescript@npm%3A^4.9.0#optional!builtin<compat/typescript>":
-  version: 4.9.5
-  resolution: "typescript@patch:typescript@npm%3A4.9.5#optional!builtin<compat/typescript>::version=4.9.5&hash=289587"
-  bin:
-    tsc: bin/tsc
-    tsserver: bin/tsserver
-  checksum: 10c0/e3333f887c6829dfe0ab6c1dbe0dd1e3e2aeb56c66460cb85c5440c566f900c833d370ca34eb47558c0c69e78ced4bfe09b8f4f98b6de7afed9b84b8d1dd06a1
   languageName: node
   linkType: hard
 

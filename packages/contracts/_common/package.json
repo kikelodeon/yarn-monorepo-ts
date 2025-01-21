@@ -9,8 +9,5 @@
     "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.0"
   }
 }

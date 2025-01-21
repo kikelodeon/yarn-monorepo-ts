@@ -12,8 +12,5 @@
   },
   "dependencies": {
     "@kikerepo/utils-uuid6": "^1.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.0"
   }
 }

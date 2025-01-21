@@ -43,7 +43,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json
     "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    
   }
 }
 
@@ -176,7 +176,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\session\p
     "@kikerepo/domain-common": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -230,7 +230,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\pack
     "@kikerepo/infrastructure-user": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -393,7 +393,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\p
     "test": "jest"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -441,7 +441,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\session\pac
     "@kikerepo/domain-common": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -493,7 +493,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\packag
     "@kikerepo/domain-common": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -680,7 +680,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\pac
     "test": "jest"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -785,7 +785,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\session\packag
     "@kikerepo/domain-common": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -936,7 +936,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\package.j
     "@kikerepo/domain-common": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -1295,7 +1295,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\packag
     "@kikerepo/utils-uuid6": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -1553,7 +1553,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\sessio
     "@kikerepo/infrastructure-common": "^1.0.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -1609,7 +1609,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\p
     "tsyringe": "^4.8.0"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -1819,7 +1819,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
 
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -2058,7 +2058,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\package.j
     "uuid": "^11.0.5"
   },
   "devDependencies": {
-    "typescript": "^4.9.0"
+    
   }
 }
 
@@ -2281,7 +2281,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authenticatio
     "eslint": "^8.0.0",
     "ts-node-dev": "^2.0.0",
     "tsconfig-paths": "^4.2.0",
-    "typescript": "^4.9.0"
+    
   },
   "dependencies": {
     "@kikerepo/application-user": "workspace:*",
@@ -2507,7 +2507,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\packa
   "devDependencies": {
     "eslint": "^8.0.0",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^4.9.0"
+    
   }
 }
 

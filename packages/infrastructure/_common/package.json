@@ -13,8 +13,5 @@
   "dependencies": {
     "@kikerepo/contracts-common": "^1.0.0",
     "jsonwebtoken": "^9.0.2"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.0"
   }
 }

@@ -1,3 +1,2 @@
-export * from './UserModel';
-export * from './UserMapper';
+export * from './UserDatabase';
 export * from './UserRepository';

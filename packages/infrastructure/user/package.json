@@ -13,11 +13,9 @@
   "dependencies": {
     "@kikerepo/domain-user": "^1.0.0",
     "@kikerepo/infrastructure-common": "^1.0.0",
+    "@prisma/client": "^6.2.1",
     "mongoose": "^6.8.0",
     "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.0"
   }
 }

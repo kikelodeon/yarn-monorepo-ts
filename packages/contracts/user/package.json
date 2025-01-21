@@ -12,8 +12,5 @@
   },
   "dependencies": {
     "@kikerepo/domain-common": "^1.0.0"
-  },
-  "devDependencies": {
-    "typescript": "^4.9.0"
   }
 }

@@ -7,7 +7,7 @@
     "outDir": "dist",
     "baseUrl": ".",
   },
-  "include": ["src"],
+  "include": ["src", "../../packages/infrastructure/user/src/persistance/databaseConnection.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
 

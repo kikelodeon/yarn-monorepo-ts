@@ -1,46 +1,45 @@
-// infrastructure-user/src/persistence/UserRepository.ts
 import { IUserRepository } from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
-import { UserModel } from './UserModel';
-import { toDomain, toPersistence } from './UserMapper'; 
+import { prisma } from './UserDatabase'; 
 
 export class UserRepository implements IUserRepository {
-  /**
-   * Recibe la entidad de dominio, la convierte a persistencia y hace upsert
-   */
   async save(user: User): Promise<void> {
-    const userDoc = await UserModel.findOne({ id: user.id.value });
-
-    if (userDoc) {
-      // Actualizar user existente
-      const newProps = toPersistence(user); 
-      userDoc.email = newProps.email;
-      userDoc.password = newProps.password;
-      userDoc.phone = newProps.phone;
-      await userDoc.save();
-    } else {
-      // Crear nuevo
-      const newProps = toPersistence(user);
-      const newUserDoc = new UserModel(newProps);
-      await newUserDoc.save();
-    }
+    await prisma.user.upsert({
+      where: { id: user.id.value },
+      update: {
+        email: user.email.value,
+        password: user.password.value,
+        phone: user.phone?.value,
+      },
+      create: {
+        id: user.id.value,
+        email: user.email.value,
+        password: user.password.value,
+        phone: user.phone?.value,
+      },
+    });
   }
 
-  /**
-   * Encuentra por ID
-   */
   async findById(id: string): Promise<User | null> {
-    const userDoc = await UserModel.findOne({ id });
-    if (!userDoc) return null;
-    return toDomain(userDoc);
+    const userRecord = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!userRecord) return null;
+
+    // Convertir el registro de la DB a la entidad de dominio
+    return new User(userRecord.id, userRecord.email, userRecord.password, userRecord.phone);
+
   }
 
-  /**
-   * Encuentra por email
-   */
   async findByEmail(email: string): Promise<User | null> {
-    const userDoc = await UserModel.findOne({ email });
-    if (!userDoc) return null;
-    return toDomain(userDoc);
+    const userRecord = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!userRecord) return null;
+
+    // Convertir el registro de la DB a la entidad de dominio
+    return new User(userRecord.id, userRecord.email, userRecord.password, userRecord.phone);
   }
 }
