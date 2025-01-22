@@ -1,6 +1,6 @@
-import { IUserRepository } from '@kikerepo/domain-user';
+import { Email, IUserRepository, Password, Phone, UserId } from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
-import { prisma } from './UserDatabase'; 
+import { prisma } from './UserDatabase';
 
 export class UserRepository implements IUserRepository {
   async save(user: User): Promise<void> {
@@ -28,7 +28,13 @@ export class UserRepository implements IUserRepository {
     if (!userRecord) return null;
 
     // Convertir el registro de la DB a la entidad de dominio
-    return new User(userRecord.id, userRecord.email, userRecord.password, userRecord.phone);
+    return  User.map(
+      userRecord.id,
+      userRecord.email,
+      userRecord.password,
+      userRecord.phone,
+      userRecord.createdAt,
+      userRecord.deletedAt);
 
   }
 
@@ -40,6 +46,12 @@ export class UserRepository implements IUserRepository {
     if (!userRecord) return null;
 
     // Convertir el registro de la DB a la entidad de dominio
-    return new User(userRecord.id, userRecord.email, userRecord.password, userRecord.phone);
+    return  User.map(
+      userRecord.id,
+      userRecord.email,
+      userRecord.password,
+      userRecord.phone,
+      userRecord.createdAt,
+      userRecord.deletedAt);
   }
 }

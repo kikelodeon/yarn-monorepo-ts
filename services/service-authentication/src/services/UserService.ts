@@ -10,7 +10,7 @@ export class UserService {
   }
 
   async registerUser(command: UserRegisterCommand): Promise<UserRegisterResult> {
-    const user = User.create(command.email, command.password, command.phone);
+    const user = User.createUnique(command.email, command.password, command.phone);
     await this.userRepository.save(user);
     return new UserRegisterResult(user.id.value, true);
   }

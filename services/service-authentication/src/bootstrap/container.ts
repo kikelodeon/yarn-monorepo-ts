@@ -2,7 +2,7 @@
 
 import 'reflect-metadata';
 import { container } from 'tsyringe';
-import { registerUserInfrastructure } from '@kikerepo/infrastructure-user';
+import { registerInfrastructure } from '@kikerepo/infrastructure-user';
 import { UserService } from '../services/UserService';
 import { connectPrisma } from '@kikerepo/infrastructure-user';
 // Función para construir el contenedor de dependencias
@@ -11,7 +11,7 @@ export async function buildContainer() {
   await connectPrisma();
 
   // 2) Registrar infraestructura (repositorios, etc.)
-  registerUserInfrastructure(container);
+  registerInfrastructure(container);
 
   // 3) Registrar servicios
   container.register<UserService>(UserService, {

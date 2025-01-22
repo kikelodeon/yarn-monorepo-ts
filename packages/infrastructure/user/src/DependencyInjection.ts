@@ -3,7 +3,7 @@ import {  DependencyContainer } from 'tsyringe';
 import { IUserRepository } from '@kikerepo/domain-user';
 import { UserRepository } from './persistance';
 
-export function registerUserInfrastructure(c: DependencyContainer) {
+export function registerInfrastructure(c: DependencyContainer) {
   // Registramos el repo de usuario
   c.register<IUserRepository>('IUserRepository', {
     useClass: UserRepository

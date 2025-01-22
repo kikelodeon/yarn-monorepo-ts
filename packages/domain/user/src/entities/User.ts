@@ -1,5 +1,5 @@
 // domain-user/src/entities/User.ts
-import { AggregateRoot } from '@kikerepo/domain-common';
+import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
 import { UserId, Email, Password, Phone } from '../value-objects';
 import { UserCreatedEvent } from '../events/UserCreatedEvent';
 
@@ -12,19 +12,20 @@ export class User extends AggregateRoot<UserId> {
    * El constructor recibe VO ya construidos (y no dispara eventos).
    * Lo hacemos público, pero OJO: 
    * - Normalmente lo dejaríamos `private` o `protected` 
-   *   si quieres forzar a que siempre usen la factoría `create`.
+   *   si quieres forzar a que siempre usen la factoría `createUnique`.
    */
-  public constructor(
+  private constructor(
     id: UserId,
     email: Email,
     password: Password,
-    phone?: Phone
+    phone?: Phone,
+    creationDate?: CreationDate,
+    deletionDate?: DeletionDate,
   ) {
-    super(id);
+    super(id,creationDate,deletionDate);
     this._email = email;
     this._password = password;
     this._phone = phone;
-
     this.validate();
   }
 
@@ -33,7 +34,7 @@ export class User extends AggregateRoot<UserId> {
    * Recibe valores primitivos, construye VO, llama al constructor
    * y emite un evento.
    */
-  public static create(
+  public static createUnique(
     email: string,
     password: string,
     phone?: string
@@ -54,7 +55,27 @@ export class User extends AggregateRoot<UserId> {
 
     return user;
   }
+  public static map(
+    id: string,
+    email: string,
+    password: string,
+    phone: string|null,
+    creationDate: Date,
+    deletionDate: Date|null
+  ): User {
+    // 1) Generar ID y crear Value Objects
+    const userId = new UserId(id); // genera un UUIDv6 (por ejemplo)
+    const emailVO = new Email(email); 
+    const passwordVO = new Password(password);
+    const phoneVO = phone ? new Phone(phone) : undefined;
 
+    const creationDateVO = new CreationDate(creationDate) ;
+    const deletionDateVO = deletionDate ? new DeletionDate(deletionDate) : undefined;
+    // 2) Llamar al constructor con VO
+    const user = new User(userId, emailVO, passwordVO, phoneVO,creationDateVO,deletionDateVO);
+    return user;
+  }
+  
   private validate(): void {
     // Aquí podrías poner chequeos complementarios (si fuese necesario)
     if (!this._email) {
@@ -82,7 +103,6 @@ export class User extends AggregateRoot<UserId> {
     return this._phone;
   }
 
-  // Ejemplo: un "setter" (método) para cambiar la contraseña:
   public changePassword(newPassword: string) {
     this._password = new Password(newPassword);
     // Emite un PasswordChangedEvent si deseas
