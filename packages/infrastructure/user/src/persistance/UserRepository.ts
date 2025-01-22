@@ -1,4 +1,4 @@
-import { Email, IUserRepository, Password, Phone, UserId } from '@kikerepo/domain-user';
+import { IUserRepository} from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
 import { prisma } from './UserDatabase';
 

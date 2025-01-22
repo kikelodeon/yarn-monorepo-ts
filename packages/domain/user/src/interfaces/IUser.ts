@@ -1,7 +1,7 @@
-import { Email, Phone, Password } from "./../value-objects";
+import { Email, Phone, HashedPassword } from "./../value-objects";
 
 export interface IUser {
-    password: Password;
+    password: HashedPassword;
     phone?: Phone;
     email: Email;
   }

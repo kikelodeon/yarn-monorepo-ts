@@ -1,6 +1,7 @@
 export { Email } from './Email';
-export { Password } from './Password';
+export { HashedPassword } from './HashedPassword';
 export { Phone } from './Phone';
 export { UserId } from './UserId';
+export { InputPassword } from './InputPassword';
 
 

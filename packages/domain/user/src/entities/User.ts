@@ -1,11 +1,11 @@
 // domain-user/src/entities/User.ts
 import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
-import { UserId, Email, Password, Phone } from '../value-objects';
+import { UserId, Email, HashedPassword, Phone } from '../value-objects';
 import { UserCreatedEvent } from '../events/UserCreatedEvent';
 
 export class User extends AggregateRoot<UserId> {
   private _email: Email;
-  private _password: Password;
+  private _password: HashedPassword;
   private _phone?: Phone;
 
   /**
@@ -17,7 +17,7 @@ export class User extends AggregateRoot<UserId> {
   private constructor(
     id: UserId,
     email: Email,
-    password: Password,
+    password: HashedPassword,
     phone?: Phone,
     creationDate?: CreationDate,
     deletionDate?: DeletionDate,
@@ -42,7 +42,7 @@ export class User extends AggregateRoot<UserId> {
     // 1) Generar ID y crear Value Objects
     const userId = new UserId(); // genera un UUIDv6 (por ejemplo)
     const emailVO = new Email(email); 
-    const passwordVO = new Password(password);
+    const passwordVO = new HashedPassword(password);
     const phoneVO = phone ? new Phone(phone) : undefined;
 
     // 2) Llamar al constructor con VO
@@ -66,7 +66,7 @@ export class User extends AggregateRoot<UserId> {
     // 1) Generar ID y crear Value Objects
     const userId = new UserId(id); // genera un UUIDv6 (por ejemplo)
     const emailVO = new Email(email); 
-    const passwordVO = new Password(password);
+    const passwordVO = new HashedPassword(password);
     const phoneVO = phone ? new Phone(phone) : undefined;
 
     const creationDateVO = new CreationDate(creationDate) ;
@@ -95,7 +95,7 @@ export class User extends AggregateRoot<UserId> {
     return this._email;
   }
 
-  get password(): Password {
+  get password(): HashedPassword {
     return this._password;
   }
 
@@ -104,7 +104,7 @@ export class User extends AggregateRoot<UserId> {
   }
 
   public changePassword(newPassword: string) {
-    this._password = new Password(newPassword);
+    this._password = new HashedPassword(newPassword);
     // Emite un PasswordChangedEvent si deseas
   }
 }
