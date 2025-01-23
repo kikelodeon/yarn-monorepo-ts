@@ -1,3 +1,5 @@
+import { Email,InputPassword, Phone } from "@kikerepo/domain-user";
+
 export class UserRegisterCommand {
-    constructor(public readonly email: string, public readonly password: string, public readonly phone?: string) { }
+    constructor(public readonly email: Email, public readonly password: InputPassword, public readonly phone?: Phone) { }
 }

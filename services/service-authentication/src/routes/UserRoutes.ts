@@ -10,6 +10,7 @@ import {
 
 import { UserService } from '../services/UserService';
 import { UserRegisterCommand } from '@kikerepo/application-user';
+import { Email, InputPassword, Phone } from '@kikerepo/domain-user';
 
 export const UserRoutes = Router();
 
@@ -50,7 +51,7 @@ UserRoutes.post(
       const userService = container.resolve(UserService);
 
       // Creamos comando y llamamos al servicio
-      const registerCommand = new UserRegisterCommand(email, password, phone);
+      const registerCommand = new UserRegisterCommand(new Email(email), new InputPassword(password), phone ? new Phone(phone) : undefined);
       await userService.registerUser(registerCommand);
 
       // Devolvemos la respuesta
