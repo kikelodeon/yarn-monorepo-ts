@@ -11,6 +11,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/utils-uuid6": "^1.0.0"
+    "@kikerepo/utils-uuid6": "workspace:*"
   }
 }

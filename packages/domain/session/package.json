@@ -11,6 +11,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/domain-common": "^1.0.0"
+    "@kikerepo/domain-common": "workspace:*"
   }
 }

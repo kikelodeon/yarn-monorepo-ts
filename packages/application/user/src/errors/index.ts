@@ -1,0 +1,2 @@
+
+export { EmailAlreadyInUseError } from './EmailAlreadyInUseError';

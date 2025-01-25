@@ -1,0 +1,1 @@
+export { ValidationBehaviour } from './ValidationBehaviour';

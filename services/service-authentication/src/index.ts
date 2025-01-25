@@ -4,7 +4,7 @@ import 'reflect-metadata';
 import dotenv from 'dotenv';
 import express from 'express';
 import { buildContainer } from './bootstrap/container';
-import { UserRoutes } from './routes/UserRoutes';
+import { userRoutes } from './routes/UserRoutes';
 
 dotenv.config();
 
@@ -17,7 +17,7 @@ async function startServer() {
   app.use(express.json());
 
   // 3) Montar rutas
-  app.use('/users', UserRoutes);
+  app.use('/users', userRoutes);
 
   // 4) Arrancar el servidor
   const port = process.env.APP_PORT || 3000;

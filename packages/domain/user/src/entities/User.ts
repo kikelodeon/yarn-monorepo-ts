@@ -1,6 +1,6 @@
 // domain-user/src/entities/User.ts
 import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
-import { UserId, Email, HashedPassword, Phone } from '../value-objects';
+import { UserId, Email, HashedPassword, Phone, InputPassword } from '../value-objects';
 import { UserCreatedEvent } from '../events/UserCreatedEvent';
 
 export class User extends AggregateRoot<UserId> {
@@ -68,7 +68,6 @@ export class User extends AggregateRoot<UserId> {
     const emailVO = new Email(email); 
     const passwordVO = new HashedPassword(password);
     const phoneVO = phone ? new Phone(phone) : undefined;
-
     const creationDateVO = new CreationDate(creationDate) ;
     const deletionDateVO = deletionDate ? new DeletionDate(deletionDate) : undefined;
     // 2) Llamar al constructor con VO
@@ -103,8 +102,8 @@ export class User extends AggregateRoot<UserId> {
     return this._phone;
   }
 
-  public changePassword(newPassword: string) {
-    this._password = new HashedPassword(newPassword);
+  public changePassword(newPassword: InputPassword) {
+    this._password = new HashedPassword(newPassword.value);
     // Emite un PasswordChangedEvent si deseas
   }
 }

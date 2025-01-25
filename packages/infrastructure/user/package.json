@@ -11,8 +11,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/domain-user": "^1.0.0",
-    "@kikerepo/infrastructure-common": "^1.0.0",
+    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/infrastructure-common": "workspace:*",
     "@prisma/client": "^6.2.1",
     "mongoose": "^6.8.0",
     "reflect-metadata": "^0.2.2",

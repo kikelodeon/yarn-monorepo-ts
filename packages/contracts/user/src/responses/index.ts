@@ -1,2 +1,2 @@
-export * from './UserLoginResponse';
-export * from './UserRegisterResponse';
+export * from './LoginResponse';
+export * from './RegisterResponse';

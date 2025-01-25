@@ -5,7 +5,12 @@
     "rootDir": "./src", // Only source files are included
     "composite": true, // Required for project references
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
   },
   "include": ["src"],
   "exclude": ["node_modules", "dist"],

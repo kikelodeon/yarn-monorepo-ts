@@ -11,8 +11,12 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/application-common": "^1.0.0",
-    "@kikerepo/domain-user": "^1.0.0",
-    "@kikerepo/infrastructure-user": "^1.0.0"
+    "@kikerepo/application-common": "workspace:*",
+    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/infrastructure-user": "workspace:*",
+    "@kikerepo/contracts-common": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "libphonenumber-js": "^1.11.18"
   }
 }

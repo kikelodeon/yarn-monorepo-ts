@@ -1,2 +1,2 @@
 
-export * from './UserRegisterCommand';
+export * from './RegisterCommand';

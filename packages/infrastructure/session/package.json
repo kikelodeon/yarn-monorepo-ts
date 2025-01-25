@@ -11,6 +11,6 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/infrastructure-common": "^1.0.0"
+    "@kikerepo/infrastructure-common": "workspace:*"
   }
 }

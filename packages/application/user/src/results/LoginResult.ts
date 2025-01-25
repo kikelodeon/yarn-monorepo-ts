@@ -1,6 +1,5 @@
-export class UserLoginResult {
+export class LoginResult {
     constructor(
-      public readonly success: boolean,
       public readonly userId?: string,
       public readonly token?: string
     ) {}

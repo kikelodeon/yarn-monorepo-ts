@@ -9,5 +9,9 @@
     "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
+  },
+  "dependencies": {
+    "fp-ts": "^2.16.9",
+    "@kikerepo/contracts-common": "workspace:*"
   }
 }

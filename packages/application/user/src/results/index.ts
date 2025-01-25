@@ -1,2 +1,2 @@
-export * from './UserLoginResult';
-export * from './UserRegisterResult';
+export * from './LoginResult';
+export * from './RegisterResult';
