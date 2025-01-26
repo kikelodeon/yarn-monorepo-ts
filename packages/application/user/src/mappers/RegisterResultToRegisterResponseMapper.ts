@@ -1,5 +1,5 @@
 // src/application/user/mappers/UserRegisterResultToResponseMapper.ts
-import { UserRegisterResult as RegisterResult } from '../results/RegisterResult';  // Assuming this is the result class
+import { RegisterResult as RegisterResult } from '../results/RegisterResult';  // Assuming this is the result class
 import { RegisterResponse } from '@kikerepo/contracts-user';   // Assuming this is the response DTO
 
 export class RegisterResultToRegisterResponseMapper {

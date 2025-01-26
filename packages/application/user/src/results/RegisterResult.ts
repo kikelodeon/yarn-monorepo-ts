@@ -1,7 +1,6 @@
 import { UserId,Email } from "@kikerepo/domain-user";
 
-// src/application/user/results/UserRegisterResult.ts
-export class UserRegisterResult {
+export class RegisterResult {
   userId: UserId;
   email: Email;
 

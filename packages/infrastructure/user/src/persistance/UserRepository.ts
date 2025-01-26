@@ -1,7 +1,8 @@
 import { IUserRepository} from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
 import { prisma } from './UserDatabase';
-
+import { injectable } from 'inversify';
+@injectable()
 export class UserRepository implements IUserRepository {
   async save(user: User): Promise<void> {
     await prisma.user.upsert({

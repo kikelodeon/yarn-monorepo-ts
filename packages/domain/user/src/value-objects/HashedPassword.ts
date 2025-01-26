@@ -1,5 +1,4 @@
 import { ValueObject } from '@kikerepo/domain-common';
-import { InputPassword } from './InputPassword';
 
 
 export class HashedPassword extends ValueObject<string> {

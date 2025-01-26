@@ -1,2 +1,2 @@
-export * from './DependencyInjection';
+export * from './services';
 export * from './persistance'

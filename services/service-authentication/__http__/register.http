@@ -1,10 +1,7 @@
-
-@url = http://localhost:3000/register
-
-POST {{@url}}
+POST http://localhost:5001/users/registers
 Content-Type: application/json
 
 {
-  "email": "test@test.com",
-  "password": "test123"
+  "email": "tasdas@asdasd.com",
+  "password": "Aaa!123456"
 }

@@ -11,7 +11,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "fp-ts": "^2.16.9",
-    "@kikerepo/contracts-common": "workspace:*"
+    "@kikerepo/contracts-common": "workspace:*",
+    "fp-ts": "^2.16.9"
   }
 }

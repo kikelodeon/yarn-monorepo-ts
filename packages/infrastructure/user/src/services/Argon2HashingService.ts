@@ -1,6 +1,8 @@
 // infrastructure/services/Argon2HashingService.ts
 import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/domain-user';
 import argon2 from 'argon2';
+import { injectable } from 'inversify';
+@injectable()
 
 export class Argon2HashingService implements IHashingService {
   async hash(password: InputPassword): Promise<HashedPassword> {

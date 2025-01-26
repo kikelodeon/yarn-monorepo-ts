@@ -15,7 +15,9 @@
     "@kikerepo/infrastructure-common": "workspace:*",
     "@prisma/client": "^6.2.1",
     "mongoose": "^6.8.0",
-    "reflect-metadata": "^0.2.2",
-    "tsyringe": "^4.8.0"
+    "reflect-metadata": "^0.2.2"
+  },
+  "devDependencies": {
+    "prisma": "^6.2.1"
   }
 }

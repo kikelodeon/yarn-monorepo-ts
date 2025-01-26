@@ -956,6 +956,32 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@inversifyjs/common@npm:1.4.0":
+  version: 1.4.0
+  resolution: "@inversifyjs/common@npm:1.4.0"
+  checksum: 10c0/03f76538de4d678f09c1d8a84351bcbedd5add502c46af27b8ce439d07162c428fccf26d23f0452e2adf1aaa893e179372c04f2aa9bfc3554e3125e43a76dd2b
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/core@npm:1.3.5":
+  version: 1.3.5
+  resolution: "@inversifyjs/core@npm:1.3.5"
+  dependencies:
+    "@inversifyjs/common": "npm:1.4.0"
+    "@inversifyjs/reflect-metadata-utils": "npm:0.2.4"
+  checksum: 10c0/c0b08d574be8a5a6b4c69910b443491b9b48f37a122e606e5b1a23c5d988f89f87571ef06c01465d20284515941a86685fd0eb1967be3d2e4957f8ea1fb602e5
+  languageName: node
+  linkType: hard
+
+"@inversifyjs/reflect-metadata-utils@npm:0.2.4":
+  version: 0.2.4
+  resolution: "@inversifyjs/reflect-metadata-utils@npm:0.2.4"
+  peerDependencies:
+    reflect-metadata: 0.2.2
+  checksum: 10c0/cfe93bf2366ea8fbf8e968c06e422b93ad20e5a264706aa632bca481a35f2324c38f826d639b8039181760e6a2a8cf9ef89ca57b7cec9851638cf99a1377596a
+  languageName: node
+  linkType: hard
+
 "@isaacs/cliui@npm:^8.0.2":
   version: 8.0.2
   resolution: "@isaacs/cliui@npm:8.0.2"
@@ -1281,19 +1307,12 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kikerepo/application-common@npm:^1.0.0, @kikerepo/application-common@workspace:packages/application/_common":
+"@kikerepo/application-common@workspace:*, @kikerepo/application-common@workspace:packages/application/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/application-common@workspace:packages/application/_common"
   dependencies:
+    "@kikerepo/contracts-common": "workspace:*"
     fp-ts: "npm:^2.16.9"
-  languageName: unknown
-  linkType: soft
-
-"@kikerepo/application-session@workspace:packages/application/session":
-  version: 0.0.0-use.local
-  resolution: "@kikerepo/application-session@workspace:packages/application/session"
-  dependencies:
-    "@kikerepo/domain-common": "npm:^1.0.0"
   languageName: unknown
   linkType: soft
 
@@ -1301,26 +1320,19 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kikerepo/application-user@workspace:packages/application/user"
   dependencies:
-    "@kikerepo/application-common": "npm:^1.0.0"
-    "@kikerepo/domain-user": "npm:^1.0.0"
-    "@kikerepo/infrastructure-user": "npm:^1.0.0"
+    "@kikerepo/application-common": "workspace:*"
+    "@kikerepo/contracts-common": "workspace:*"
+    "@kikerepo/domain-user": "workspace:*"
+    "@kikerepo/infrastructure-user": "workspace:*"
     class-transformer: "npm:^0.5.1"
     class-validator: "npm:^0.14.1"
     libphonenumber-js: "npm:^1.11.18"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/contracts-common@npm:^1.0.0, @kikerepo/contracts-common@workspace:packages/contracts/_common":
+"@kikerepo/contracts-common@workspace:*, @kikerepo/contracts-common@workspace:packages/contracts/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/contracts-common@workspace:packages/contracts/_common"
-  languageName: unknown
-  linkType: soft
-
-"@kikerepo/contracts-session@workspace:packages/contracts/session":
-  version: 0.0.0-use.local
-  resolution: "@kikerepo/contracts-session@workspace:packages/contracts/session"
-  dependencies:
-    "@kikerepo/domain-common": "npm:^1.0.0"
   languageName: unknown
   linkType: soft
 
@@ -1328,61 +1340,45 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kikerepo/contracts-user@workspace:packages/contracts/user"
   dependencies:
-    "@kikerepo/domain-common": "npm:^1.0.0"
+    "@kikerepo/domain-common": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/domain-common@npm:^1.0.0, @kikerepo/domain-common@workspace:packages/domain/_common":
+"@kikerepo/domain-common@workspace:*, @kikerepo/domain-common@workspace:packages/domain/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/domain-common@workspace:packages/domain/_common"
   dependencies:
-    "@kikerepo/utils-uuid6": "npm:^1.0.0"
+    "@kikerepo/utils-uuid6": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/domain-session@workspace:packages/domain/session":
-  version: 0.0.0-use.local
-  resolution: "@kikerepo/domain-session@workspace:packages/domain/session"
-  dependencies:
-    "@kikerepo/domain-common": "npm:^1.0.0"
-  languageName: unknown
-  linkType: soft
-
-"@kikerepo/domain-user@npm:^1.0.0, @kikerepo/domain-user@workspace:*, @kikerepo/domain-user@workspace:packages/domain/user":
+"@kikerepo/domain-user@workspace:*, @kikerepo/domain-user@workspace:packages/domain/user":
   version: 0.0.0-use.local
   resolution: "@kikerepo/domain-user@workspace:packages/domain/user"
   dependencies:
-    "@kikerepo/domain-common": "npm:^1.0.0"
+    "@kikerepo/domain-common": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/infrastructure-common@npm:^1.0.0, @kikerepo/infrastructure-common@workspace:*, @kikerepo/infrastructure-common@workspace:packages/infrastructure/_common":
+"@kikerepo/infrastructure-common@workspace:*, @kikerepo/infrastructure-common@workspace:packages/infrastructure/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/infrastructure-common@workspace:packages/infrastructure/_common"
   dependencies:
-    "@kikerepo/contracts-common": "npm:^1.0.0"
+    "@kikerepo/contracts-common": "workspace:*"
     jsonwebtoken: "npm:^9.0.2"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/infrastructure-session@workspace:packages/infrastructure/session":
-  version: 0.0.0-use.local
-  resolution: "@kikerepo/infrastructure-session@workspace:packages/infrastructure/session"
-  dependencies:
-    "@kikerepo/infrastructure-common": "npm:^1.0.0"
-  languageName: unknown
-  linkType: soft
-
-"@kikerepo/infrastructure-user@npm:^1.0.0, @kikerepo/infrastructure-user@workspace:*, @kikerepo/infrastructure-user@workspace:packages/infrastructure/user":
+"@kikerepo/infrastructure-user@workspace:*, @kikerepo/infrastructure-user@workspace:packages/infrastructure/user":
   version: 0.0.0-use.local
   resolution: "@kikerepo/infrastructure-user@workspace:packages/infrastructure/user"
   dependencies:
-    "@kikerepo/domain-user": "npm:^1.0.0"
-    "@kikerepo/infrastructure-common": "npm:^1.0.0"
+    "@kikerepo/domain-user": "workspace:*"
+    "@kikerepo/infrastructure-common": "workspace:*"
     "@prisma/client": "npm:^6.2.1"
     mongoose: "npm:^6.8.0"
+    prisma: "npm:^6.2.1"
     reflect-metadata: "npm:^0.2.2"
-    tsyringe: "npm:^4.8.0"
   languageName: unknown
   linkType: soft
 
@@ -1399,6 +1395,7 @@ __metadata:
     "@types/jsonwebtoken": "npm:^9.0.7"
     dotenv: "npm:^16.4.7"
     eslint: "npm:^8.0.0"
+    prisma: "npm:^6.2.1"
     reflect-metadata: "npm:^0.2.2"
     ts-node-dev: "npm:^2.0.0"
     tsconfig-paths: "npm:^4.2.0"
@@ -1425,7 +1422,7 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/utils-uuid6@npm:^1.0.0, @kikerepo/utils-uuid6@workspace:packages/utils/uuid6":
+"@kikerepo/utils-uuid6@workspace:*, @kikerepo/utils-uuid6@workspace:packages/utils/uuid6":
   version: 0.0.0-use.local
   resolution: "@kikerepo/utils-uuid6@workspace:packages/utils/uuid6"
   dependencies:
@@ -3613,6 +3610,18 @@ __metadata:
   languageName: node
   linkType: hard
 
+"inversify@npm:^6.2.1":
+  version: 6.2.1
+  resolution: "inversify@npm:6.2.1"
+  dependencies:
+    "@inversifyjs/common": "npm:1.4.0"
+    "@inversifyjs/core": "npm:1.3.5"
+  peerDependencies:
+    reflect-metadata: ~0.2.2
+  checksum: 10c0/a7c4d0802ae3cbf3d21f1c97a24e066917a2560ff0a8f00c6401147f7c48846549959de3110e9849197eed2ccf6ac64f1208a1295a4beda8fe9ea8e5cdf5f197
+  languageName: node
+  linkType: hard
+
 "ip-address@npm:^9.0.5":
   version: 9.0.5
   resolution: "ip-address@npm:9.0.5"
@@ -4820,6 +4829,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.4.5"
     argon2: "npm:^0.41.1"
+    inversify: "npm:^6.2.1"
     jest: "npm:^29.7.0"
     prisma: "npm:^6.2.1"
     rimraf: "npm:^6.0.1"

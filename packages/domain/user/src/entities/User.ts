@@ -1,6 +1,6 @@
 // domain-user/src/entities/User.ts
 import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
-import { UserId, Email, HashedPassword, Phone, InputPassword } from '../value-objects';
+import { UserId, Email, HashedPassword, Phone} from '../value-objects';
 import { UserCreatedEvent } from '../events/UserCreatedEvent';
 
 export class User extends AggregateRoot<UserId> {
@@ -35,22 +35,19 @@ export class User extends AggregateRoot<UserId> {
    * y emite un evento.
    */
   public static createUnique(
-    email: string,
-    password: string,
-    phone?: string
+    email: Email,
+    password: HashedPassword,
+    phone?: Phone
   ): User {
     // 1) Generar ID y crear Value Objects
     const userId = new UserId(); // genera un UUIDv6 (por ejemplo)
-    const emailVO = new Email(email); 
-    const passwordVO = new HashedPassword(password);
-    const phoneVO = phone ? new Phone(phone) : undefined;
 
     // 2) Llamar al constructor con VO
-    const user = new User(userId, emailVO, passwordVO, phoneVO);
+    const user = new User(userId, email, password, phone);
 
     // 3) Emitir evento de dominio para un user nuevo
     user.addDomainEvent(
-      new UserCreatedEvent(userId.value, emailVO.value, phoneVO?.value),
+      new UserCreatedEvent(userId.value, email.value, phone?.value),
     );
 
     return user;
@@ -102,7 +99,7 @@ export class User extends AggregateRoot<UserId> {
     return this._phone;
   }
 
-  public changePassword(newPassword: InputPassword) {
+  public changePassword(newPassword: HashedPassword) {
     this._password = new HashedPassword(newPassword.value);
     // Emite un PasswordChangedEvent si deseas
   }

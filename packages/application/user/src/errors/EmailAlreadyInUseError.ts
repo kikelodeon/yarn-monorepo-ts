@@ -1,7 +1,7 @@
 // src/application/user/errors/EmailAlreadyInUseError.ts
-import { ValidationError } from '@kikerepo/contracts-common'; // Import the ValidationError from contracts
+import { ConflictError } from '@kikerepo/contracts-common'; // Import the ValidationError from contracts
 
-export class EmailAlreadyInUseError extends ValidationError {
+export class EmailAlreadyInUseError extends ConflictError {
   constructor(email: string) {
     // Create a detailed validation error for the email
     const validationErrors = {

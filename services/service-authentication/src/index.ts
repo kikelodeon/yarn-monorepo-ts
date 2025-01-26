@@ -1,25 +1,24 @@
 // services/service-authentication/src/index.ts
-
 import 'reflect-metadata';
 import dotenv from 'dotenv';
 import express from 'express';
-import { buildContainer } from './bootstrap/container';
+import { buildContainer, container } from './bootstrap/container';
 import { userRoutes } from './routes/UserRoutes';
 
 dotenv.config();
 
 async function startServer() {
-  // 1) Construir el contenedor y conectar Prisma
+  // 1) Build container -> connect Prisma
   await buildContainer();
 
-  // 2) Crear servidor Express
+  // 2) Create Express server
   const app = express();
   app.use(express.json());
 
-  // 3) Montar rutas
+  // 3) Mount routes
   app.use('/users', userRoutes);
 
-  // 4) Arrancar el servidor
+  // 4) Listen
   const port = process.env.APP_PORT || 3000;
   app.listen(port, () => console.log(`[Auth] Listening on port ${port}`));
 }

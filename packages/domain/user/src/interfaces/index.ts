@@ -1,3 +1,3 @@
-export { IUser } from './IUser';
-export { IUserRepository } from './IUserRepository';
-export { IHashingService } from './IHashingService';
+
+export { IUserRepository, IUserRepositoryToken } from './IUserRepository';
+export { IHashingService, IHashingServiceToken } from './IHashingService';

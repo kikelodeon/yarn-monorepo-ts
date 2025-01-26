@@ -1,42 +1,52 @@
-// src/presentation/controllers/UserController.ts
+// services/service-authentication/src/controllers/UserController.ts
+
 import { Request, Response, NextFunction } from 'express';
-import { RegisterCommandHandler ,RegisterResultToRegisterResponseMapper } from '@kikerepo/application-user';
-import { RegisterRequest,RegisterResponse as RegisterResponse } from '@kikerepo/contracts-user';
-import { UserRepository } from '@kikerepo/infrastructure-user';
-import { ValidationBehaviour } from '@kikerepo/application-common';
-import { ValidationError } from '@kikerepo/contracts-common';
+import {
+  RegisterCommandHandler,
+  RegisterCommandHandlerToken,
+  RegisterResultToRegisterResponseMapper,
+  RegisterRequestToRegisterCommandMapper,
+  RegisterCommand,
+  RegisterResult
+} from '@kikerepo/application-user';
+import {
+  RegisterRequest,
+  RegisterResponse
+} from '@kikerepo/contracts-user';
+import { injectable, inject } from 'inversify';
 
+export const UserControllerToken = Symbol('UserControllerToken');
+
+@injectable()
 export class UserController {
-  private registerCommandHandler: RegisterCommandHandler;
+  constructor(
+    @inject(RegisterCommandHandlerToken)
+    private readonly registerCommandHandler: RegisterCommandHandler
+  ) { }
 
-  constructor() {
-    const userRepository = new UserRepository(); // Instantiate repository
-    const validationService = new ValidationBehaviour(); // Instantiate ValidationService
-    this.registerCommandHandler = new RegisterCommandHandler(userRepository, validationService); // Inject into the handler
-  }
-
-  /**
-   * Handle the user registration request.
-   * @param req - The request object.
-   * @param res - The response object.
-   * @param next - The next middleware function.
-   */
   public register = async (
-    req: Request<{}, {}, RegisterRequest>, // Request object with UserRegisterRequest
-    res: Response<RegisterResponse>, // Response object with UserRegisterResponse
+    req: Request<{}, {}, RegisterRequest>,
+    res: Response<RegisterResponse>,
     next: NextFunction
   ): Promise<void> => {
     try {
-      // Call the RegisterCommandHandler to process the registration
-      const result = await this.registerCommandHandler.handle(req.body);
+      // 1) Extract raw strings from the request
+      const command: RegisterCommand = RegisterRequestToRegisterCommandMapper.toCommand(req.body);
 
-      // Map the UserRegisterResult to UserRegisterResponse using the mapper
-      const response = RegisterResultToRegisterResponseMapper.toResponse(result);
+      // 2) Handle the command via the injected RegisterCommandHandler
+      const result: RegisterResult | Error = await this.registerCommandHandler.handle(command);
+      if(result instanceof Error) {
+        next(result);
+        return;
+      }
 
-      // Return the registration result
-      res.status(201).json(response); // Send the mapped response
+      // 3) Map the result to a JSON-friendly DTO
+      const response: RegisterResponse = RegisterResultToRegisterResponseMapper.toResponse(result);
+
+      // 4) Send 201 Created
+      res.status(201).json(response);
     } catch (error) {
-      next(error); // Pass the error to the error handler middleware
+      next(error);
     }
   };
 }

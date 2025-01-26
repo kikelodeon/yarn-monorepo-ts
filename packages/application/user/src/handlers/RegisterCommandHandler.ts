@@ -1,48 +1,39 @@
-// src/application/user/handlers/RegisterCommandHandler.ts
-import { RegisterCommand } from '../commands/RegisterCommand';
-import { UserRegisterResult } from '../results/RegisterResult'; // Import the RegisterUserResult class
-import { UserRepository } from '@kikerepo/infrastructure-user';
-import { User } from '@kikerepo/domain-user'; // Your User entity class
-import { ValidationBehaviour } from '@kikerepo/application-common'; // Import the ValidationService
-import { ValidationError } from '@kikerepo/contracts-common'; // Custom error class
+// RegisterCommandHandler.ts
+
+import { injectable, inject } from 'inversify';
+import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-user';
+import { User } from '@kikerepo/domain-user';
 import { EmailAlreadyInUseError } from '../errors';
+import { RegisterCommand } from '../commands/RegisterCommand';
+import { RegisterResult } from '../results/RegisterResult';
 
+// 1) Declare a unique Symbol right at the top
+export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
+
+@injectable()
 export class RegisterCommandHandler {
-  private userRepository: UserRepository;
-  private validationService: ValidationBehaviour; // Add ValidationService
+  constructor(
+    // If you want to inject them by token:
+    @inject(IUserRepositoryToken) private userRepository: IUserRepository,
+    @inject(IHashingServiceToken) private hashingService: IHashingService
+    // Possibly more dependencies, like a ValidationBehaviour token, etc.
+  ) {}
 
-  constructor(userRepository: UserRepository, validationService: ValidationBehaviour) {
-    this.userRepository = userRepository;
-    this.validationService = validationService; // Inject ValidationService
-  }
-
-  /**
-   * Handle user registration, including validating the RegisterCommand and saving the user.
-   * @param userRegisterRequest - The incoming registration data.
-   * @returns The result of the registration process (UserRegisterResult).
-   */
-  async handle(userRegisterRequest: { email: string; password: string; phone?: string }): Promise<UserRegisterResult> {
-    // Map the request to RegisterCommand
-    const registerCommand = new RegisterCommand(
-      userRegisterRequest.email,
-      userRegisterRequest.password,
-      userRegisterRequest.phone
-    );
-
-    // Use the ValidationService to validate the RegisterCommand instance
-    await this.validationService.validate(registerCommand); // Validate the command using the common validation service
-
-    // Check if the user already exists
-    const existingUser = await this.userRepository.findByEmail(registerCommand.email);
+  public async handle( command: RegisterCommand): Promise<RegisterResult| Error> {
+    
+    // 1) Check if user already exists
+    const existingUser = await this.userRepository.findByEmail(command.email.value);
     if (existingUser) {
-      throw new EmailAlreadyInUseError(registerCommand.email);
+      return new EmailAlreadyInUseError(command.email.value);
     }
 
-    // Create and save the user
-    const newUser = User.createUnique(registerCommand.email, registerCommand.password, registerCommand.phone);
-    await this.userRepository.save(newUser);
+    // 2) Create domain entity
+    const hashedpassword = await this.hashingService.hash(command.password);
+    const user = User.createUnique(command.email,hashedpassword, command.phone);
 
-    // Return the result of the registration process (UserRegisterResult)
-    return new UserRegisterResult(newUser.id, newUser.email);
+    // 3) Save
+    await this.userRepository.save(user);
+
+    return new RegisterResult(user.id, user.email);
   }
 }
