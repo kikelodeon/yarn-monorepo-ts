@@ -3,7 +3,8 @@
   "private": true,
   "workspaces": [
     "packages/*/**",
-    "services/*"
+    "services/*",
+    "redis-server"
   ],
   "scripts": {
     "build": "yarn workspaces foreach --all --topological-dev run build ",
@@ -27,6 +28,7 @@
     "@prisma/client": "^6.2.1",
     "argon2": "^0.41.1",
     "inversify": "^6.2.1",
-    "prisma": "^6.2.1"
+    "prisma": "^6.2.1",
+    "reflect-metadata": "^0.2.2"
   }
 }

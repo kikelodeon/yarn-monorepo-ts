@@ -26,7 +26,6 @@
     "@kikerepo/infrastructure-user": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
-    "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0"
   }
 }
