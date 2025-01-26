@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@kikerepo/contracts-common": "workspace:*",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.17.0"
   }
 }

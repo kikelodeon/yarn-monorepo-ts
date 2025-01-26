@@ -1,6 +1,6 @@
 import { BaseError, InternalError, ValidationError } from '@kikerepo/contracts-common';
 import { Request, Response, NextFunction } from 'express';
-
+import { logger } from '@kikerepo/infrastructure-common';
 // Función para manejar la respuesta de errores
 const handleErrorResponse = (err: BaseError, res: Response): void => {
   const { message, errorCode, statusCode, timestamp, context, stack } = err;
@@ -40,6 +40,7 @@ export const ErrorHandlerMiddleware = (
       input: req.body,  // Aquí se incluyen los datos de la solicitud, si es relevante
       fieldErrors: err.validationErrors,  // Los errores de validación
     };
+    logger.debug(err.name, context);
     return handleErrorResponse(err, res);
   }
 
@@ -49,6 +50,7 @@ export const ErrorHandlerMiddleware = (
       requestBody: req.body,
       endpoint: req.url,
     };
+    logger.debug(err.name, context);
     return handleErrorResponse(err, res);  // Llamamos a la función de manejo de errores para BaseError
   }
 
@@ -64,6 +66,6 @@ export const ErrorHandlerMiddleware = (
     endpoint: req.url,
     requestBody: req.body,
   };
-
+  logger.debug(internalError.name, context);
   return handleErrorResponse(internalError, res);  // Llamamos a la función para manejar el error interno
 };

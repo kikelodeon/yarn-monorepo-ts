@@ -165,816 +165,2795 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\tasks.json
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\.prisma\client\default.d.ts
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import * as runtime from '@prisma/client/runtime/library'
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare const PrismaClient: any
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare type PrismaClient = any
-
-export declare class PrismaClientExtends<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> {
-  $extends: { extArgs: ExtArgs } & (<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends<ExtArgs>) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ) => PrismaClientExtends<Args & ExtArgs> & Args['client'])
-
-  $transaction<R>(
-    fn: (prisma: Omit<this, runtime.ITXClientDenyList>) => Promise<R>,
-    options?: { maxWait?: number; timeout?: number; isolationLevel?: string },
-  ): Promise<R>
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(
-    arg: [...P],
-    options?: { isolationLevel?: string },
-  ): Promise<runtime.Types.Utils.UnwrapTuple<P>>
-}
-
-export declare const dmmf: any
-export declare type dmmf = any
-
-/**
- * Get the type of the value, that the Promise holds.
- */
-export declare type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<infer U> ? U : T
-
-/**
- * Get the return type of a function which returns a Promise.
- */
-export declare type PromiseReturnType<T extends (...args: any) => Promise<any>> = PromiseType<ReturnType<T>>
-
-export namespace Prisma {
-  export type TransactionClient = any
-
-  export function defineExtension<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ): (client: any) => PrismaClientExtends<Args>
-
-  export type Extension = runtime.Types.Extensions.UserArgs
-  export import getExtensionContext = runtime.Extensions.getExtensionContext
-  export import Args = runtime.Types.Public.Args
-  export import Payload = runtime.Types.Public.Payload
-  export import Result = runtime.Types.Public.Result
-  export import Exact = runtime.Types.Public.Exact
-  export import PrismaPromise = runtime.Types.Public.PrismaPromise
-
-  export const prismaVersion: {
-    client: string
-    engine: string
-  }
-}
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\.prisma\client\edge.d.ts
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import * as runtime from '@prisma/client/runtime/library'
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare const PrismaClient: any
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare type PrismaClient = any
-
-export declare class PrismaClientExtends<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> {
-  $extends: { extArgs: ExtArgs } & (<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends<ExtArgs>) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ) => PrismaClientExtends<Args & ExtArgs> & Args['client'])
-
-  $transaction<R>(
-    fn: (prisma: Omit<this, runtime.ITXClientDenyList>) => Promise<R>,
-    options?: { maxWait?: number; timeout?: number; isolationLevel?: string },
-  ): Promise<R>
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(
-    arg: [...P],
-    options?: { isolationLevel?: string },
-  ): Promise<runtime.Types.Utils.UnwrapTuple<P>>
-}
-
-export declare const dmmf: any
-export declare type dmmf = any
-
-/**
- * Get the type of the value, that the Promise holds.
- */
-export declare type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<infer U> ? U : T
-
-/**
- * Get the return type of a function which returns a Promise.
- */
-export declare type PromiseReturnType<T extends (...args: any) => Promise<any>> = PromiseType<ReturnType<T>>
-
-export namespace Prisma {
-  export type TransactionClient = any
-
-  export function defineExtension<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ): (client: any) => PrismaClientExtends<Args>
-
-  export type Extension = runtime.Types.Extensions.UserArgs
-  export import getExtensionContext = runtime.Extensions.getExtensionContext
-  export import Args = runtime.Types.Public.Args
-  export import Payload = runtime.Types.Public.Payload
-  export import Result = runtime.Types.Public.Result
-  export import Exact = runtime.Types.Public.Exact
-  export import PrismaPromise = runtime.Types.Public.PrismaPromise
-
-  export const prismaVersion: {
-    client: string
-    engine: string
-  }
-}
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\.prisma\client\index.d.ts
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import * as runtime from '@prisma/client/runtime/library'
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare const PrismaClient: any
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare type PrismaClient = any
-
-export declare class PrismaClientExtends<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> {
-  $extends: { extArgs: ExtArgs } & (<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends<ExtArgs>) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ) => PrismaClientExtends<Args & ExtArgs> & Args['client'])
-
-  $transaction<R>(
-    fn: (prisma: Omit<this, runtime.ITXClientDenyList>) => Promise<R>,
-    options?: { maxWait?: number; timeout?: number; isolationLevel?: string },
-  ): Promise<R>
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(
-    arg: [...P],
-    options?: { isolationLevel?: string },
-  ): Promise<runtime.Types.Utils.UnwrapTuple<P>>
-}
-
-export declare const dmmf: any
-export declare type dmmf = any
-
-/**
- * Get the type of the value, that the Promise holds.
- */
-export declare type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<infer U> ? U : T
-
-/**
- * Get the return type of a function which returns a Promise.
- */
-export declare type PromiseReturnType<T extends (...args: any) => Promise<any>> = PromiseType<ReturnType<T>>
-
-export namespace Prisma {
-  export type TransactionClient = any
-
-  export function defineExtension<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ): (client: any) => PrismaClientExtends<Args>
-
-  export type Extension = runtime.Types.Extensions.UserArgs
-  export import getExtensionContext = runtime.Extensions.getExtensionContext
-  export import Args = runtime.Types.Public.Args
-  export import Payload = runtime.Types.Public.Payload
-  export import Result = runtime.Types.Public.Result
-  export import Exact = runtime.Types.Public.Exact
-  export import PrismaPromise = runtime.Types.Public.PrismaPromise
-
-  export const prismaVersion: {
-    client: string
-    engine: string
-  }
-}
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\.prisma\client\wasm.d.ts
-
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import * as runtime from '@prisma/client/runtime/library'
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare const PrismaClient: any
-
-/**
- * ##  Prisma Client ʲˢ
- *
- * Type-safe database client for TypeScript & Node.js
- * @example
- * ```
- * const prisma = new Prisma()
- * // Fetch zero or more Users
- * const users = await prisma.user.findMany()
- * ```
- *
- *
- * Read more in our [docs](https://www.prisma.io/docs/concepts/components/prisma-client).
- */
-export declare type PrismaClient = any
-
-export declare class PrismaClientExtends<
-  ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs,
-> {
-  $extends: { extArgs: ExtArgs } & (<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends<ExtArgs>) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ) => PrismaClientExtends<Args & ExtArgs> & Args['client'])
-
-  $transaction<R>(
-    fn: (prisma: Omit<this, runtime.ITXClientDenyList>) => Promise<R>,
-    options?: { maxWait?: number; timeout?: number; isolationLevel?: string },
-  ): Promise<R>
-  $transaction<P extends Prisma.PrismaPromise<any>[]>(
-    arg: [...P],
-    options?: { isolationLevel?: string },
-  ): Promise<runtime.Types.Utils.UnwrapTuple<P>>
-}
-
-export declare const dmmf: any
-export declare type dmmf = any
-
-/**
- * Get the type of the value, that the Promise holds.
- */
-export declare type PromiseType<T extends PromiseLike<any>> = T extends PromiseLike<infer U> ? U : T
-
-/**
- * Get the return type of a function which returns a Promise.
- */
-export declare type PromiseReturnType<T extends (...args: any) => Promise<any>> = PromiseType<ReturnType<T>>
-
-export namespace Prisma {
-  export type TransactionClient = any
-
-  export function defineExtension<
-    R extends runtime.Types.Extensions.UserArgs['result'] = {},
-    M extends runtime.Types.Extensions.UserArgs['model'] = {},
-    Q extends runtime.Types.Extensions.UserArgs['query'] = {},
-    C extends runtime.Types.Extensions.UserArgs['client'] = {},
-    Args extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.InternalArgs<R, M, {}, C>,
-  >(
-    args:
-      | ((client: PrismaClientExtends) => { $extends: { extArgs: Args } })
-      | { name?: string }
-      | { result?: R & runtime.Types.Extensions.UserArgs['result'] }
-      | { model?: M & runtime.Types.Extensions.UserArgs['model'] }
-      | { query?: Q & runtime.Types.Extensions.UserArgs['query'] }
-      | { client?: C & runtime.Types.Extensions.UserArgs['client'] },
-  ): (client: any) => PrismaClientExtends<Args>
-
-  export type Extension = runtime.Types.Extensions.UserArgs
-  export import getExtensionContext = runtime.Extensions.getExtensionContext
-  export import Args = runtime.Types.Public.Args
-  export import Payload = runtime.Types.Public.Payload
-  export import Result = runtime.Types.Public.Result
-  export import Exact = runtime.Types.Public.Exact
-  export import PrismaPromise = runtime.Types.Public.PrismaPromise
-
-  export const prismaVersion: {
-    client: string
-    engine: string
-  }
-}
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\.prisma\client\deno\edge.d.ts
-
-class PrismaClient {
-  constructor() {
-    throw new Error(
-      '@prisma/client/deno/edge did not initialize yet. Please run "prisma generate" and try to import it again.',
-    )
-  }
-}
-
-export { PrismaClient }
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@ampproject\remapping\package.json
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\package.json
 
 {
-  "name": "@ampproject/remapping",
-  "version": "2.3.0",
-  "description": "Remap sequential sourcemaps through transformations to point at the original source code",
-  "keywords": [
-    "source",
-    "map",
-    "remap"
-  ],
-  "main": "dist/remapping.umd.js",
-  "module": "dist/remapping.mjs",
-  "types": "dist/types/remapping.d.ts",
-  "exports": {
-    ".": [
-      {
-        "types": "./dist/types/remapping.d.ts",
-        "browser": "./dist/remapping.umd.js",
-        "require": "./dist/remapping.umd.js",
-        "import": "./dist/remapping.mjs"
-      },
-      "./dist/remapping.umd.js"
-    ],
-    "./package.json": "./package.json"
-  },
-  "files": [
-    "dist"
-  ],
-  "author": "Justin Ridgewell <jridgewell@google.com>",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/ampproject/remapping.git"
-  },
-  "license": "Apache-2.0",
-  "engines": {
-    "node": ">=6.0.0"
-  },
+  "name": "@kikerepo/application-user",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "run-s -n build:*",
-    "build:rollup": "rollup -c rollup.config.js",
-    "build:ts": "tsc --project tsconfig.build.json",
-    "lint": "run-s -n lint:*",
-    "lint:prettier": "npm run test:lint:prettier -- --write",
-    "lint:ts": "npm run test:lint:ts -- --fix",
-    "prebuild": "rm -rf dist",
-    "prepublishOnly": "npm run preversion",
-    "preversion": "run-s test build",
-    "test": "run-s -n test:lint test:only",
-    "test:debug": "node --inspect-brk node_modules/.bin/jest --runInBand",
-    "test:lint": "run-s -n test:lint:*",
-    "test:lint:prettier": "prettier --check '{src,test}/**/*.ts'",
-    "test:lint:ts": "eslint '{src,test}/**/*.ts'",
-    "test:only": "jest --coverage",
-    "test:watch": "jest --coverage --watch"
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/application-common": "workspace:*",
+    "@kikerepo/contracts-common": "workspace:*",
+    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/infrastructure-user": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "libphonenumber-js": "^1.11.18"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\index.ts
+
+export * from './commands';
+export * from './queries';
+export * from './events';
+export * from './results';
+export * from './validators';
+export * from './handlers';
+export * from './mappers';
+export * from './errors';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\commands\index.ts
+
+
+export * from './RegisterCommand';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\commands\RegisterCommand.ts
+
+// src/application/user/commands/RegisterCommand.ts
+import { IsEmail, IsString, IsOptional, Length } from 'class-validator';
+
+import { IsStrongPassword,IsPhoneNumber } from '../validators';
+import { Email, InputPassword, Phone } from '@kikerepo/domain-user';
+export class RegisterCommand {
+  @IsEmail()
+  email: Email;
+
+  @IsString()
+  @IsStrongPassword()
+  password: InputPassword;
+
+  @IsOptional()
+  @IsString()
+  @IsPhoneNumber()
+  phone?: Phone;
+
+  constructor(email: Email, password: InputPassword, phone?: Phone) {
+    this.email = email;
+    this.password = password;
+    this.phone = phone;
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\errors\EmailAlreadyInUseError.ts
+
+// src/application/user/errors/EmailAlreadyInUseError.ts
+import { ConflictError } from '@kikerepo/contracts-common'; // Import the ValidationError from contracts
+
+export class EmailAlreadyInUseError extends ConflictError {
+  constructor(email: string) {
+    // Create a detailed validation error for the email
+    super();
+   this.message = 'Email is already in use.';
+
+    // Call the parent constructor to set the message and validation errors
+
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\errors\index.ts
+
+
+export { EmailAlreadyInUseError } from './EmailAlreadyInUseError';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\index.ts
+
+
+export * from './UserLoggedInEvent';
+export * from './UserRegisteredEvent';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\UserLoggedInEvent.ts
+
+export class UserLoggedInEvent {
+    constructor(public readonly userId: string, public readonly timestamp: Date) {}
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\UserRegisteredEvent.ts
+
+export class UserRegisteredEvent {
+    constructor(
+      public readonly userId: string,
+      public readonly email: string,
+      public readonly timestamp: Date
+    ) {}
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\index.ts
+
+// src/shared/validation/index.ts
+export { LoginQueryHandler } from './LoginQueryHandler';
+export { RegisterCommandHandler,RegisterCommandHandlerToken } from './RegisterCommandHandler';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\LoginQueryHandler.ts
+
+
+export class LoginQueryHandler {
+  
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\RegisterCommandHandler.ts
+
+// RegisterCommandHandler.ts
+
+import { injectable, inject } from 'inversify';
+import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-user';
+import { User } from '@kikerepo/domain-user';
+import { EmailAlreadyInUseError } from '../errors';
+import { RegisterCommand } from '../commands/RegisterCommand';
+import { RegisterResult } from '../results/RegisterResult';
+
+// 1) Declare a unique Symbol right at the top
+export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
+
+@injectable()
+export class RegisterCommandHandler {
+  constructor(
+    // If you want to inject them by token:
+    @inject(IUserRepositoryToken) private userRepository: IUserRepository,
+    @inject(IHashingServiceToken) private hashingService: IHashingService
+    // Possibly more dependencies, like a ValidationBehaviour token, etc.
+  ) {}
+
+  public async handle( command: RegisterCommand): Promise<RegisterResult| Error> {
+    
+    // 1) Check if user already exists
+    const existingUser = await this.userRepository.findByEmail(command.email.value);
+    if (existingUser) {
+      return new EmailAlreadyInUseError(command.email.value);
+    }
+
+    // 2) Create domain entity
+    const hashedpassword = await this.hashingService.hash(command.password);
+    const user = User.createUnique(command.email,hashedpassword, command.phone);
+
+    // 3) Save
+    await this.userRepository.save(user);
+
+    return new RegisterResult(user.id, user.email);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\index.ts
+
+// src/shared/validation/index.ts
+export { RegisterResultToRegisterResponseMapper } from './RegisterResultToRegisterResponseMapper';
+export { RegisterRequestToRegisterCommandMapper } from './RegisterRequestToRegisterCommandMapper';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\RegisterRequestToRegisterCommandMapper.ts
+
+import { RegisterRequest } from '@kikerepo/contracts-user';
+import { RegisterCommand } from '../commands';
+import { Email, InputPassword, Phone } from '@kikerepo/domain-user';
+
+export class RegisterRequestToRegisterCommandMapper {
+  static toCommand(dto: RegisterRequest): RegisterCommand {
+    const emailVO = new Email(dto.email);
+    const passwordVO = new InputPassword(dto.password);
+    const phoneVO = dto.phone ? new Phone(dto.phone) : undefined;
+    return new RegisterCommand(emailVO, passwordVO, phoneVO);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\RegisterResultToRegisterResponseMapper.ts
+
+// src/application/user/mappers/UserRegisterResultToResponseMapper.ts
+import { RegisterResult as RegisterResult } from '../results/RegisterResult';  // Assuming this is the result class
+import { RegisterResponse } from '@kikerepo/contracts-user';   // Assuming this is the response DTO
+
+export class RegisterResultToRegisterResponseMapper {
+  static toResponse(result: RegisterResult): RegisterResponse {
+    // Map UserRegisterResult to UserRegisterResponse
+    return new RegisterResponse(
+      result.userId.value, // Convert UserId (value object) to string
+      result.email.value          // Directly pass email as it’s a simple value
+    );
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\queries\index.ts
+
+export * from './LoginQuery';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\queries\LoginQuery.ts
+
+// src/application/queries/LoginQuery.ts
+
+import { IsEmail, ValidateNested } from 'class-validator';
+import { Type } from 'class-transformer';
+import { Email,InputPassword } from "@kikerepo/domain-user";
+import { IsStrongPassword } from '../validators';
+
+/**
+ * Represents a login query in the CQRS pattern.
+ */
+export class LoginQuery {
+  @IsEmail()
+  @ValidateNested()
+  @Type(() => Email)
+  public readonly email: Email;
+
+  @IsStrongPassword()
+  @ValidateNested()
+  @Type(() => InputPassword)
+  public readonly password: InputPassword;
+
+  constructor(email: Email, password: InputPassword) {
+    this.email = email;
+    this.password = password;
+  }
+}
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\index.ts
+
+export * from './LoginResult';
+export * from './RegisterResult';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\LoginResult.ts
+
+export class LoginResult {
+    constructor(
+      public readonly userId?: string,
+      public readonly token?: string
+    ) {}
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\RegisterResult.ts
+
+import { UserId,Email } from "@kikerepo/domain-user";
+
+export class RegisterResult {
+  userId: UserId;
+  email: Email;
+
+  constructor(userId: UserId, email: Email) {
+    this.userId = userId;
+    this.email = email;
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\index.ts
+
+// src/shared/validation/index.ts
+export { IsStrongPassword } from './IsStrongPassword';
+export { IsPhoneNumberCustom as IsPhoneNumber } from './IsPhoneNumber';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\IsPhoneNumber.ts
+
+// src/shared/validation/decorators/IsPhoneNumber.ts
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+} from 'class-validator';
+import { parsePhoneNumberFromString } from 'libphonenumber-js';
+
+/**
+ * Custom decorator to validate phone numbers, automatically extracting the country code.
+ * @param validationOptions - Optional validation options.
+ */
+export function IsPhoneNumberCustom(validationOptions?: ValidationOptions) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isPhoneNumberCustom',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        /**
+         * Validates the phone number by parsing it and automatically detecting the country code.
+         * @param value - The phone number string to validate.
+         * @param args - Validation arguments.
+         * @returns `true` if the phone number is valid, otherwise `false`.
+         */
+        validate(value: any, args: ValidationArguments) {
+          if (typeof value !== 'string') return false;
+
+          // Parse the phone number and automatically detect the country code
+          const phoneNumber = parsePhoneNumberFromString(value);
+
+          // Ensure phone number is valid
+          return phoneNumber ? phoneNumber.isValid() : false;
+        },
+
+        /**
+         * Default error message when the phone number is invalid.
+         * @param args - The validation arguments.
+         * @returns A message indicating the validation failure.
+         */
+        defaultMessage(args: ValidationArguments) {
+          return `${args.property} must be a valid phone number.`;
+        },
+      },
+    });
+  };
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\IsStrongPassword.ts
+
+// src/shared/validation/decorators/IsStrongPassword.ts
+import {
+  registerDecorator,
+  ValidationOptions,
+  ValidationArguments,
+} from 'class-validator';
+
+export function IsStrongPassword(
+  minLength: number = 8,  // Default to 8 if not provided
+  maxLength: number = 20, // Default to 20 if not provided
+  validationOptions?: ValidationOptions
+) {
+  return function (object: Object, propertyName: string) {
+    registerDecorator({
+      name: 'isStrongPassword',
+      target: object.constructor,
+      propertyName: propertyName,
+      options: validationOptions,
+      validator: {
+        /**
+         * Validate the password to ensure it meets the strong password criteria.
+         * @param value - The password value to validate.
+         * @param args - The validation arguments.
+         * @returns `true` if the password meets the requirements, otherwise `false`.
+         */
+        validate(value: any, args: ValidationArguments) {
+          if (typeof value !== 'string') return false;
+
+          // Password validation regex with min and max length constraints
+          const strongPasswordRegex = new RegExp(
+            `^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d)(?=.*[@$!%*?#&])[A-Za-z\\d@$!%*?#&]{${minLength},${maxLength}}$`
+          );
+
+          return strongPasswordRegex.test(value);
+        },
+
+        /**
+         * Default error message for password validation failure.
+         * @param args - The validation arguments.
+         * @returns A custom error message explaining the password criteria.
+         */
+        defaultMessage(args: ValidationArguments) {
+          return `${args.property} must be between ${minLength} and ${maxLength} characters long, include at least one uppercase letter, one lowercase letter, one number, and one special character.`;
+        },
+      },
+    });
+  };
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\package.json
+
+{
+  "name": "@kikerepo/application-common",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/contracts-common": "workspace:*",
+    "fp-ts": "^2.16.9"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\index.ts
+
+export * from './middleware';
+export * from './behaviours';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\Result.ts
+
+import { Either, left, right } from 'fp-ts/Either';
+
+/**
+ * Represents the outcome of an operation, which can be either an error or a success.
+ */
+export type Result<E, T> = Either<E, T>;
+
+/**
+ * Helper function to create a failure result.
+ * @param error The error value.
+ */
+export const failure = <E, T = never>(error: E): Result<E, T> => left(error);
+
+/**
+ * Helper function to create a success result.
+ * @param value The success value.
+ */
+export const success = <E = never, T = any>(value: T): Result<E, T> => right(value);
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\AuthorizationBehaviour.ts
+
+ /* export const AuthorizationBehaviour = (
+  req: Request,
+    res: Response,
+    next: NextFunction
+  ): void => {
+    // 1) Leer el header Authorization
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    // 2) Verificar formato: "Bearer <token>"
+    const parts = authHeader.split(' ');
+    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+      return res.status(401).json({ message: 'Invalid token format' });
+    }
+
+    const token = parts[1];
+
+    // 3) Comprobar el token (tokenFake en este ejemplo)
+    if (token !== 'tokenFake') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    // 4) Si es válido, continuar con la ejecución
+    next();
+  };
+*/
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\index.ts
+
+export { ValidationBehaviour } from './ValidationBehaviour';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\ValidationBehaviour.ts
+
+// src/application/common/services/ValidationService.ts
+import { validate } from 'class-validator'; // validate function from class-validator
+import { ValidationError } from '@kikerepo/contracts-common'; // Custom error class
+
+export class ValidationBehaviour {
+  /**
+   * Validate an object based on class-validator decorators.
+   * @param target - The object to validate (must be an instance of a class with class-validator decorators).
+   * @throws ValidationError - If validation fails, an error is thrown with the formatted errors.
+   */
+  public async validate<T extends object>(target: T): Promise<void> {
+    // Perform the validation using class-validator
+    const validationErrors = await validate(target);
+
+    if (validationErrors.length > 0) {
+      // Map validation errors into Record<string, string[]>
+      const formattedErrors: Record<string, string[]> = {};
+
+      validationErrors.forEach((error) => {
+        const property = error.property;
+        const messages = error.constraints ? Object.values(error.constraints) : [];
+        formattedErrors[property] = messages;
+      });
+
+      // Throw a formatted validation error
+      throw new ValidationError(formattedErrors);
+    }
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ErrorHandlerMiddleware.ts
+
+import { BaseError, InternalError, ValidationError } from '@kikerepo/contracts-common';
+import { Request, Response, NextFunction } from 'express';
+
+// Función para manejar la respuesta de errores
+const handleErrorResponse = (err: BaseError, res: Response): void => {
+  const { message, errorCode, statusCode, timestamp, context, stack } = err;
+
+  // Control de entorno para ocultar detalles en producción
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // Si el entorno es producción, ocultamos detalles sensibles como el stack trace
+  const errorResponse: any = {
+    code: errorCode,
+    message,
+    statusCode,
+    timestamp,
+    context,
+  };
+
+  // En producción no se debe exponer el stack trace
+  if (!isProduction && stack) {
+    errorResponse.stack = stack;  // Agregamos el stack solo si no es producción
+  }
+
+  res.status(statusCode).json(errorResponse);
+};
+
+// Middleware para manejar errores
+export const ErrorHandlerMiddleware = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  let context = {};
+
+  // Si el error es de validación, manejamos el caso por separado
+  if (err instanceof ValidationError) {
+    context = {
+      input: req.body,  // Aquí se incluyen los datos de la solicitud, si es relevante
+      fieldErrors: err.validationErrors,  // Los errores de validación
+    };
+    return handleErrorResponse(err, res);
+  }
+
+  // Para cualquier otro error que sea instancia de BaseError, usamos la misma lógica
+  if (err instanceof BaseError) {
+    context = {
+      requestBody: req.body,
+      endpoint: req.url,
+    };
+    return handleErrorResponse(err, res);  // Llamamos a la función de manejo de errores para BaseError
+  }
+
+  // Para errores no controlados o cualquier otro tipo de error, lo manejamos como un error genérico
+  const internalError = new InternalError();
+
+  // Aquí agregamos el stack trace en el error interno para depuración
+  internalError.stack = err.stack;
+
+  // Si hay un error interno, puedes agregar más contexto si es necesario
+  context = {
+    environment: process.env.NODE_ENV,
+    endpoint: req.url,
+    requestBody: req.body,
+  };
+
+  return handleErrorResponse(internalError, res);  // Llamamos a la función para manejar el error interno
+};
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\index.ts
+
+export {ErrorHandlerMiddleware} from './ErrorHandlerMiddleware';
+export {ValidationMiddleware} from './ValidationMiddleware';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ValidationMiddleware.ts
+
+// packages/infrastructure/_common/src/middleware/ValidationMiddleware.ts
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { ValidationError } from '@kikerepo/contracts-common';
+
+/**
+ * Validation middleware for Express using class-transformer + class-validator.
+ * 
+ * @param dtoClass The DTO class to validate (must have class-validator decorators).
+ * @returns A RequestHandler that validates req.body and either returns 400 or calls next().
+ */
+export function ValidationMiddleware(
+  dtoClass: new (...args: any[]) => object
+): RequestHandler {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // 1) Transform the plain JSON body into an instance of dtoClass
+      const dtoObject = plainToInstance(dtoClass, req.body);
+
+      // 2) Validate the instance
+      const errors = await validate(dtoObject);
+
+      if (errors.length > 0) {
+        // 3) If errors, format them
+        const formatted: Record<string, string[]> = {};
+
+        for (const err of errors) {
+          const property = err.property;
+          const constraints = err.constraints ? Object.values(err.constraints) : [];
+          formatted[property] = constraints;
+        }
+
+        // 4) Respond with 400 and a ValidationError shape
+        //    Note: Do NOT return the `Response` object; call `res.json(...)` then `return;`
+        res.status(400).json(new ValidationError(formatted));
+        return; // ensures TypeScript sees our function returning void
+      }
+
+      // 5) No errors: move on to the next middleware / route handler
+      next();
+    } catch (err) {
+      // For unexpected errors, let your global ErrorHandlerMiddleware handle it
+      next(err);
+    }
+  };
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\package.json
+
+{
+  "name": "@kikerepo/contracts-user",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/domain-common": "workspace:*"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../_common" } // Uses compiled @kikerepo/contracts-common
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\index.ts
+
+export * from './responses';
+export * from './requests';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\ChangePasswordRequest.ts
+
+
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\ForgotPasswordRequest.ts
+
+
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\index.ts
+
+export * from './LoginRequest';
+export * from './RegisterRequest';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\LoginRequest.ts
+
+
+// packages/contracts/user/src/requests/UserLoginRequest.ts
+export interface LoginRequest {
+    email: string;
+    password: string;
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\RegisterRequest.ts
+
+export class RegisterRequest {
+  email: string;
+  password: string;
+  phone?: string;
+
+  constructor(email: string, password: string, phone?: string) {
+    this.email = email;
+    this.password = password;
+    this.phone = phone;
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\ChangePasswordResponse.ts
+
+
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\ForgotPaswordResponse.ts
+
+
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\index.ts
+
+export * from './LoginResponse';
+export * from './RegisterResponse';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\LoginResponse.ts
+
+  export interface LoginResponse {
+    token: string;
+  }
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\RegisterResponse.ts
+
+// src/application/user/commands/UserRegisterResponse.ts
+export class RegisterResponse {
+  userId: string;
+  email: string;
+
+  constructor(userId: string, email: string) {
+    this.userId = userId;
+    this.email = email;
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\package.json
+
+{
+  "name": "@kikerepo/contracts-common",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\index.ts
+
+export * from './errors';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\BaseError.ts
+
+export abstract class BaseError extends Error {
+  public readonly statusCode: number;
+  public readonly timestamp: string;
+  public readonly errorCode: string;
+  public readonly context?: any;
+
+  constructor(
+    message: string,
+    statusCode: number,
+    errorCode: string,
+    context?: any
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
+    this.timestamp = new Date().toISOString(); // Marca de tiempo en formato ISO
+    this.context = context; // Información adicional si es necesario
+
+    // Asegurarse de que el nombre del error esté configurado correctamente
+    this.name = this.constructor.name;
+
+    // Este método permite la correcta herencia del stack trace
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+
+  // Método para serializar el error en formato JSON
+  public toJSON() {
+    return {
+      message: this.message,
+      code: this.errorCode,
+      statusCode: this.statusCode,
+      timestamp: this.timestamp,
+      context: this.context,
+    };
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ConflictError.ts
+
+import { BaseError } from './BaseError';
+
+export class ConflictError extends BaseError {
+  constructor(message: string = 'An internal server error occurred', context?: any) {
+    super(message, 409, 'CONFLICT', context); // Llamamos al constructor de BaseError
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\index.ts
+
+export * from './BaseError';
+export * from './InternalError';
+export * from './ValidationError';
+export * from './NotFoundError';
+export * from './ConflictError';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\InternalError.ts
+
+import { BaseError } from './BaseError';
+
+export class InternalError extends BaseError {
+  constructor(message: string = 'An internal server error occurred', context?: any) {
+    super(message, 500, 'INTERNAL_ERROR', context); // Llamamos al constructor de BaseError
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\NotFoundError.ts
+
+import { BaseError } from './BaseError';
+
+export class NotFoundError extends BaseError {
+  constructor(message: string = 'An internal server error occurred', context?: any) {
+    super(message, 404, 'NOT FOUND', context); // Llamamos al constructor de BaseError
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ValidationError.ts
+
+import { BaseError } from './BaseError';
+
+export class ValidationError extends BaseError {
+  public readonly validationErrors: Record<string, string[]>;
+
+  constructor(validationErrors: Record<string, string[]>, context?: any) {
+    // Usamos el constructor de BaseError, agregamos un mensaje y el código de estado 400 para errores de validación
+    super('One or more validation errors occurred.', 400, 'VALIDATION_ERROR', context);
+    this.validationErrors = validationErrors;
+  }
+
+  /**
+   * Converts the ValidationError into a JSON-serializable format.
+   */
+  toJSON() {
+    return {
+      message: this.message,
+      code: this.errorCode,  // Usamos errorCode en lugar de un valor estático
+      statusCode: this.statusCode,
+      timestamp: this.timestamp,  // Agregamos el timestamp de la clase base
+      validationErrors: this.validationErrors,
+      context: this.context,  // Contexto adicional si se pasó
+    };
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\package.json
+
+{
+  "name": "@kikerepo/domain-user",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/domain-common": "workspace:*"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\index.ts
+
+export * from './value-objects';
+export * from './events';
+export * from './interfaces';
+export * from './entities';
+
+
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\entities\index.ts
+
+export { User } from './User'
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\entities\User.ts
+
+// domain-user/src/entities/User.ts
+import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
+import { UserId, Email, HashedPassword, Phone} from '../value-objects';
+import { UserCreatedEvent } from '../events/UserCreatedEvent';
+
+export class User extends AggregateRoot<UserId> {
+  private _email: Email;
+  private _password: HashedPassword;
+  private _phone?: Phone;
+
+  /**
+   * El constructor recibe VO ya construidos (y no dispara eventos).
+   * Lo hacemos público, pero OJO: 
+   * - Normalmente lo dejaríamos `private` o `protected` 
+   *   si quieres forzar a que siempre usen la factoría `createUnique`.
+   */
+  private constructor(
+    id: UserId,
+    email: Email,
+    password: HashedPassword,
+    phone?: Phone,
+    creationDate?: CreationDate,
+    deletionDate?: DeletionDate,
+  ) {
+    super(id,creationDate,deletionDate);
+    this._email = email;
+    this._password = password;
+    this._phone = phone;
+    this.validate();
+  }
+
+  /**
+   * Método estático/factoría para crear un "User" *nuevo*.
+   * Recibe valores primitivos, construye VO, llama al constructor
+   * y emite un evento.
+   */
+  public static createUnique(
+    email: Email,
+    password: HashedPassword,
+    phone?: Phone
+  ): User {
+    // 1) Generar ID y crear Value Objects
+    const userId = new UserId(); // genera un UUIDv6 (por ejemplo)
+
+    // 2) Llamar al constructor con VO
+    const user = new User(userId, email, password, phone);
+
+    // 3) Emitir evento de dominio para un user nuevo
+    user.addDomainEvent(
+      new UserCreatedEvent(userId.value, email.value, phone?.value),
+    );
+
+    return user;
+  }
+  public static map(
+    id: string,
+    email: string,
+    password: string,
+    phone: string|null,
+    creationDate: Date,
+    deletionDate: Date|null
+  ): User {
+    // 1) Generar ID y crear Value Objects
+    const userId = new UserId(id); // genera un UUIDv6 (por ejemplo)
+    const emailVO = new Email(email); 
+    const passwordVO = new HashedPassword(password);
+    const phoneVO = phone ? new Phone(phone) : undefined;
+    const creationDateVO = new CreationDate(creationDate) ;
+    const deletionDateVO = deletionDate ? new DeletionDate(deletionDate) : undefined;
+    // 2) Llamar al constructor con VO
+    const user = new User(userId, emailVO, passwordVO, phoneVO,creationDateVO,deletionDateVO);
+    return user;
+  }
+  
+  private validate(): void {
+    // Aquí podrías poner chequeos complementarios (si fuese necesario)
+    if (!this._email) {
+      throw new Error('Email requerido');
+    }
+    if (!this._password) {
+      throw new Error('Password requerida');
+    }
+  }
+
+  // Getters
+  get id(): UserId {
+    return this._id;
+  }
+
+  get email(): Email {
+    return this._email;
+  }
+
+  get password(): HashedPassword {
+    return this._password;
+  }
+
+  get phone(): Phone | undefined {
+    return this._phone;
+  }
+
+  public changePassword(newPassword: HashedPassword) {
+    this._password = new HashedPassword(newPassword.value);
+    // Emite un PasswordChangedEvent si deseas
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\events\index.ts
+
+// shared/src/domain/valueObjects/index.ts
+export { UserCreatedEvent } from './UserCreatedEvent';
+
+// Export other value objects as needed
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\events\UserCreatedEvent.ts
+
+import { DomainEvent } from '@kikerepo/domain-common';
+
+export class UserCreatedEvent extends DomainEvent {
+  constructor(
+    public readonly userId: string,
+    public readonly email: string,
+    public readonly phone?: string // Optional phone
+  ) {
+    super();
+  }
+
+  eventName(): string {
+    return 'UserCreatedEvent';
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\IHashingService.ts
+
+import { InputPassword } from "../value-objects";
+import { HashedPassword } from "../value-objects/HashedPassword";
+export const IHashingServiceToken = Symbol('IHashingService');
+
+export interface IHashingService {
+  hash(password: InputPassword): Promise<HashedPassword>;
+  verify(hashedPassword: HashedPassword, password: InputPassword): Promise<boolean>;
+}
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\index.ts
+
+
+export { IUserRepository, IUserRepositoryToken } from './IUserRepository';
+export { IHashingService, IHashingServiceToken } from './IHashingService';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\IUserRepository.ts
+
+import { User } from '../entities/User';
+
+// 1) Declare a unique Symbol to represent the repository token.
+export const IUserRepositoryToken = Symbol('IUserRepository');
+
+// 2) Define the interface itself.
+export interface IUserRepository {
+  save(user: User): Promise<void>;
+  findById(id: string): Promise<User | null>;
+  findByEmail(email: string): Promise<User | null>;
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\Email.ts
+
+import { ValueObject } from '@kikerepo/domain-common';
+
+export class Email extends ValueObject<string> {
+  constructor(email: string) {
+    super(email);
+    if (!this.isValidEmail(email)) {
+      throw new Error('Invalid email address');
+    }
+  }
+
+  private isValidEmail(email: string): boolean {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+}
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\HashedPassword.ts
+
+import { ValueObject } from '@kikerepo/domain-common';
+
+
+export class HashedPassword extends ValueObject<string> {
+  // Private constructor to prevent direct instantiation
+  public constructor(hashedPassword: string) {
+    super(hashedPassword);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\index.ts
+
+export { Email } from './Email';
+export { HashedPassword } from './HashedPassword';
+export { Phone } from './Phone';
+export { UserId } from './UserId';
+export { InputPassword } from './InputPassword';
+
+
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\InputPassword.ts
+
+import { ValueObject } from '@kikerepo/domain-common';
+
+
+export class InputPassword extends ValueObject<string> {
+  constructor(password: string) {
+    super(password);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\Phone.ts
+
+import { ValueObject } from '@kikerepo/domain-common';
+
+
+export class Phone extends ValueObject<string> {
+  constructor(phone: string) {
+    super(phone);
+    if (!this.isValidPhone(phone)) {
+      throw new Error('Invalid phone number.');
+    }
+  }
+
+  private isValidPhone(phone: string): boolean {
+    return /^\+?[1-9]\d{1,14}$/.test(phone); // E.164 international phone number format
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\UserId.ts
+
+
+import { ValueObject } from '@kikerepo/domain-common';
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+
+/**
+ * Value Object representing the ID of a User Entity.
+ */
+export class UserId extends ValueObject<string> {
+  constructor(id?: string) {
+    super(id ? id : generateUUIDv6());
+  }
+
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\package.json
+
+{
+  "name": "@kikerepo/domain-common",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/utils-uuid6": "workspace:*"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../utils/uuid6" } // Explicit dependency on @kikerepo/utils-uuid6
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRoot.ts
+
+// packages/shared/src/domain/aggregateRoots/AggregateRoot.ts
+
+import { Entity } from './Entity';
+import { ValueObject } from './ValueObject';
+import { DomainEvent } from './DomainEvent';
+
+export abstract class AggregateRoot<TId extends ValueObject<string>> extends Entity<TId> {
+  private readonly _domainEvents: DomainEvent[] = [];
+
+  /**
+   * Adds a new domain event to the aggregate.
+   * @param event The domain event to add.
+   */
+  protected addDomainEvent(event: DomainEvent): void {
+    this._domainEvents.push(event);
+  }
+
+  /**
+   * Returns all domain events emitted by this aggregate.
+   * @returns A copy of the list of domain events.
+   */
+  public get domainEvents(): DomainEvent[] {
+    return [...this._domainEvents];
+  }
+
+  /**
+   * Clears all domain events from the aggregate.
+   */
+  public clearDomainEvents(): void {
+    this._domainEvents.length = 0;
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRootId.ts
+
+// packages/shared/src/domain/valueObjects/AggregateRootId.ts
+import { ValueObject } from './ValueObject';
+// Replace with your actual UUID v6 generator
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+
+export class AggregateRootId extends ValueObject<string> {
+  constructor(value?: string) {
+    super(value ? value : generateUUIDv6());
+  }
+  toString(): string {
+    throw new Error('Method not implemented.');
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainError.ts
+
+export class DomainError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name += '[DomainError]';
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainEvent.ts
+
+export abstract class DomainEvent {
+  public readonly occurredAt: Date;
+  public readonly eventId: string;
+
+  constructor() {
+    this.occurredAt = new Date();
+    this.eventId = DomainEvent.generateId();
+  }
+
+  private static generateId(): string {
+    // Generate a unique identifier for the event (can be UUID or similar)
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  }
+
+  abstract eventName(): string; // Each event should define its own name
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\Entity.ts
+
+// packages/shared/src/domain/entities/Entity.ts
+
+import { CreationDate, DeletionDate } from './value-objects';
+import { ValueObject } from './ValueObject';
+
+export abstract class Entity<TId extends ValueObject<string>> {
+  protected readonly _id: TId;
+  protected readonly _creationDate: CreationDate;
+  private _deletionDate?: DeletionDate;
+
+  constructor(id: TId, creationDate?: CreationDate, deletionDate?: DeletionDate) {
+    this._id = id;
+    this._creationDate = creationDate?? new CreationDate();
+    this._deletionDate = deletionDate?? undefined;
+  }
+
+  public get creationDate(): CreationDate {
+    return this._creationDate;
+  }
+
+  public get id(): TId {
+    return this._id;
+  }
+
+  public get deletionDate(): DeletionDate | undefined {
+    return this._deletionDate;
+  }
+
+  public isDeleted(): boolean {
+    return !!this._deletionDate;
+  }
+
+  
+  public delete(deletionDate: DeletionDate): void {
+    if (this._deletionDate) {
+      throw new Error('Entity is already deleted.');
+    }
+    this._deletionDate = deletionDate;
+  }
+
+  public equals(entity?: Entity<TId>): boolean {
+    if (entity === null || entity === undefined) {
+      return false;
+    }
+
+    if (entity === this) {
+      return true;
+    }
+
+    if (entity.constructor !== this.constructor) {
+      return false;
+    }
+
+    return this.id.equals(entity.id);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\index.ts
+
+export * from './ValueObject';
+export * from './Entity';
+export * from './AggregateRoot';
+export * from './DomainEvent';
+export * from './DomainError';
+export * from './value-objects';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\ValueObject.ts
+
+export abstract class ValueObject<T> {
+  private readonly _value: T;
+
+  constructor(value: T) {
+    if (value === null || value === undefined) {
+      throw new Error('ValueObject cannot be null or undefined');
+    }
+    this._value = Object.freeze(value); // Make the value immutable
+  }
+
+  /**
+   * Gets the encapsulated value.
+   */
+  get value(): T {
+    return this._value;
+  }
+
+  /**
+   * Checks equality between two value objects.
+   * @param other - The other value object to compare.
+   * @returns True if the values are equal, false otherwise.
+   */
+  public equals(other: ValueObject<T>): boolean {
+    if (other === null || other === undefined) {
+      return false;
+    }
+
+    return JSON.stringify(this._value) === JSON.stringify(other.value);
+  }
+
+  /**
+   * Converts the value to a string.
+   * @returns The string representation of the encapsulated value.
+   */
+  public toString(): string {
+    return String(this._value);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IEntityId.ts
+
+export interface IEntityId {
+  /**
+   * Returns the string representation of the ID.
+   * Useful for serialization and logging.
+   */
+  toString(): string;
+
+  /**
+   * Compares this ID with another for equality.
+   * @param id - The ID to compare with.
+   * @returns `true` if both IDs are equal, `false` otherwise.
+   */
+  equals(id: IEntityId): boolean;
+}
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IErrorResponse.ts
+
+// packages/shared/src/errors/interfaces/IErrorResponse.ts
+
+export interface IErrorResponse {
+  status: number;
+  message: string;
+  errors?: string[];
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\index.ts
+
+// shared/src/domain/interfaces/index.ts
+export * from './IEntityId';
+export * from './IErrorResponse';
+// Export other interfaces as needed
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\CreationDate.ts
+
+export class CreationDate {
+    private readonly _value: Date;
+  
+    constructor(date?: Date) {
+      this._value = date ? new Date(date) : new Date();
+      this.validate();
+    }
+  
+    private validate() {
+      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
+        throw new Error('Invalid creation date.');
+      }
+  
+      const now = new Date();
+      if (this._value > now) {
+        throw new Error('Creation date cannot be in the future.');
+      }
+    }
+  
+    get value(): Date {
+      return new Date(this._value);
+    }
+  
+    equals(other: CreationDate): boolean {
+      return this._value.getTime() === other._value.getTime();
+    }
+  
+    toString(): string {
+      return this._value.toISOString();
+    }
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\DeletionDate.ts
+
+export class DeletionDate {
+    private readonly _value: Date;
+  
+    constructor(date?: Date) {
+      this._value = date ? new Date(date) : new Date();
+      this.validate();
+    }
+  
+    private validate() {
+      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
+        throw new Error('Invalid deletion date.');
+      }
+  
+      const now = new Date();
+      if (this._value > now) {
+        throw new Error('Creation date cannot be in the future.');
+      }
+    }
+  
+    get value(): Date {
+      return new Date(this._value);
+    }
+  
+    equals(other: DeletionDate): boolean {
+      return this._value.getTime() === other._value.getTime();
+    }
+  
+    toString(): string {
+      return this._value.toISOString();
+    }
+  }
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\index.ts
+
+export * from './CreationDate';
+export * from './DeletionDate';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\package.json
+
+{
+  "name": "@kikerepo/infrastructure-user",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/infrastructure-common": "workspace:*",
+    "@prisma/client": "^6.2.1",
+    "mongoose": "^6.8.0",
+    "reflect-metadata": "^0.2.2"
   },
   "devDependencies": {
-    "@rollup/plugin-typescript": "8.3.2",
-    "@types/jest": "27.4.1",
-    "@typescript-eslint/eslint-plugin": "5.20.0",
-    "@typescript-eslint/parser": "5.20.0",
-    "eslint": "8.14.0",
-    "eslint-config-prettier": "8.5.0",
-    "jest": "27.5.1",
-    "jest-config": "27.5.1",
-    "npm-run-all": "4.1.5",
-    "prettier": "2.6.2",
-    "rollup": "2.70.2",
-    "ts-jest": "27.1.4",
-    "tslib": "2.4.0",
-    "typescript": "4.6.3"
-  },
-  "dependencies": {
-    "@jridgewell/gen-mapping": "^0.3.5",
-    "@jridgewell/trace-mapping": "^0.3.24"
+    "prisma": "^6.2.1"
   }
 }
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@ampproject\remapping\dist\types\build-source-map-tree.d.ts
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\tsconfig.json
 
-import type { MapSource as MapSourceType } from './source-map-tree';
-import type { SourceMapInput, SourceMapLoader } from './types';
-/**
- * Recursively builds a tree structure out of sourcemap files, with each node
- * being either an `OriginalSource` "leaf" or a `SourceMapTree` composed of
- * `OriginalSource`s and `SourceMapTree`s.
- *
- * Every sourcemap is composed of a collection of source files and mappings
- * into locations of those source files. When we generate a `SourceMapTree` for
- * the sourcemap, we attempt to load each source file's own sourcemap. If it
- * does not have an associated sourcemap, it is considered an original,
- * unmodified source file.
- */
-export default function buildSourceMapTree(input: SourceMapInput | SourceMapInput[], loader: SourceMapLoader): MapSourceType;
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@ampproject\remapping\dist\types\remapping.d.ts
-
-import SourceMap from './source-map';
-import type { SourceMapInput, SourceMapLoader, Options } from './types';
-export type { SourceMapSegment, EncodedSourceMap, EncodedSourceMap as RawSourceMap, DecodedSourceMap, SourceMapInput, SourceMapLoader, LoaderContext, Options, } from './types';
-export type { SourceMap };
-/**
- * Traces through all the mappings in the root sourcemap, through the sources
- * (and their sourcemaps), all the way back to the original source location.
- *
- * `loader` will be called every time we encounter a source file. If it returns
- * a sourcemap, we will recurse into that sourcemap to continue the trace. If
- * it returns a falsey value, that source file is treated as an original,
- * unmodified source file.
- *
- * Pass `excludeContent` to exclude any self-containing source file content
- * from the output sourcemap.
- *
- * Pass `decodedMappings` to receive a SourceMap with decoded (instead of
- * VLQ encoded) mappings.
- */
-export default function remapping(input: SourceMapInput | SourceMapInput[], loader: SourceMapLoader, options?: boolean | Options): SourceMap;
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@ampproject\remapping\dist\types\source-map-tree.d.ts
-
-import { GenMapping } from '@jridgewell/gen-mapping';
-import type { TraceMap } from '@jridgewell/trace-mapping';
-export declare type SourceMapSegmentObject = {
-    column: number;
-    line: number;
-    name: string;
-    source: string;
-    content: string | null;
-    ignore: boolean;
-};
-export declare type OriginalSource = {
-    map: null;
-    sources: Sources[];
-    source: string;
-    content: string | null;
-    ignore: boolean;
-};
-export declare type MapSource = {
-    map: TraceMap;
-    sources: Sources[];
-    source: string;
-    content: null;
-    ignore: false;
-};
-export declare type Sources = OriginalSource | MapSource;
-/**
- * MapSource represents a single sourcemap, with the ability to trace mappings into its child nodes
- * (which may themselves be SourceMapTrees).
- */
-export declare function MapSource(map: TraceMap, sources: Sources[]): MapSource;
-/**
- * A "leaf" node in the sourcemap tree, representing an original, unmodified source file. Recursive
- * segment tracing ends at the `OriginalSource`.
- */
-export declare function OriginalSource(source: string, content: string | null, ignore: boolean): OriginalSource;
-/**
- * traceMappings is only called on the root level SourceMapTree, and begins the process of
- * resolving each mapping in terms of the original source files.
- */
-export declare function traceMappings(tree: MapSource): GenMapping;
-/**
- * originalPositionFor is only called on children SourceMapTrees. It recurses down into its own
- * child SourceMapTrees, until we find the original source map.
- */
-export declare function originalPositionFor(source: Sources, line: number, column: number, name: string): SourceMapSegmentObject | null;
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@ampproject\remapping\dist\types\source-map.d.ts
-
-import type { GenMapping } from '@jridgewell/gen-mapping';
-import type { DecodedSourceMap, EncodedSourceMap, Options } from './types';
-/**
- * A SourceMap v3 compatible sourcemap, which only includes fields that were
- * provided to it.
- */
-export default class SourceMap {
-    file?: string | null;
-    mappings: EncodedSourceMap['mappings'] | DecodedSourceMap['mappings'];
-    sourceRoot?: string;
-    names: string[];
-    sources: (string | null)[];
-    sourcesContent?: (string | null)[];
-    version: 3;
-    ignoreList: number[] | undefined;
-    constructor(map: GenMapping, options: Options);
-    toString(): string;
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+  ]
 }
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@ampproject\remapping\dist\types\types.d.ts
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\index.ts
 
-import type { SourceMapInput } from '@jridgewell/trace-mapping';
-export type { SourceMapSegment, DecodedSourceMap, EncodedSourceMap, } from '@jridgewell/trace-mapping';
-export type { SourceMapInput };
-export declare type LoaderContext = {
-    readonly importer: string;
-    readonly depth: number;
-    source: string;
-    content: string | null | undefined;
-    ignore: boolean | undefined;
-};
-export declare type SourceMapLoader = (file: string, ctx: LoaderContext) => SourceMapInput | null | undefined | void;
-export declare type Options = {
-    excludeContent?: boolean;
-    decodedMappings?: boolean;
-};
+export * from './services';
+export * from './persistance'
 
 
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\index.ts
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\package.json
+export * from './UserDatabase';
+export * from './UserRepository';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\UserDatabase.ts
+
+// services/service-authentication/src/bootstrap/prismaClient.ts
+
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function connectPrisma(): Promise<void> {
+  try {
+    await prisma.$connect();
+    console.log('[PrismaClient] Connected to PostgreSQL');
+  } catch (error) {
+    console.error('[PrismaClient] Connection error:', error);
+    process.exit(1);
+  }
+}
+
+export async function disconnectPrisma(): Promise<void> {
+  try {
+    await prisma.$disconnect();
+    console.log('[PrismaClient] Disconnected from PostgreSQL');
+  } catch (error) {
+    console.error('[PrismaClient] Disconnection error:', error);
+  }
+}
+
+export { prisma };
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\UserRepository.ts
+
+import { IUserRepository} from '@kikerepo/domain-user';
+import { User } from '@kikerepo/domain-user';
+import { prisma } from './UserDatabase';
+import { injectable } from 'inversify';
+@injectable()
+export class UserRepository implements IUserRepository {
+  async save(user: User): Promise<void> {
+    await prisma.user.upsert({
+      where: { id: user.id.value },
+      update: {
+        email: user.email.value,
+        password: user.password.value,
+        phone: user.phone?.value,
+      },
+      create: {
+        id: user.id.value,
+        email: user.email.value,
+        password: user.password.value,
+        phone: user.phone?.value,
+      },
+    });
+  }
+
+  async findById(id: string): Promise<User | null> {
+    const userRecord = await prisma.user.findUnique({
+      where: { id },
+    });
+
+    if (!userRecord) return null;
+
+    // Convertir el registro de la DB a la entidad de dominio
+    return  User.map(
+      userRecord.id,
+      userRecord.email,
+      userRecord.password,
+      userRecord.phone,
+      userRecord.createdAt,
+      userRecord.deletedAt);
+
+  }
+
+  async findByEmail(email: string): Promise<User | null> {
+    const userRecord = await prisma.user.findUnique({
+      where: { email },
+    });
+
+    if (!userRecord) return null;
+
+    // Convertir el registro de la DB a la entidad de dominio
+    return  User.map(
+      userRecord.id,
+      userRecord.email,
+      userRecord.password,
+      userRecord.phone,
+      userRecord.createdAt,
+      userRecord.deletedAt);
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\Argon2HashingService.ts
+
+// infrastructure/services/Argon2HashingService.ts
+import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/domain-user';
+import argon2 from 'argon2';
+import { injectable } from 'inversify';
+@injectable()
+
+export class Argon2HashingService implements IHashingService {
+  async hash(password: InputPassword): Promise<HashedPassword> {
+    var hash = await argon2.hash(password.value, { type: argon2.argon2id });
+    return new HashedPassword(hash);
+  }
+
+  async verify(hashedPassword: HashedPassword, inputPassword: InputPassword): Promise<boolean> {
+    return argon2.verify(hashedPassword.value, inputPassword.value);
+  }
+}
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\index.ts
+
+export {Argon2HashingService} from './Argon2HashingService';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\package.json
 
 {
-  "name": "@aws-crypto/sha256-browser",
-  "version": "5.2.0",
+  "name": "@kikerepo/infrastructure-common",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "prepublishOnly": "tsc -p tsconfig.json && tsc -p tsconfig.module.json",
-    "pretest": "tsc -p tsconfig.test.json",
-    "test": "mocha --require ts-node/register test/**/*test.ts"
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
   },
-  "repository": {
-    "type": "git",
-    "url": "git@github.com:aws/aws-sdk-js-crypto-helpers.git"
-  },
-  "author": {
-    "name": "AWS Crypto Tools Team",
-    "email": "aws-cryptools@amazon.com",
-    "url": "https://docs.aws.amazon.com/aws-crypto-tools/index.html?id=docs_gateway#lang/en_us"
-  },
-  "homepage": "https://github.com/aws/aws-sdk-js-crypto-helpers/tree/master/packages/sha256-browser",
-  "license": "Apache-2.0",
   "dependencies": {
-    "@aws-crypto/sha256-js": "^5.2.0",
-    "@aws-crypto/supports-web-crypto": "^5.2.0",
-    "@aws-crypto/util": "^5.2.0",
-    "@aws-sdk/types": "^3.222.0",
-    "@aws-sdk/util-locate-window": "^3.0.0",
-    "@smithy/util-utf8": "^2.0.0",
-    "tslib": "^2.6.2"
-  },
-  "main": "./build/main/index.js",
-  "module": "./build/module/index.js",
-  "types": "./build/main/index.d.ts",
-  "gitHead": "c11b171b35ec5c093364f0e0d8dc4ab1af68e748"
-}
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\tsconfig.json
-
-{
-  "extends": "../tsconfig.json",
-  "compilerOptions": {
-    "rootDir": "./src",
-    "outDir": "./build/main",
-    "lib": ["dom"],
-  },
-  "include": ["src/**/*.ts"],
-  "exclude": ["node_modules/**"]
-}
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\tsconfig.module.json
-
-{
-  "extends": "./tsconfig",
-  "compilerOptions": {
-    "outDir": "build/module",
-    "module": "esnext",
+    "@kikerepo/contracts-common": "workspace:*",
+    "jsonwebtoken": "^9.0.2"
   }
 }
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\build\main\constants.d.ts
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\tsconfig.json
 
-export declare const SHA_256_HASH: {
-    name: "SHA-256";
-};
-export declare const SHA_256_HMAC_ALGO: {
-    name: "HMAC";
-    hash: {
-        name: "SHA-256";
-    };
-};
-export declare const EMPTY_DATA_SHA_256: Uint8Array;
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\build\main\crossPlatformSha256.d.ts
-
-import { Checksum, SourceData } from "@aws-sdk/types";
-export declare class Sha256 implements Checksum {
-    private hash;
-    constructor(secret?: SourceData);
-    update(data: SourceData, encoding?: "utf8" | "ascii" | "latin1"): void;
-    digest(): Promise<Uint8Array>;
-    reset(): void;
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../contracts/_common" } // Uses compiled @kikerepo/contracts-common
+  ]
 }
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\build\main\index.d.ts
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\index.ts
 
-export * from "./crossPlatformSha256";
-export { Sha256 as WebCryptoSha256 } from "./webCryptoSha256";
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\build\main\isEmptyData.d.ts
-
-import { SourceData } from "@aws-sdk/types";
-export declare function isEmptyData(data: SourceData): boolean;
+export * from './middleware';
+export * from './authentication';
 
 
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\authenticationToken.ts
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\node_modules\@aws-crypto\sha256-browser\build\main\webCryptoSha256.d.ts
+import jwt, { JwtPayload } from 'jsonwebtoken';
 
-import { Checksum, SourceData } from "@aws-sdk/types";
-export declare class Sha256 implements Checksum {
-    private readonly secret?;
-    private key;
-    private toHash;
-    constructor(secret?: SourceData);
-    update(data: SourceData): void;
-    digest(): Promise<Uint8Array>;
-    reset(): void;
+const SECRET_KEY = process.env.JWT_SECRET || 'default-secret-key'; // Replace with env variable
+
+export const generateToken = (payload: object): string => {
+  return jwt.sign(payload, SECRET_KEY, { expiresIn: '1h' });
+};
+
+export const verifyToken = (token: string): JwtPayload => {
+  try {
+    const decoded = jwt.verify(token, SECRET_KEY);
+
+    if (typeof decoded === 'string') {
+      throw new Error('Invalid token payload: Expected an object');
+    }
+
+    return decoded; // Now TypeScript knows it's a JwtPayload
+  } catch (err) {
+    throw new Error('Invalid or expired token');
+  }
+};
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\index.ts
+
+export { generateToken, verifyToken } from './authenticationToken';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\AuthenticationMiddleware.ts
+
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Middleware de autenticación que comprueba "Authorization: Bearer <token>".
+ * Retorna un "Response" si hay error, o "void" si llama a next() sin devolver nada.
+ */
+export function AuthenticationMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void | Response {
+  // 1) Leer el header Authorization
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  // 2) Verificar formato: "Bearer <token>"
+  const parts = authHeader.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    return res.status(401).json({ message: 'Invalid token format' });
+  }
+
+  const token = parts[1];
+
+  // 3) Comprobar el token (tokenFake en este ejemplo)
+  if (token !== 'tokenFake') {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+
+  // 4) Si es válido, continuar con la ejecución
+  next();
 }
 
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\ErrorHandlerMiddleware.ts
+
+// packages/infrastructure/common/src/middleware/ErrorHandlerMiddleware.ts
+import { Request, Response, NextFunction } from 'express';
+import { BaseError, ValidationError } from '@kikerepo/contracts-common';
+export const ErrorHandlerMiddleware = (
+    err: Error,
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): void => {
+    if (err instanceof ValidationError) {
+      res.status(err.statusCode).json(err.toJSON());
+    } else if (err instanceof BaseError) {
+      res.status(err.statusCode).json({ code: err.statusCode, message: err.message });
+    } else {
+      res.status(500).json({ code: 'INTERNAL_SERVER_ERROR', message: 'Unexpected error occurred.' });
+    }
+  };
+  
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\index.ts
+
+export { RequestLoggerMiddleware } from './RequestLoggerMiddleware';
+export { ErrorHandlerMiddleware } from './ErrorHandlerMiddleware';
+export { ValidationMiddleware } from './ValidationMiddleware';
+export { AuthenticationMiddleware } from './AuthenticationMiddleware';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\RequestLoggerMiddleware.ts
+
+
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Logs every incoming HTTP request.
+ */
+export const RequestLoggerMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
+    next();
+};
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\ValidationMiddleware.ts
+
+import { Request, Response, NextFunction } from 'express';
+import { Schema } from 'joi';
+
+export const ValidationMiddleware = (schema: Schema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { error } = schema.validate(req.body);
+    if (error) {
+      return res.status(400).json({ message: error.message });
+    }
+    next();
+  };
+};
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\index.ts
+
+export * from './src/requireEnv';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\package.json
+
+{
+  "name": "@kikerepo/utils-env",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "uuid": "^11.0.5"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\src\index.ts
+
+// shared/src/domain/index.ts
+export * from './requireEnv';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\src\requireEnv.ts
+
+export function requireEnv(varName: string): string {
+  const value = process.env[varName];
+  if (!value) {
+    throw new Error(`Missing environment variable: ${varName}`);
+  }
+  return value;
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\__tests__\basic.spec.ts
+
+import { generateUUIDv6, isValidUUIDv6 } from "../src/uuid6";
+
+describe('isValidUUIDv6', () => {
+  it('should return true for a valid UUID v6', () => {
+    const validUUIDv6 = '1e79e27e-8a88-6eb6-9405-0242ac120002';
+    expect(isValidUUIDv6(validUUIDv6)).toBe(true);
+  });
+
+  it('should return false for a UUID v4', () => {
+    const validUUIDv4 = '550e8400-e29b-41d4-a716-446655440000'; // v4 UUID
+    expect(isValidUUIDv6(validUUIDv4)).toBe(false);
+  });
+
+  it('should return false for an invalid UUID format', () => {
+    const invalidUUID = 'invalid-uuid-string';
+    expect(isValidUUIDv6(invalidUUID)).toBe(false);
+  });
+
+  it('should return false for an empty string', () => {
+    expect(isValidUUIDv6('')).toBe(false);
+  });
+
+  it('should return false for null or undefined', () => {
+    expect(isValidUUIDv6(null as unknown as string)).toBe(false);
+    expect(isValidUUIDv6(undefined as unknown as string)).toBe(false);
+  });
+
+  it('should return false for a UUID with the wrong version', () => {
+    const wrongVersionUUID = '1e79e27e-8a88-4eb6-9405-0242ac120002'; // Version 4
+    expect(isValidUUIDv6(wrongVersionUUID)).toBe(false);
+  });
+
+  it('should return false for a UUID with the wrong variant', () => {
+    const wrongVariantUUID = '1e79e27e-8a88-6eb6-3405-0242ac120002'; // Variant 001xxxxx
+    expect(isValidUUIDv6(wrongVariantUUID)).toBe(false);
+  });
+
+  it('should handle case-insensitivity for valid UUID v6', () => {
+    const upperCaseUUIDv6 = '1E79E27E-8A88-6EB6-9405-0242AC120002';
+    expect(isValidUUIDv6(upperCaseUUIDv6)).toBe(true);
+  });
+});
+
+describe('generateUUIDv6', () => {
+  it('should generate a valid UUID v6', () => {
+    const uuid = generateUUIDv6();
+    expect(isValidUUIDv6(uuid)).toBe(true);
+  });
+
+  it('should generate unique UUIDs for multiple calls', () => {
+    const uuidSet = new Set();
+    for (let i = 0; i < 1000; i++) {
+      const uuid = generateUUIDv6();
+      expect(isValidUUIDv6(uuid)).toBe(true); // Ensure validity
+      expect(uuidSet.has(uuid)).toBe(false); // Ensure uniqueness
+      uuidSet.add(uuid);
+    }
+  });
+
+  it('should contain the correct version (6)', () => {
+    const uuid = generateUUIDv6();
+    const version = uuid.split('-')[2][0];
+    expect(version).toBe('6');
+  });
+
+  it('should contain the correct variant (10xxxxxx)', () => {
+    const uuid = generateUUIDv6();
+    const variant = parseInt(uuid.split('-')[3][0], 16);
+    expect(variant & 0b1100).toBe(0b1000);
+  });
+
+  it('should generate UUIDs with increasing timestamps for ordering', () => {
+    const uuid1 = generateUUIDv6();
+    const uuid2 = generateUUIDv6();
+  
+    // Extract the timestamp (first 3 components of the UUID: time_low, time_mid, and time_high_and_version)
+    const timestamp1 = uuid1.split('-').slice(0, 3).join('');
+    const timestamp2 = uuid2.split('-').slice(0, 3).join('');
+  
+    expect(timestamp1 < timestamp2).toBe(true); // Ensure timestamps are increasing
+  });
+  
+  it('should generate 16-byte UUIDs', () => {
+    const uuid = generateUUIDv6();
+    const byteLength = Buffer.from(uuid.replace(/-/g, ''), 'hex').length;
+    expect(byteLength).toBe(16);
+  });
+
+  it('should generate 36-character UUID strings', () => {
+    const uuid = generateUUIDv6();
+    expect(uuid.length).toBe(36);
+  });
+
+  it('should not generate duplicate UUIDs in a high-concurrency environment', () => {
+    const uuids = new Set<string>();
+    const NUM_UUIDS = 10000;
+
+    for (let i = 0; i < NUM_UUIDS; i++) {
+      const uuid = generateUUIDv6();
+      expect(isValidUUIDv6(uuid)).toBe(true); // Ensure validity
+      expect(uuids.has(uuid)).toBe(false); // Ensure uniqueness
+      uuids.add(uuid);
+    }
+  });
+});
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\index.ts
+
+export * from './src/uuid6';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\package.json
+
+{
+  "name": "@kikerepo/utils-uuid6",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "uuid": "^11.0.5"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\src\index.ts
+
+// shared/src/domain/index.ts
+export * from './uuid6';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\src\uuid6.ts
+
+import { randomBytes } from 'crypto';
+
+let lastTimestamp = BigInt(0);
+
+/**
+ * Generates a UUID v6 string.
+ * UUID v6 embeds timestamps for lexicographical order.
+ * @returns {string} The generated UUID v6 string.
+ */
+export function generateUUIDv6(): string {
+  const uuidEpochToUnixEpoch = 12219292800000n; // Offset between UUID epoch (1582) and Unix epoch (1970)
+  let now = BigInt(Date.now());
+
+  // Ensure timestamps are strictly increasing
+  if (now <= lastTimestamp) {
+    now = lastTimestamp + 1n; // Increment the timestamp if it's the same or lower
+  }
+  lastTimestamp = now;
+
+  // Convert to 100-nanosecond intervals and offset to UUID epoch
+  const timestamp = (now + uuidEpochToUnixEpoch) * 10000n;
+
+  // Split the timestamp into 3 parts
+  const timeLow = Number(timestamp & 0xFFFFFFFFn); // Lower 32 bits
+  const timeMid = Number((timestamp >> 32n) & 0xFFFFn); // Next 16 bits
+  const timeHigh = Number((timestamp >> 48n) & 0x0FFFn); // Next 12 bits
+  const timeHighAndVersion = timeHigh | 0x6000; // Set version to 6 (0b0110)
+
+  // Generate random clock sequence and node
+  const clockSeq = Math.floor(Math.random() * 0x3FFF); // Random 14-bit clock sequence
+  const clockSeqHigh = (clockSeq >> 8) | 0x80; // Set variant to 10xxxxxx
+  const clockSeqLow = clockSeq & 0xFF;
+  const node = randomBytes(6); // Random 48-bit node
+
+  // Construct the UUID byte array
+  const uuidBytes = Buffer.alloc(16);
+  uuidBytes.writeUInt32BE(timeLow, 0); // 4 bytes
+  uuidBytes.writeUInt16BE(timeMid, 4); // 2 bytes
+  uuidBytes.writeUInt16BE(timeHighAndVersion, 6); // 2 bytes
+  uuidBytes.writeUInt8(clockSeqHigh, 8); // 1 byte
+  uuidBytes.writeUInt8(clockSeqLow, 9); // 1 byte
+  node.copy(uuidBytes, 10); // 6 bytes
+
+  // Convert to string and format as 8-4-4-4-12
+  const hex = uuidBytes.toString('hex');
+  return `${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20, 32)}`;
+}
+
+/**
+ * Validates if a given string is a valid UUID v6.
+ *
+ * @param uuid - The UUID string to validate.
+ * @returns {boolean} True if the string is a valid UUID v6, false otherwise.
+ */
+export function isValidUUIDv6(uuid: string): boolean {
+  if (!uuid) return false;
+
+  // Regex explicitly checks for version 6 UUIDs
+  const uuidV6Regex = /^[0-9a-f]{8}-[0-9a-f]{4}-6[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
+  return uuidV6Regex.test(uuid);
+}
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\__tests__\basic.spec.ts
+
+import { generateUUIDv6, isValidUUIDv6 } from "../src/uuid6";
+
+describe('isValidUUIDv6', () => {
+  it('should return true for a valid UUID v6', () => {
+    const validUUIDv6 = '1e79e27e-8a88-6eb6-9405-0242ac120002';
+    expect(isValidUUIDv6(validUUIDv6)).toBe(true);
+  });
+
+  it('should return false for a UUID v4', () => {
+    const validUUIDv4 = '550e8400-e29b-41d4-a716-446655440000'; // v4 UUID
+    expect(isValidUUIDv6(validUUIDv4)).toBe(false);
+  });
+
+  it('should return false for an invalid UUID format', () => {
+    const invalidUUID = 'invalid-uuid-string';
+    expect(isValidUUIDv6(invalidUUID)).toBe(false);
+  });
+
+  it('should return false for an empty string', () => {
+    expect(isValidUUIDv6('')).toBe(false);
+  });
+
+  it('should return false for null or undefined', () => {
+    expect(isValidUUIDv6(null as unknown as string)).toBe(false);
+    expect(isValidUUIDv6(undefined as unknown as string)).toBe(false);
+  });
+
+  it('should return false for a UUID with the wrong version', () => {
+    const wrongVersionUUID = '1e79e27e-8a88-4eb6-9405-0242ac120002'; // Version 4
+    expect(isValidUUIDv6(wrongVersionUUID)).toBe(false);
+  });
+
+  it('should return false for a UUID with the wrong variant', () => {
+    const wrongVariantUUID = '1e79e27e-8a88-6eb6-3405-0242ac120002'; // Variant 001xxxxx
+    expect(isValidUUIDv6(wrongVariantUUID)).toBe(false);
+  });
+
+  it('should handle case-insensitivity for valid UUID v6', () => {
+    const upperCaseUUIDv6 = '1E79E27E-8A88-6EB6-9405-0242AC120002';
+    expect(isValidUUIDv6(upperCaseUUIDv6)).toBe(true);
+  });
+});
+
+describe('generateUUIDv6', () => {
+  it('should generate a valid UUID v6', () => {
+    const uuid = generateUUIDv6();
+    expect(isValidUUIDv6(uuid)).toBe(true);
+  });
+
+  it('should generate unique UUIDs for multiple calls', () => {
+    const uuidSet = new Set();
+    for (let i = 0; i < 1000; i++) {
+      const uuid = generateUUIDv6();
+      expect(isValidUUIDv6(uuid)).toBe(true); // Ensure validity
+      expect(uuidSet.has(uuid)).toBe(false); // Ensure uniqueness
+      uuidSet.add(uuid);
+    }
+  });
+
+  it('should contain the correct version (6)', () => {
+    const uuid = generateUUIDv6();
+    const version = uuid.split('-')[2][0];
+    expect(version).toBe('6');
+  });
+
+  it('should contain the correct variant (10xxxxxx)', () => {
+    const uuid = generateUUIDv6();
+    const variant = parseInt(uuid.split('-')[3][0], 16);
+    expect(variant & 0b1100).toBe(0b1000);
+  });
+
+  it('should generate UUIDs with increasing timestamps for ordering', () => {
+    const uuid1 = generateUUIDv6();
+    const uuid2 = generateUUIDv6();
+  
+    // Extract the timestamp (first 3 components of the UUID: time_low, time_mid, and time_high_and_version)
+    const timestamp1 = uuid1.split('-').slice(0, 3).join('');
+    const timestamp2 = uuid2.split('-').slice(0, 3).join('');
+  
+    expect(timestamp1 < timestamp2).toBe(true); // Ensure timestamps are increasing
+  });
+  
+  it('should generate 16-byte UUIDs', () => {
+    const uuid = generateUUIDv6();
+    const byteLength = Buffer.from(uuid.replace(/-/g, ''), 'hex').length;
+    expect(byteLength).toBe(16);
+  });
+
+  it('should generate 36-character UUID strings', () => {
+    const uuid = generateUUIDv6();
+    expect(uuid.length).toBe(36);
+  });
+
+  it('should not generate duplicate UUIDs in a high-concurrency environment', () => {
+    const uuids = new Set<string>();
+    const NUM_UUIDS = 10000;
+
+    for (let i = 0; i < NUM_UUIDS; i++) {
+      const uuid = generateUUIDv6();
+      expect(isValidUUIDv6(uuid)).toBe(true); // Ensure validity
+      expect(uuids.has(uuid)).toBe(false); // Ensure uniqueness
+      uuids.add(uuid);
+    }
+  });
+});
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\jest.config.ts
+
+// services/service-authentication/jest.config.ts
+
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
+  moduleFileExtensions: ['ts', 'js'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '.*/dist/'],
+  transform: {
+    '^.+\\.ts$': 'ts-jest',
+  },
+  globals: {
+    'ts-jest': {
+      tsconfig: 'tsconfig.json',
+    },
+  },
+};
+
+export default config;
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\package.json
+
+{
+  "name": "@kikerepo/service-authentication",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn -- src/index.ts --transpileOnly",
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "lint": "eslint 'src/**/*.ts'"
+  },
+  "devDependencies": {
+    "@types/jsonwebtoken": "^9.0.7",
+    "eslint": "^8.0.0",
+    "prisma": "^6.2.1",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@kikerepo/application-user": "workspace:*",
+    "@kikerepo/contracts-user": "workspace:*",
+    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/infrastructure-user": "workspace:*",
+    "@kikerepo/utils-env": "workspace:*",
+    "dotenv": "^16.4.7",
+    "reflect-metadata": "^0.2.2",
+    "tsyringe": "^4.8.0"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\tsconfig.json
+
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": ".",
+  },
+  "include": ["src", "../../packages/infrastructure/user/src/persistance/databaseConnection.ts"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\index.ts
+
+// services/service-authentication/src/index.ts
+import 'reflect-metadata';
+import dotenv from 'dotenv';
+import express from 'express';
+import { buildContainer, container } from './bootstrap/container';
+import { userRoutes } from './routes/UserRoutes';
+
+dotenv.config();
+
+async function startServer() {
+  // 1) Build container -> connect Prisma
+  await buildContainer();
+
+  // 2) Create Express server
+  const app = express();
+  app.use(express.json());
+
+  // 3) Mount routes
+  app.use('/users', userRoutes);
+
+  // 4) Listen
+  const port = process.env.APP_PORT || 3000;
+  app.listen(port, () => console.log(`[Auth] Listening on port ${port}`));
+}
+
+startServer().catch((err) => {
+  console.error('[Auth] Startup error:', err);
+  process.exit(1);
+});
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\container.ts
+
+// services/service-authentication/src/bootstrap/container.ts
+import { Container } from 'inversify';
+import {
+  IUserRepositoryToken,
+  IHashingServiceToken,
+  IUserRepository,
+  IHashingService,
+} from '@kikerepo/domain-user';
+import {
+  UserRepository,
+  Argon2HashingService,
+  // 1) Import connectPrisma
+  connectPrisma,
+} from '@kikerepo/infrastructure-user';
+import {
+  RegisterCommandHandler,
+  RegisterCommandHandlerToken,
+} from '@kikerepo/application-user';
+import { UserController, UserControllerToken } from '../controllers/UserController';
+
+const container = new Container();
+
+// -- Bind interfaces to implementations
+container.bind<IUserRepository>(IUserRepositoryToken).to(UserRepository);
+container.bind<IHashingService>(IHashingServiceToken).to(Argon2HashingService);
+
+// -- Bind your CommandHandler
+container.bind<RegisterCommandHandler>(RegisterCommandHandlerToken).to(RegisterCommandHandler);
+
+// -- Bind your Controller
+container.bind<UserController>(UserControllerToken).to(UserController);
+
+/**
+ * Async function for container initialization + Prisma connection.
+ */
+export async function buildContainer(): Promise<void> {
+  // 2) Connect Prisma before returning
+  await connectPrisma();
+}
+
+// Export the container as well:
+export { container };
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\index.ts
+
+export * from './container';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\controllers\index.ts
+
+export * from './UserController';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\controllers\UserController.ts
+
+// services/service-authentication/src/controllers/UserController.ts
+
+import { Request, Response, NextFunction } from 'express';
+import {
+  RegisterCommandHandler,
+  RegisterCommandHandlerToken,
+  RegisterResultToRegisterResponseMapper,
+  RegisterRequestToRegisterCommandMapper,
+  RegisterCommand,
+  RegisterResult
+} from '@kikerepo/application-user';
+import {
+  RegisterRequest,
+  RegisterResponse
+} from '@kikerepo/contracts-user';
+import { injectable, inject } from 'inversify';
+
+export const UserControllerToken = Symbol('UserControllerToken');
+
+@injectable()
+export class UserController {
+  constructor(
+    @inject(RegisterCommandHandlerToken)
+    private readonly registerCommandHandler: RegisterCommandHandler
+  ) { }
+
+  public register = async (
+    req: Request<{}, {}, RegisterRequest>,
+    res: Response<RegisterResponse>,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      // 1) Extract raw strings from the request
+      const command: RegisterCommand = RegisterRequestToRegisterCommandMapper.toCommand(req.body);
+
+      // 2) Handle the command via the injected RegisterCommandHandler
+      const result: RegisterResult | Error = await this.registerCommandHandler.handle(command);
+      if(result instanceof Error) {
+        next(result);
+        return;
+      }
+
+      // 3) Map the result to a JSON-friendly DTO
+      const response: RegisterResponse = RegisterResultToRegisterResponseMapper.toResponse(result);
+
+      // 4) Send 201 Created
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  };
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\index.ts
+
+export { userRoutes } from './UserRoutes';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\UserRoutes.ts
+
+// services/service-authentication/src/routes/UserRoutes.ts
+
+import { Router, Request, Response, NextFunction } from 'express';
+import { container } from '../bootstrap/container';
+import { UserController, UserControllerToken } from '../controllers/UserController'; 
+import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/application-common';
+import { RegisterCommand } from '@kikerepo/application-user';
+import { NotFoundError } from '@kikerepo/contracts-common';
+
+const userRoutes = Router();
+
+// Resolve the UserController from the container using the defined token
+const userController = container.get<UserController>(UserControllerToken);
+
+// Define the POST /register route with validation and controller handler
+userRoutes.post(
+  '/register',
+  ValidationMiddleware(RegisterCommand),
+  userController.register.bind(userController) // Ensure correct 'this' context
+);
+
+// Optional: Define other user-related routes here
+// Example:
+// userRoutes.post(
+//   '/login',
+//   ValidationMiddleware(LoginCommand),
+//   userController.login.bind(userController)
+// );
+
+// 404 Handler for Undefined Routes within this Router
+userRoutes.use((req: Request, res: Response, next: NextFunction) => {
+  res.status(404).json( new NotFoundError( ));
+});
+
+// Error Handling Middleware
+userRoutes.use(ErrorHandlerMiddleware);
+
+export { userRoutes };
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\__tests__\basic.spec.ts
+
+describe('Mailing Service test', () => {
+  it('should do a sample test in service-mailing', () => {
+    expect("hello").toBe("hello");
+  });
+});
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\package.json
+
+{
+  "name": "@kikerepo/service-mailing",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "ts-node-dev --respawn -- src/index.ts --transpileOnly",
+    "build": "tsc -p tsconfig.json",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "lint": "eslint 'src/**/*.ts'"
+  },
+  "devDependencies": {
+    "eslint": "^8.0.0",
+    "ts-node-dev": "^2.0.0",
+    "typescript": "^5.7.3"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\tsconfig.json
+
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "rootDir": "src",
+    "outDir": "dist"
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\src\index.ts
+
+console.log('Hello from service-mailing!');
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\__tests__\basic.spec.ts
+
+describe('Simple test in Authentication Service', () => {
+    it('should pass a basic truthy test', () => {
+      expect(true).toBe(true);
+    });
+  });
+  
 
 

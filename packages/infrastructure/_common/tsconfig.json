@@ -7,7 +7,7 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src"],
+  "include": ["src", "types"]  ,
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../contracts/_common" } // Uses compiled @kikerepo/contracts-common

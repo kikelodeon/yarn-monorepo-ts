@@ -14,37 +14,34 @@ import {
   RegisterResponse
 } from '@kikerepo/contracts-user';
 import { injectable, inject } from 'inversify';
+import { logger } from '@kikerepo/infrastructure-common'; // <--- Logger
 
 export const UserControllerToken = Symbol('UserControllerToken');
-
 @injectable()
 export class UserController {
   constructor(
-    @inject(RegisterCommandHandlerToken)
-    private readonly registerCommandHandler: RegisterCommandHandler
-  ) { }
+    @inject(RegisterCommandHandlerToken) private readonly registerCommandHandler: RegisterCommandHandler
+  ) {}
 
   public register = async (
     req: Request<{}, {}, RegisterRequest>,
     res: Response<RegisterResponse>,
     next: NextFunction
   ): Promise<void> => {
-    try {
-      // 1) Extract raw strings from the request
-      const command: RegisterCommand = RegisterRequestToRegisterCommandMapper.toCommand(req.body);
+    logger.info('Register endpoint called');
 
-      // 2) Handle the command via the injected RegisterCommandHandler
-      const result: RegisterResult | Error = await this.registerCommandHandler.handle(command);
-      if(result instanceof Error) {
-        next(result);
-        return;
+    try {
+      const command = RegisterRequestToRegisterCommandMapper.toCommand(req.body);
+      const result = await this.registerCommandHandler.handle(command);
+
+      if (result instanceof Error) {
+        return next(result);
       }
 
-      // 3) Map the result to a JSON-friendly DTO
-      const response: RegisterResponse = RegisterResultToRegisterResponseMapper.toResponse(result);
-
-      // 4) Send 201 Created
+      const response = RegisterResultToRegisterResponseMapper.toResponse(result);
+      logger.info('User registered. Sending response');
       res.status(201).json(response);
+
     } catch (error) {
       next(error);
     }

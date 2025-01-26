@@ -1,7 +1,7 @@
-POST http://localhost:5001/users/registers
+POST http://localhost:5001/users/register
 Content-Type: application/json
 
 {
-  "email": "tasdas@asdasd.com",
+  "email": "ta22dd2sdas87@asdasd.com",
   "password": "Aaa!123456"
 }

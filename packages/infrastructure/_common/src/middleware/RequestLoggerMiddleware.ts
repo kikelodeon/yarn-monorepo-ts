@@ -1,10 +1,11 @@
-
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../logging/logger';
 
-/**
- * Logs every incoming HTTP request.
- */
-export const RequestLoggerMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
+export const RequestLoggerMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  logger.info(`[${req.method}] ${req.url}`, { ip: req.ip });
+  next();
 };
