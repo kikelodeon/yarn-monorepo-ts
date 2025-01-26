@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@kikerepo/contracts-common": "workspace:*",
+    "@kikerepo/infrastructure-common": "workspace:*",
     "fp-ts": "^2.16.9"
   }
 }
