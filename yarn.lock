@@ -1446,6 +1446,7 @@ __metadata:
   resolution: "@kikerepo/utils-redis-client@workspace:packages/utils/redis-client"
   dependencies:
     "@types/opossum": "npm:^8"
+    jest: "npm:^29.7.0"
     opossum: "npm:^8.4.0"
     redis: "npm:^4.6.7"
   languageName: unknown
