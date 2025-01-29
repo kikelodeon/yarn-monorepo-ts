@@ -21,7 +21,7 @@ export default config;
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json
 
 {
-  "name": "my-monorepo",
+  "name": "kikerepo",
   "private": true,
   "workspaces": [
     "packages/*/**",
@@ -49,7 +49,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json
     "@prisma/client": "^6.2.1",
     "argon2": "^0.41.1",
     "inversify": "^6.2.1",
-    "prisma": "^6.2.1"
+    "prisma": "^6.2.1",
+    "reflect-metadata": "^0.2.2"
   }
 }
 
@@ -102,39 +103,39 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\tsconfig.json
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\launch.json
 
 {
-    "version": "0.2.0",
-    "compounds": [
-      {
-        "name": "Debug Full Monorepo",
-        "configurations": ["Debug Lib", "Debug Service"]
-      }
-    ],
-    "configurations": [
-      {
-        "name": "Debug Lib",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/packages/lib/src/index.ts",
-        "outFiles": ["${workspaceFolder}/packages/lib/dist/**/*.js"],
-        "preLaunchTask": "Build Lib",
-        "sourceMaps": true,
-        "console": "integratedTerminal",
-        "internalConsoleOptions": "openOnSessionStart"
-      },
-      {
-        "name": "Debug Service",
-        "type": "node",
-        "request": "launch",
-        "program": "${workspaceFolder}/packages/service-authentication/src/index.ts",
-        "outFiles": ["${workspaceFolder}/packages/service-authentication/dist/**/*.js"],
-        "preLaunchTask": "Build Service",
-        "sourceMaps": true,
-        "console": "integratedTerminal",
-        "internalConsoleOptions": "openOnSessionStart"
-      }
-    ]
-  }
-  
+  "version": "0.2.0",
+  "compounds": [
+    {
+      "name": "Debug Full Monorepo",
+      "configurations": ["Debug Lib", "Debug Service"]
+    }
+  ],
+  "configurations": [
+    {
+      "name": "Debug Lib",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/lib/dist/index.js", // Point to compiled ESM
+      "outFiles": ["${workspaceFolder}/packages/lib/dist/**/*.js"],
+      "preLaunchTask": "Build Lib",
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart"
+    },
+    {
+      "name": "Debug Service",
+      "type": "node",
+      "request": "launch",
+      "program": "${workspaceFolder}/packages/service-authentication/dist/index.js", // Point to compiled ESM
+      "outFiles": ["${workspaceFolder}/packages/service-authentication/dist/**/*.js"],
+      "preLaunchTask": "Build Service",
+      "sourceMaps": true,
+      "console": "integratedTerminal",
+      "internalConsoleOptions": "openOnSessionStart"
+    }
+  ]
+}
+
 
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\tasks.json
@@ -335,42 +336,36 @@ export class LoginQueryHandler {
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\RegisterCommandHandler.ts
 
-// RegisterCommandHandler.ts
-
 import { injectable, inject } from 'inversify';
 import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
 import { EmailAlreadyInUseError } from '../errors';
 import { RegisterCommand } from '../commands/RegisterCommand';
 import { RegisterResult } from '../results/RegisterResult';
-
-// 1) Declare a unique Symbol right at the top
+import { logger } from '@kikerepo/infrastructure-common'; // <--- Importa tu logger
 export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
 
 @injectable()
 export class RegisterCommandHandler {
   constructor(
-    // If you want to inject them by token:
     @inject(IUserRepositoryToken) private userRepository: IUserRepository,
     @inject(IHashingServiceToken) private hashingService: IHashingService
-    // Possibly more dependencies, like a ValidationBehaviour token, etc.
   ) {}
 
-  public async handle( command: RegisterCommand): Promise<RegisterResult| Error> {
-    
-    // 1) Check if user already exists
+  public async handle(command: RegisterCommand): Promise<RegisterResult | Error> {
+    logger.info('[RegisterCommandHandler] Handling register command', { email: command.email.value });
+
     const existingUser = await this.userRepository.findByEmail(command.email.value);
     if (existingUser) {
+      logger.warn('[RegisterCommandHandler] Email already in use', { email: command.email.value });
       return new EmailAlreadyInUseError(command.email.value);
     }
 
-    // 2) Create domain entity
     const hashedpassword = await this.hashingService.hash(command.password);
-    const user = User.createUnique(command.email,hashedpassword, command.phone);
-
-    // 3) Save
+    const user = User.createUnique(command.email, hashedpassword, command.phone);
     await this.userRepository.save(user);
 
+    logger.info('[RegisterCommandHandler] User registered successfully', { userId: user.id.value });
     return new RegisterResult(user.id, user.email);
   }
 }
@@ -618,6 +613,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\p
   },
   "dependencies": {
     "@kikerepo/contracts-common": "workspace:*",
+    "@kikerepo/infrastructure-common": "workspace:*",
     "fp-ts": "^2.16.9"
   }
 }
@@ -748,7 +744,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\s
 
 import { BaseError, InternalError, ValidationError } from '@kikerepo/contracts-common';
 import { Request, Response, NextFunction } from 'express';
-
+import { logger } from '@kikerepo/infrastructure-common';
 // Función para manejar la respuesta de errores
 const handleErrorResponse = (err: BaseError, res: Response): void => {
   const { message, errorCode, statusCode, timestamp, context, stack } = err;
@@ -788,6 +784,7 @@ export const ErrorHandlerMiddleware = (
       input: req.body,  // Aquí se incluyen los datos de la solicitud, si es relevante
       fieldErrors: err.validationErrors,  // Los errores de validación
     };
+    logger.debug(err.name, context);
     return handleErrorResponse(err, res);
   }
 
@@ -797,6 +794,7 @@ export const ErrorHandlerMiddleware = (
       requestBody: req.body,
       endpoint: req.url,
     };
+    logger.debug(err.name, context);
     return handleErrorResponse(err, res);  // Llamamos a la función de manejo de errores para BaseError
   }
 
@@ -812,7 +810,7 @@ export const ErrorHandlerMiddleware = (
     endpoint: req.url,
     requestBody: req.body,
   };
-
+  logger.debug(internalError.name, context);
   return handleErrorResponse(internalError, res);  // Llamamos a la función para manejar el error interno
 };
 
@@ -1878,8 +1876,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\p
     "@kikerepo/domain-user": "workspace:*",
     "@kikerepo/infrastructure-common": "workspace:*",
     "@prisma/client": "^6.2.1",
-    "mongoose": "^6.8.0",
-    "reflect-metadata": "^0.2.2"
+    "mongoose": "^6.8.0"
   },
   "devDependencies": {
     "prisma": "^6.2.1"
@@ -1957,9 +1954,12 @@ import { IUserRepository} from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
 import { prisma } from './UserDatabase';
 import { injectable } from 'inversify';
+import { logger } from '@kikerepo/infrastructure-common'; // <--- Logger
+
 @injectable()
 export class UserRepository implements IUserRepository {
   async save(user: User): Promise<void> {
+    logger.debug('[UserRepository] Saving user', { userId: user.id.value });
     await prisma.user.upsert({
       where: { id: user.id.value },
       update: {
@@ -1977,41 +1977,39 @@ export class UserRepository implements IUserRepository {
   }
 
   async findById(id: string): Promise<User | null> {
-    const userRecord = await prisma.user.findUnique({
-      where: { id },
-    });
-
-    if (!userRecord) return null;
-
-    // Convertir el registro de la DB a la entidad de dominio
-    return  User.map(
+    logger.debug('[UserRepository] Finding user by ID', { id });
+    const userRecord = await prisma.user.findUnique({ where: { id } });
+    if (!userRecord) {
+      logger.debug('[UserRepository] No user found', { id });
+      return null;
+    }
+    return User.map(
       userRecord.id,
       userRecord.email,
       userRecord.password,
       userRecord.phone,
       userRecord.createdAt,
-      userRecord.deletedAt);
-
+      userRecord.deletedAt
+    );
   }
 
   async findByEmail(email: string): Promise<User | null> {
-    const userRecord = await prisma.user.findUnique({
-      where: { email },
-    });
-
-    if (!userRecord) return null;
-
-    // Convertir el registro de la DB a la entidad de dominio
-    return  User.map(
+    logger.debug('[UserRepository] Finding user by email', { email });
+    const userRecord = await prisma.user.findUnique({ where: { email } });
+    if (!userRecord) {
+      logger.debug('[UserRepository] No user found', { email });
+      return null;
+    }
+    return User.map(
       userRecord.id,
       userRecord.email,
       userRecord.password,
       userRecord.phone,
       userRecord.createdAt,
-      userRecord.deletedAt);
+      userRecord.deletedAt
+    );
   }
 }
-
 
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\Argon2HashingService.ts
@@ -2055,7 +2053,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
   },
   "dependencies": {
     "@kikerepo/contracts-common": "workspace:*",
-    "jsonwebtoken": "^9.0.2"
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.17.0"
   }
 }
 
@@ -2072,7 +2071,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src"],
+  "include": ["src", "types"]  ,
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../contracts/_common" } // Uses compiled @kikerepo/contracts-common
@@ -2085,6 +2084,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
 
 export * from './middleware';
 export * from './authentication';
+export * from './logging';
 
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\authenticationToken.ts
@@ -2116,6 +2116,121 @@ export const verifyToken = (token: string): JwtPayload => {
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\index.ts
 
 export { generateToken, verifyToken } from './authenticationToken';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\index.ts
+
+export {logger} from './logger';
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\logger.ts
+
+// packages/infrastructure/_common/src/logging/logger.ts
+import { createLogger, format, transports } from 'winston';
+import chalk from 'chalk';
+import dayjs from 'dayjs';
+
+const { combine, timestamp, printf } = format;
+
+// Formato personalizado
+const consoleFormat = printf((info) => {
+  // Aseguramos que el timestamp es una cadena
+  const rawTimestamp = typeof info.timestamp === 'string' ? info.timestamp : new Date().toISOString();
+  
+  // Formateamos la fecha usando dayjs
+  const formattedDate = dayjs(rawTimestamp).format('YYYY-MM-DD HH:mm:ss');
+  const greyDate = chalk.gray(formattedDate);
+
+  // Asignamos colores al nivel
+  let coloredLevel: string;
+  switch (info.level) {
+    case 'error':
+      coloredLevel = chalk.red(info.level);
+      break;
+    case 'warn':
+      coloredLevel = chalk.yellow(info.level);
+      break;
+    case 'info':
+      coloredLevel = chalk.green(info.level);
+      break;
+    case 'debug':
+      coloredLevel = chalk.blue(info.level);
+      break;
+    default:
+      coloredLevel = info.level; // Sin color para niveles personalizados
+  }
+
+  // Extraemos los datos adicionales
+  const { level, message, timestamp, ...rest } = info;
+  const extraData = Object.keys(rest).length ? JSON.stringify(rest) : '';
+
+  return `${greyDate} [${coloredLevel}]: ${message} ${extraData}`;
+});
+
+export const logger = createLogger({
+  level: 'debug',
+  format: combine(
+    timestamp(),
+    consoleFormat
+  ),
+  transports: [
+    new transports.Console(),
+  ],
+});
+/*
+// packages/infrastructure/_common/src/logging/logger.ts
+import { createLogger, format, transports } from 'winston';
+import chalk from 'chalk';
+import dayjs from 'dayjs';
+
+const { combine, timestamp, printf } = format;
+
+// Formato personalizado
+const consoleFormat = printf((info) => {
+  // Aseguramos que el timestamp es una cadena
+  const rawTimestamp = typeof info.timestamp === 'string' ? info.timestamp : new Date().toISOString();
+  
+  // Formateamos la fecha usando dayjs
+  const formattedDate = dayjs(rawTimestamp).format('YYYY-MM-DD HH:mm:ss');
+  const greyDate = chalk.gray(formattedDate);
+
+  // Asignamos colores al nivel
+  let coloredLevel: string;
+  switch (info.level) {
+    case 'error':
+      coloredLevel = chalk.red(info.level);
+      break;
+    case 'warn':
+      coloredLevel = chalk.yellow(info.level);
+      break;
+    case 'info':
+      coloredLevel = chalk.green(info.level);
+      break;
+    case 'debug':
+      coloredLevel = chalk.blue(info.level);
+      break;
+    default:
+      coloredLevel = info.level; // Sin color para niveles personalizados
+  }
+
+  // Extraemos los datos adicionales
+  const { level, message, timestamp, ...rest } = info;
+  const extraData = Object.keys(rest).length ? JSON.stringify(rest) : '';
+
+  return `${greyDate} [${coloredLevel}]: ${message} ${extraData}`;
+});
+
+export const logger = createLogger({
+  level: 'debug',
+  format: combine(
+    timestamp(),
+    consoleFormat
+  ),
+  transports: [
+    new transports.Console(),
+  ],
+});
+*/
 
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\AuthenticationMiddleware.ts
@@ -2156,65 +2271,25 @@ export function AuthenticationMiddleware(
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\ErrorHandlerMiddleware.ts
-
-// packages/infrastructure/common/src/middleware/ErrorHandlerMiddleware.ts
-import { Request, Response, NextFunction } from 'express';
-import { BaseError, ValidationError } from '@kikerepo/contracts-common';
-export const ErrorHandlerMiddleware = (
-    err: Error,
-    req: Request,
-    res: Response,
-    next: NextFunction
-  ): void => {
-    if (err instanceof ValidationError) {
-      res.status(err.statusCode).json(err.toJSON());
-    } else if (err instanceof BaseError) {
-      res.status(err.statusCode).json({ code: err.statusCode, message: err.message });
-    } else {
-      res.status(500).json({ code: 'INTERNAL_SERVER_ERROR', message: 'Unexpected error occurred.' });
-    }
-  };
-  
-
-
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\index.ts
 
 export { RequestLoggerMiddleware } from './RequestLoggerMiddleware';
-export { ErrorHandlerMiddleware } from './ErrorHandlerMiddleware';
-export { ValidationMiddleware } from './ValidationMiddleware';
 export { AuthenticationMiddleware } from './AuthenticationMiddleware';
 
 
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\RequestLoggerMiddleware.ts
 
-
 import { Request, Response, NextFunction } from 'express';
+import { logger } from '../logging/logger';
 
-/**
- * Logs every incoming HTTP request.
- */
-export const RequestLoggerMiddleware = (req: Request, res: Response, next: NextFunction): void => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.url}`);
-    next();
-};
-
-
-
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\ValidationMiddleware.ts
-
-import { Request, Response, NextFunction } from 'express';
-import { Schema } from 'joi';
-
-export const ValidationMiddleware = (schema: Schema) => {
-  return (req: Request, res: Response, next: NextFunction) => {
-    const { error } = schema.validate(req.body);
-    if (error) {
-      return res.status(400).json({ message: error.message });
-    }
-    next();
-  };
+export const RequestLoggerMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  logger.info(`[${req.method}] ${req.url}`, { ip: req.ip });
+  next();
 };
 
 
@@ -2386,6 +2461,178 @@ describe('generateUUIDv6', () => {
       expect(uuids.has(uuid)).toBe(false); // Ensure uniqueness
       uuids.add(uuid);
     }
+  });
+});
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\jest.config.ts
+
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'], // Match .spec.ts or .test.ts files
+  moduleFileExtensions: ['ts', 'js'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '.*/dist/'], // Ignore all dist folders
+  transform: {
+    '^.+\\.ts$': 'ts-jest', // Use ts-jest to transform TypeScript files
+  },
+};
+
+export default config;
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\package.json
+
+{
+  "name": "@kikerepo/utils-redis-client",
+  "version": "1.0.0",
+  "description": "Enhanced Redis client with retry, fallback, and circuit breaker capabilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clean": "rimraf dist tsconfig.tsbuildinfo",
+    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint 'src/**/*.ts'",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "opossum": "^8.4.0",
+    "redis": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/opossum": "^8",
+    "jest": "^29.7.0"
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\tsconfig.json
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\index.ts
+
+export { RedisClient } from './RedisClient';
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\RedisClient.ts
+
+import { createClient, RedisClientType } from '@redis/client';
+
+export interface RedisClientConfig {
+  host?: string;
+  port?: number;
+  password?: string;
+  url?: string; // Optional for full Redis connection URL
+}
+
+export class RedisClient {
+  private client: RedisClientType;
+
+  constructor(private config: RedisClientConfig = {}) {
+    const { host = '127.0.0.1', port = 6379, password= "mama-redis-1234", url } = config;
+
+    if (url) {
+      this.client = createClient({ url });
+    } else {
+      this.client = createClient({
+        socket: { host, port },
+        password,
+      });
+    }
+  }
+
+  public async connect(): Promise<void> {
+    try {
+      await this.client.connect();
+      console.info('[RedisClient] Connected to Redis.');
+    } catch (error) {
+      console.error('[RedisClient] Failed to connect to Redis:', error);
+    }
+  }
+
+  public async disconnect(): Promise<void> {
+    await this.client.disconnect();
+    console.info('[RedisClient] Disconnected from Redis.');
+  }
+
+  public async set(key: string, value: string): Promise<void> {
+    await this.client.set(key, value);
+  }
+
+  public async get(key: string): Promise<string | null> {
+    return this.client.get(key);
+  }
+  public async healthCheck(): Promise<{ status: string; message?: string }> {
+    try {
+      const response = await this.client.ping();
+      if (response === 'PONG') {
+        return { status: 'UP' };
+      } else {
+        return { status: 'DOWN', message: 'Unexpected response from Redis.' };
+      }
+    } catch (error) {
+      let message = 'An unknown error occurred';
+      if (error instanceof Error) {
+        message = error.message; // Narrow the type to Error
+      }
+      return { status: 'DOWN', message };
+    }
+  }
+}
+
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\__tests__\redisclient.spec.ts
+
+import {RedisClient} from '../src/RedisClient';
+
+describe('RedisClient', () => {
+  let redisClient: RedisClient;
+
+  beforeAll(async () => {
+    redisClient = new RedisClient({
+      host: '127.0.0.1',
+      port: 6379,
+      password: 'mama-redis-1234', // Add password if required
+    });
+    await redisClient.connect();
+  });
+
+  afterAll(async () => {
+    await redisClient.disconnect();
+  });
+
+  it('should connect to Redis successfully', async () => {
+    const health = await redisClient.healthCheck();
+    expect(health.status).toBe('UP');
+  });
+
+  it('should set and get values', async () => {
+    await redisClient.set('testKey', 'testValue');
+    const value = await redisClient.get('testKey');
+    expect(value).toBe('testValue');
   });
 });
 
@@ -2618,27 +2865,25 @@ describe('generateUUIDv6', () => {
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\jest.config.ts
 
-// services/service-authentication/jest.config.ts
+// services/service-authentication/jest.config.mjs
 
-import type { Config } from 'jest';
-
-const config: Config = {
-  preset: 'ts-jest',
+export default {
+  preset: 'ts-jest/presets/default-esm', // Use the ESM preset
   testEnvironment: 'node',
   testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'],
   moduleFileExtensions: ['ts', 'js'],
   modulePathIgnorePatterns: ['<rootDir>/dist/', '.*/dist/'],
   transform: {
-    '^.+\\.ts$': 'ts-jest',
+    '^.+\\.ts$': ['ts-jest', { useESM: true }], // Enable ESM in ts-jest
   },
   globals: {
     'ts-jest': {
       tsconfig: 'tsconfig.json',
+      useESM: true, // Ensure ts-jest uses ESM
     },
   },
+  extensionsToTreatAsEsm: ['.ts'], // Treat TypeScript files as ESM
 };
-
-export default config;
 
 
 
@@ -2672,7 +2917,6 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authenticatio
     "@kikerepo/infrastructure-user": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
-    "reflect-metadata": "^0.2.2",
     "tsyringe": "^4.8.0"
   }
 }
@@ -2808,43 +3052,39 @@ import {
   RegisterResponse
 } from '@kikerepo/contracts-user';
 import { injectable, inject } from 'inversify';
+import { logger } from '@kikerepo/infrastructure-common'; // <--- Logger
 
 export const UserControllerToken = Symbol('UserControllerToken');
-
 @injectable()
 export class UserController {
   constructor(
-    @inject(RegisterCommandHandlerToken)
-    private readonly registerCommandHandler: RegisterCommandHandler
-  ) { }
+    @inject(RegisterCommandHandlerToken) private readonly registerCommandHandler: RegisterCommandHandler
+  ) {}
 
   public register = async (
     req: Request<{}, {}, RegisterRequest>,
     res: Response<RegisterResponse>,
     next: NextFunction
   ): Promise<void> => {
-    try {
-      // 1) Extract raw strings from the request
-      const command: RegisterCommand = RegisterRequestToRegisterCommandMapper.toCommand(req.body);
+    logger.info('Register endpoint called');
 
-      // 2) Handle the command via the injected RegisterCommandHandler
-      const result: RegisterResult | Error = await this.registerCommandHandler.handle(command);
-      if(result instanceof Error) {
-        next(result);
-        return;
+    try {
+      const command = RegisterRequestToRegisterCommandMapper.toCommand(req.body);
+      const result = await this.registerCommandHandler.handle(command);
+
+      if (result instanceof Error) {
+        return next(result);
       }
 
-      // 3) Map the result to a JSON-friendly DTO
-      const response: RegisterResponse = RegisterResultToRegisterResponseMapper.toResponse(result);
-
-      // 4) Send 201 Created
+      const response = RegisterResultToRegisterResponseMapper.toResponse(result);
+      logger.info('User registered. Sending response');
       res.status(201).json(response);
+
     } catch (error) {
       next(error);
     }
   };
 }
-
 
 
 C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\index.ts
@@ -2955,5 +3195,21 @@ describe('Simple test in Authentication Service', () => {
     });
   });
   
+
+
+C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\package.json
+
+{
+  "name": "redis-server",
+  "version": "1.0.0",
+  "description": "Redis server for the monorepo",
+  "scripts": {
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f",
+    "clean": "docker-compose down -v"
+  }
+}
+
 
 

@@ -4598,6 +4598,25 @@ __metadata:
   languageName: node
   linkType: hard
 
+"kikerepo@workspace:.":
+  version: 0.0.0-use.local
+  resolution: "kikerepo@workspace:."
+  dependencies:
+    "@prisma/client": "npm:^6.2.1"
+    "@types/jest": "npm:^29.5.14"
+    "@types/node": "npm:^20.4.5"
+    argon2: "npm:^0.41.1"
+    inversify: "npm:^6.2.1"
+    jest: "npm:^29.7.0"
+    prisma: "npm:^6.2.1"
+    reflect-metadata: "npm:^0.2.2"
+    rimraf: "npm:^6.0.1"
+    ts-jest: "npm:^29.2.5"
+    ts-node: "npm:^10.9.2"
+    typescript: "npm:^5.7.3"
+  languageName: unknown
+  linkType: soft
+
 "kleur@npm:^3.0.3":
   version: 3.0.3
   resolution: "kleur@npm:3.0.3"
@@ -5040,25 +5059,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"my-monorepo@workspace:.":
-  version: 0.0.0-use.local
-  resolution: "my-monorepo@workspace:."
-  dependencies:
-    "@prisma/client": "npm:^6.2.1"
-    "@types/jest": "npm:^29.5.14"
-    "@types/node": "npm:^20.4.5"
-    argon2: "npm:^0.41.1"
-    inversify: "npm:^6.2.1"
-    jest: "npm:^29.7.0"
-    prisma: "npm:^6.2.1"
-    reflect-metadata: "npm:^0.2.2"
-    rimraf: "npm:^6.0.1"
-    ts-jest: "npm:^29.2.5"
-    ts-node: "npm:^10.9.2"
-    typescript: "npm:^5.7.3"
-  languageName: unknown
-  linkType: soft
-
 "natural-compare@npm:^1.4.0":
   version: 1.4.0
   resolution: "natural-compare@npm:1.4.0"
@@ -5466,9 +5466,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis-server@workspace:redis-server":
+"redis-server@workspace:services/service-redis-server":
   version: 0.0.0-use.local
-  resolution: "redis-server@workspace:redis-server"
+  resolution: "redis-server@workspace:services/service-redis-server"
   languageName: unknown
   linkType: soft
 

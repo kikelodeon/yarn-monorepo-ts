@@ -1,10 +1,9 @@
 {
-  "name": "my-monorepo",
+  "name": "kikerepo",
   "private": true,
   "workspaces": [
     "packages/*/**",
-    "services/*",
-    "redis-server"
+    "services/*"
   ],
   "scripts": {
     "build": "yarn workspaces foreach --all --topological-dev run build ",
