@@ -1,13 +1,13 @@
 services:
   authentication-service:
     build:
-      context: ../../  # Monorepo root
+      context: ../../
       dockerfile: services/service-authentication/Dockerfile.development
     ports:
-      - "${SERVICE_AUTHENTICATION_PORT}:3001"  # Host:Container
+      - "${SERVICE_AUTHENTICATION_PORT}:3001"
     volumes:
-      - ../../services/service-authentication:/app
-      - /app/node_modules
+      - ../../services/service-authentication/src:/app/src
+      - authentication_node_modules:/app/node_modules
     env_file:
       - ../../services/service-authentication/.env.development
     command: yarn dev
@@ -16,13 +16,13 @@ services:
 
   mailing-service:
     build:
-      context: ../../  # Monorepo root
+      context: ../../
       dockerfile: services/service-mailing/Dockerfile.development
     ports:
-      - "${SERVICE_MAILING_PORT}:4000"  # Host:Container
+      - "${SERVICE_MAILING_PORT}:4000"
     volumes:
-      - ../../services/service-mailing:/app
-      - /app/node_modules
+      - ../../services/service-mailing/src:/app/src
+      - mailing_node_modules:/app/node_modules
     env_file:
       - ../../services/service-mailing/.env.development
     command: yarn dev
@@ -45,4 +45,6 @@ services:
       retries: 3
 
 volumes:
+  authentication_node_modules:
+  mailing_node_modules:
   redis-data:
