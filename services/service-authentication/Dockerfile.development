@@ -1,14 +1,16 @@
-# Stage 1: Build
-FROM node:18-alpine AS builder
+# Stage 1: Install dependencies
+FROM node:18-alpine AS dependencies
 
-# Set working directory
 WORKDIR /app
 
-# Copy root package.json and yarn.lock for dependency installation
+# Copy root package.json and yarn.lock
 COPY package.json yarn.lock ./
 
 # Install all dependencies (including workspaces)
 RUN yarn install --frozen-lockfile
+
+# Stage 2: Build
+FROM dependencies AS builder
 
 # Copy all workspace packages
 COPY packages ./packages
@@ -17,12 +19,12 @@ COPY services/service-authentication ./services/service-authentication
 # Build the authentication service
 RUN yarn workspace @kikerepo/service-authentication build
 
-# Stage 2: Production
+# Stage 3: Development
 FROM node:18-alpine
 
 WORKDIR /app
 
-# Copy only the built authentication service from the builder stage
+# Copy built authentication service from builder
 COPY --from=builder /app/services/service-authentication/dist ./dist
 COPY --from=builder /app/services/service-authentication/package.json ./package.json
 COPY --from=builder /app/services/service-authentication/yarn.lock ./yarn.lock
@@ -34,7 +36,7 @@ RUN yarn install --frozen-lockfile --production
 ENV NODE_ENV=development
 
 # Expose the internal application port
-EXPOSE 3001
+EXPOSE 5001
 
 # Create a non-root user for security
 RUN addgroup -S appgroup && adduser -S appuser -G appgroup
