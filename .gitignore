@@ -52,3 +52,7 @@ jest.config.ts
 
 # Windows system files
 Thumbs.db
+
+# Ignorar la caché de Turborepo
+.turbo/
+.cache/turbo/

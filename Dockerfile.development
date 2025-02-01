@@ -1,0 +1,30 @@
+# Usa una imagen base de Node (versión LTS recomendada)
+FROM node:18-alpine
+
+# (Opcional) Instala herramientas adicionales si las necesitas, por ejemplo git
+# RUN apk add --no-cache git
+
+# Establece el directorio de trabajo
+WORKDIR /app
+
+# Copia los archivos de configuración del proyecto para aprovechar la caché de dependencias.
+# Asegúrate de incluir package.json, yarn.lock, turbo.json, y archivos de configuración de Yarn (por ejemplo, .yarnrc.yml)
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+
+# Si usas Yarn v4 con PnP y tienes la carpeta .yarn, cópiala también:
+COPY .yarn .yarn
+
+# Instala las dependencias
+RUN yarn install
+
+# Copia el resto del código (esta capa se regenerará si se modifica el código fuente)
+COPY . .
+
+# Expón los puertos que usen tus servicios. Por ejemplo, si tu service-authentication usa el puerto 3000:
+EXPOSE 3000
+
+# Define la variable de entorno para el entorno de desarrollo
+ENV NODE_ENV=development
+
+# Comando de inicio: Ejecuta la tarea "dev" definida en el package.json raíz (por ejemplo, "turbo run dev")
+CMD ["yarn", "dev"]

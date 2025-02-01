@@ -3,7 +3,8 @@
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn -- src/index.ts --transpileOnly",
+    "prisma:generate": "prisma generate",
+    "dev": "yarn prisma:generate && ts-node-dev --respawn -- src/index.ts --transpileOnly",
     "build": "tsc -p tsconfig.json",
     "clean": "rimraf dist tsconfig.tsbuildinfo",
     "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
