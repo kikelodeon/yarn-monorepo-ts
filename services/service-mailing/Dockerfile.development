@@ -1,46 +1,33 @@
-# Stage 1: Install dependencies
-FROM node:18-alpine AS dependencies
-
-WORKDIR /app
-
-# Copy root package.json and yarn.lock
-COPY package.json yarn.lock ./
-
-# Install all dependencies (including workspaces)
-RUN yarn install --frozen-lockfile
-
-# Stage 2: Build
-FROM dependencies AS builder
-
-# Copy all workspace packages
-COPY packages ./packages
-COPY services/service-mailing ./services/service-mailing
-
-# Build the mailing service
-RUN yarn workspace @kikerepo/service-mailing build
-
-# Stage 3: Development
+# Usa una imagen base de Node (versión LTS recomendada)
 FROM node:18-alpine
 
+# Directorio de trabajo en el contenedor
 WORKDIR /app
 
-# Copy built mailing service from builder
-COPY --from=builder /app/services/service-mailing/dist ./dist
-COPY --from=builder /app/services/service-mailing/package.json ./package.json
-COPY --from=builder /app/services/service-mailing/yarn.lock ./yarn.lock
+# --- CAPA DE DEPENDENCIAS ---
+# Copia archivos de configuración del monorepo necesarios para instalar dependencias
+# Estos archivos se encuentran en la raíz del monorepo
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+# Si usas Yarn v4 con la carpeta .yarn, cópiala también:
+COPY .yarn .yarn
 
-# Install production dependencies
-RUN yarn install --frozen-lockfile --production
+# Instala todas las dependencias (usando workspaces)
+RUN yarn install
 
-# Set environment variables
-ENV NODE_ENV=development
+# --- CAPA DE CÓDIGO ---
+# Copia todo el código del monorepo al contenedor
+COPY . .
 
-# Expose the internal application port
+# Establece el directorio de trabajo al servicio de autenticación
+WORKDIR /app/services/service-mailing
+
+# Expone el puerto en el que el servicio escucha (ajústalo según corresponda)
 EXPOSE 5002
 
-# Create a non-root user for security
-RUN addgroup -S appgroup && adduser -S appuser -G appgroup
-USER appuser
+# Define la variable de entorno para desarrollo
+ENV NODE_ENV=development
 
-# Start the development server with live reloading
+# Ejecuta el comando de desarrollo definido en el package.json del servicio.
+# Por ejemplo, se asume que en services/service-authentication/package.json existe:
+# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
 CMD ["yarn", "dev"]

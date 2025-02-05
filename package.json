@@ -11,8 +11,7 @@
     "buildasync": "turbo run build --parallel",
     "dev": "turbo run dev",
     "test": "turbo run test",
-    "clean": "turbo run clean",
-    "clear": "turbo run clear && rimraf node_modules",
+    "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
     "uninstall": "turbo run uninstall && rimraf node_modules",
     "lint": "turbo run lint"
   },

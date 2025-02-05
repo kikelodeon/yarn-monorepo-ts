@@ -1,0 +1,29 @@
+# Use Node LTS image
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy root-level files (so Yarn workspaces work correctly)
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+
+# (Optional) If you have a .yarn folder, copy it too
+COPY .yarn .yarn
+
+# Install dependencies from the root (Yarn will hoist workspaces if needed)
+RUN yarn install --immutable
+
+# Copy all files
+COPY . .
+
+# Change directory to the service folder
+WORKDIR /app/services/service-kafka
+
+# Expose the port
+EXPOSE 3100
+
+# Set environment (development)
+ENV NODE_ENV=development
+
+# Start the service
+CMD ["yarn", "dev"]

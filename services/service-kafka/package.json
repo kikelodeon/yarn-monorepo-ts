@@ -1,7 +1,7 @@
 {
-  "name": "redis-server",
+  "name": "service-kafka",
   "version": "1.0.0",
-  "description": "Redis server for the monorepo",
+  "description": "Kafka server for the monorepo",
   "scripts": {
     "dev": "docker-compose up -d",
     "start": "docker-compose up -d",

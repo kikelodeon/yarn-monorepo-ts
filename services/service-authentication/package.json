@@ -6,12 +6,12 @@
     "prisma:generate": "prisma generate",
     "dev": "yarn prisma:generate && ts-node-dev --respawn -- src/index.ts --transpileOnly",
     "build": "tsc -p tsconfig.json",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "lint": "eslint 'src/**/*.ts'"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "eslint": "^8.0.0",
     "prisma": "^6.2.1",
@@ -27,6 +27,7 @@
     "@kikerepo/infrastructure-user": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "tsyringe": "^4.8.0"
   }
 }

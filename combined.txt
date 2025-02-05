@@ -1,5 +1,50 @@
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\jest.config.ts
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.yarnrc.yml ===
+
+nodeLinker: node-modules
+
+yarnPath: .yarn/releases/yarn-berry.js
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\Dockerfile.development ===
+
+# Usa una imagen base de Node (versi√≥n LTS recomendada)
+FROM node:18-alpine
+
+# (Opcional) Instala herramientas adicionales si las necesitas, por ejemplo git
+# RUN apk add --no-cache git
+
+# Establece el directorio de trabajo
+WORKDIR /app
+
+# Copia los archivos de configuraci√≥n del proyecto para aprovechar la cach√© de dependencias.
+# Aseg√∫rate de incluir package.json, yarn.lock, turbo.json, y archivos de configuraci√≥n de Yarn (por ejemplo, .yarnrc.yml)
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+
+# Si usas Yarn v4 con PnP y tienes la carpeta .yarn, c√≥piala tambi√©n:
+COPY .yarn .yarn
+
+# Instala las dependencias
+RUN yarn install
+
+# Copia el resto del c√≥digo (esta capa se regenerar√° si se modifica el c√≥digo fuente)
+COPY . .
+
+# Exp√≥n los puertos que usen tus servicios. Por ejemplo, si tu service-authentication usa el puerto 3000:
+EXPOSE 3000
+
+# Define la variable de entorno para el entorno de desarrollo
+ENV NODE_ENV=development
+
+# Comando de inicio: Ejecuta la tarea "dev" definida en el package.json ra√≠z (por ejemplo, "turbo run dev")
+CMD ["yarn", "dev"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\jest.config.ts ===
 
 import type { Config } from 'jest';
 
@@ -18,23 +63,25 @@ export default config;
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json ===
 
 {
   "name": "kikerepo",
   "private": true,
+  "packageManager": "yarn@4.0.2",
   "workspaces": [
     "packages/*/**",
     "services/*"
   ],
   "scripts": {
-    "build": "yarn workspaces foreach --all --topological-dev run build ",
-    "buildasync": "yarn workspaces foreach -p --all run build",
-    "test": "jest --passWithNoTests",
-    "clean": "yarn workspaces foreach --all run clean",
-    "clear": "yarn workspaces foreach --all run clear && rimraf node_modules",
-    "uninstall": "yarn workspaces foreach --all run uninstall && rimraf node_modules",
-    "lint": "yarn workspaces foreach run lint"
+    "build": "turbo run build",
+    "buildasync": "turbo run build --parallel",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
+    "uninstall": "turbo run uninstall && rimraf node_modules",
+    "lint": "turbo run lint"
   },
   "devDependencies": {
     "@types/jest": "^29.5.14",
@@ -43,6 +90,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json
     "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "turbo": "^2.4.0",
     "typescript": "^5.7.3"
   },
   "dependencies": {
@@ -56,7 +104,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\package.json
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\tsconfig.json ===
 
 {
   "compilerOptions": {
@@ -100,7 +149,32 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\tsconfig.json
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\launch.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\turbo.json ===
+
+{
+  "$schema": "https://turborepo.org/schema.json",
+  "tasks": {
+    "build": {
+      "dependsOn": ["^build"],
+      "outputs": ["dist/**"]
+    },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "test": {},
+    "clean": {},
+    "clear": {},
+    "uninstall": {},
+    "lint": {}
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\launch.json ===
 
 {
   "version": "0.2.0",
@@ -138,7 +212,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\launch.json
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\tasks.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\tasks.json ===
 
 {
   "version": "2.0.0",
@@ -166,7 +241,127 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.vscode\tasks.json
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\docker\development\.env ===
+
+NODE_ENV=*****
+SERVICE_AUTHENTICATION_PORT=*****
+SERVICE_MAILING_PORT=*****
+SERVICE_REDIS_PORT=*****
+SERVICE_REDIS_PASSWORD=*****
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\docker\development\docker-compose.yml ===
+
+services:
+  authentication-service:
+    build:
+      context: ../../
+      dockerfile: services/service-authentication/Dockerfile.development
+    ports:
+      - "${SERVICE_AUTHENTICATION_PORT}:5001"
+    volumes:
+      - ../../services/service-authentication/src:/app/src
+      - authentication_node_modules:/app/node_modules
+    env_file:
+      - ../../services/service-authentication/.env.development
+    command: yarn dev
+    depends_on:
+      - redis
+
+  mailing-service:
+    build:
+      context: ../../
+      dockerfile: services/service-mailing/Dockerfile.development
+    ports:
+      - "${SERVICE_MAILING_PORT}:5002"
+    volumes:
+      - ../../services/service-mailing/src:/app/src
+      - mailing_node_modules:/app/node_modules
+    env_file:
+      - ../../services/service-mailing/.env.development
+    command: yarn dev
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - "${SERVICE_REDIS_PORT}:6379"
+    volumes:
+      - redis-data:/data
+    environment:
+      - REDIS_PASSWORD=${SERVICE_REDIS_PASSWORD}
+    command: redis-server --requirepass ${SERVICE_REDIS_PASSWORD}
+    healthcheck:
+      test: ["CMD", "redis-cli", "PING"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  authentication_node_modules:
+  mailing_node_modules:
+  redis-data:
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\docker\production\.env ===
+
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\docker\production\docker-compose.yml ===
+
+version: '3.8'
+
+services:
+  authentication-service:
+    image: your-dockerhub-username/service-authentication:latest
+    ports:
+      - '3000:3000'
+    env_file:
+      - ../../services/service-authentication/.env.production
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  mailing-service:
+    image: your-dockerhub-username/service-mailing:latest
+    ports:
+      - '4000:4000'
+    env_file:
+      - ../../services/service-mailing/.env.production
+    depends_on:
+      - redis
+    restart: unless-stopped
+
+  redis:
+    image: redis:7.0-alpine
+    ports:
+      - '6379:6379'
+    volumes:
+      - redis-prod-data:/data
+    environment:
+      - REDIS_PASSWORD=${REDIS_PASSWORD}
+    command: redis-server --requirepass ${REDIS_PASSWORD}
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+volumes:
+  redis-prod-data:
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\package.json ===
 
 {
   "name": "@kikerepo/application-user",
@@ -175,8 +370,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\pack
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -193,7 +387,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\pack
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -218,7 +413,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\tsco
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\index.ts ===
 
 export * from './commands';
 export * from './queries';
@@ -230,14 +426,16 @@ export * from './mappers';
 export * from './errors';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\commands\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\commands\index.ts ===
 
 
 export * from './RegisterCommand';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\commands\RegisterCommand.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\commands\RegisterCommand.ts ===
 
 // src/application/user/commands/RegisterCommand.ts
 import { IsEmail, IsString, IsOptional, Length } from 'class-validator';
@@ -266,7 +464,8 @@ export class RegisterCommand {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\errors\EmailAlreadyInUseError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\errors\EmailAlreadyInUseError.ts ===
 
 // src/application/user/errors/EmailAlreadyInUseError.ts
 import { ConflictError } from '@kikerepo/contracts-common'; // Import the ValidationError from contracts
@@ -284,13 +483,15 @@ export class EmailAlreadyInUseError extends ConflictError {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\errors\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\errors\index.ts ===
 
 
 export { EmailAlreadyInUseError } from './EmailAlreadyInUseError';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\index.ts ===
 
 
 export * from './UserLoggedInEvent';
@@ -298,7 +499,8 @@ export * from './UserRegisteredEvent';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\UserLoggedInEvent.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\UserLoggedInEvent.ts ===
 
 export class UserLoggedInEvent {
     constructor(public readonly userId: string, public readonly timestamp: Date) {}
@@ -306,7 +508,8 @@ export class UserLoggedInEvent {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\UserRegisteredEvent.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\events\UserRegisteredEvent.ts ===
 
 export class UserRegisteredEvent {
     constructor(
@@ -318,14 +521,16 @@ export class UserRegisteredEvent {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\index.ts ===
 
 // src/shared/validation/index.ts
 export { LoginQueryHandler } from './LoginQueryHandler';
 export { RegisterCommandHandler,RegisterCommandHandlerToken } from './RegisterCommandHandler';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\LoginQueryHandler.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\LoginQueryHandler.ts ===
 
 
 export class LoginQueryHandler {
@@ -334,7 +539,8 @@ export class LoginQueryHandler {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\RegisterCommandHandler.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\handlers\RegisterCommandHandler.ts ===
 
 import { injectable, inject } from 'inversify';
 import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-user';
@@ -372,14 +578,16 @@ export class RegisterCommandHandler {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\index.ts ===
 
 // src/shared/validation/index.ts
 export { RegisterResultToRegisterResponseMapper } from './RegisterResultToRegisterResponseMapper';
 export { RegisterRequestToRegisterCommandMapper } from './RegisterRequestToRegisterCommandMapper';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\RegisterRequestToRegisterCommandMapper.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\RegisterRequestToRegisterCommandMapper.ts ===
 
 import { RegisterRequest } from '@kikerepo/contracts-user';
 import { RegisterCommand } from '../commands';
@@ -396,7 +604,8 @@ export class RegisterRequestToRegisterCommandMapper {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\RegisterResultToRegisterResponseMapper.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\mappers\RegisterResultToRegisterResponseMapper.ts ===
 
 // src/application/user/mappers/UserRegisterResultToResponseMapper.ts
 import { RegisterResult as RegisterResult } from '../results/RegisterResult';  // Assuming this is the result class
@@ -414,12 +623,14 @@ export class RegisterResultToRegisterResponseMapper {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\queries\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\queries\index.ts ===
 
 export * from './LoginQuery';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\queries\LoginQuery.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\queries\LoginQuery.ts ===
 
 // src/application/queries/LoginQuery.ts
 
@@ -449,14 +660,16 @@ export class LoginQuery {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\index.ts ===
 
 export * from './LoginResult';
 export * from './RegisterResult';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\LoginResult.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\LoginResult.ts ===
 
 export class LoginResult {
     constructor(
@@ -467,7 +680,8 @@ export class LoginResult {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\RegisterResult.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\results\RegisterResult.ts ===
 
 import { UserId,Email } from "@kikerepo/domain-user";
 
@@ -483,7 +697,8 @@ export class RegisterResult {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\index.ts ===
 
 // src/shared/validation/index.ts
 export { IsStrongPassword } from './IsStrongPassword';
@@ -491,7 +706,8 @@ export { IsPhoneNumberCustom as IsPhoneNumber } from './IsPhoneNumber';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\IsPhoneNumber.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\IsPhoneNumber.ts ===
 
 // src/shared/validation/decorators/IsPhoneNumber.ts
 import {
@@ -544,7 +760,8 @@ export function IsPhoneNumberCustom(validationOptions?: ValidationOptions) {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\IsStrongPassword.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\user\src\validators\IsStrongPassword.ts ===
 
 // src/shared/validation/decorators/IsStrongPassword.ts
 import {
@@ -597,7 +814,8 @@ export function IsStrongPassword(
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\package.json ===
 
 {
   "name": "@kikerepo/application-common",
@@ -606,8 +824,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\p
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -620,7 +837,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\p
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -640,13 +858,15 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\t
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\index.ts ===
 
 export * from './middleware';
 export * from './behaviours';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\Result.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\Result.ts ===
 
 import { Either, left, right } from 'fp-ts/Either';
 
@@ -669,7 +889,8 @@ export const success = <E = never, T = any>(value: T): Result<E, T> => right(val
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\AuthorizationBehaviour.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\AuthorizationBehaviour.ts ===
 
  /* export const AuthorizationBehaviour = (
   req: Request,
@@ -701,12 +922,14 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\s
 */
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\index.ts ===
 
 export { ValidationBehaviour } from './ValidationBehaviour';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\ValidationBehaviour.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\ValidationBehaviour.ts ===
 
 // src/application/common/services/ValidationService.ts
 import { validate } from 'class-validator'; // validate function from class-validator
@@ -740,7 +963,8 @@ export class ValidationBehaviour {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ErrorHandlerMiddleware.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ErrorHandlerMiddleware.ts ===
 
 import { BaseError, InternalError, ValidationError } from '@kikerepo/contracts-common';
 import { Request, Response, NextFunction } from 'express';
@@ -816,14 +1040,16 @@ export const ErrorHandlerMiddleware = (
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\index.ts ===
 
 export {ErrorHandlerMiddleware} from './ErrorHandlerMiddleware';
 export {ValidationMiddleware} from './ValidationMiddleware';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ValidationMiddleware.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ValidationMiddleware.ts ===
 
 // packages/infrastructure/_common/src/middleware/ValidationMiddleware.ts
 import { plainToInstance } from 'class-transformer';
@@ -875,7 +1101,8 @@ export function ValidationMiddleware(
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\package.json ===
 
 {
   "name": "@kikerepo/contracts-user",
@@ -884,8 +1111,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\packag
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -896,7 +1122,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\packag
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -916,32 +1143,37 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\tsconf
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\index.ts ===
 
 export * from './responses';
 export * from './requests';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\ChangePasswordRequest.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\ChangePasswordRequest.ts ===
 
 
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\ForgotPasswordRequest.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\ForgotPasswordRequest.ts ===
 
 
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\index.ts ===
 
 export * from './LoginRequest';
 export * from './RegisterRequest';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\LoginRequest.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\LoginRequest.ts ===
 
 
 // packages/contracts/user/src/requests/UserLoginRequest.ts
@@ -952,7 +1184,8 @@ export interface LoginRequest {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\RegisterRequest.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\requests\RegisterRequest.ts ===
 
 export class RegisterRequest {
   email: string;
@@ -968,33 +1201,38 @@ export class RegisterRequest {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\ChangePasswordResponse.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\ChangePasswordResponse.ts ===
 
 
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\ForgotPaswordResponse.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\ForgotPaswordResponse.ts ===
 
 
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\index.ts ===
 
 export * from './LoginResponse';
 export * from './RegisterResponse';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\LoginResponse.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\LoginResponse.ts ===
 
   export interface LoginResponse {
     token: string;
   }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\RegisterResponse.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\user\src\responses\RegisterResponse.ts ===
 
 // src/application/user/commands/UserRegisterResponse.ts
 export class RegisterResponse {
@@ -1009,7 +1247,8 @@ export class RegisterResponse {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\package.json ===
 
 {
   "name": "@kikerepo/contracts-common",
@@ -1018,8 +1257,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\pac
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   }
@@ -1027,7 +1265,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\pac
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -1047,12 +1286,14 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\tsc
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\index.ts ===
 
 export * from './errors';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\BaseError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\BaseError.ts ===
 
 export abstract class BaseError extends Error {
   public readonly statusCode: number;
@@ -1095,7 +1336,8 @@ export abstract class BaseError extends Error {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ConflictError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ConflictError.ts ===
 
 import { BaseError } from './BaseError';
 
@@ -1107,7 +1349,8 @@ export class ConflictError extends BaseError {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\index.ts ===
 
 export * from './BaseError';
 export * from './InternalError';
@@ -1116,7 +1359,8 @@ export * from './NotFoundError';
 export * from './ConflictError';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\InternalError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\InternalError.ts ===
 
 import { BaseError } from './BaseError';
 
@@ -1128,7 +1372,8 @@ export class InternalError extends BaseError {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\NotFoundError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\NotFoundError.ts ===
 
 import { BaseError } from './BaseError';
 
@@ -1140,7 +1385,8 @@ export class NotFoundError extends BaseError {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ValidationError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ValidationError.ts ===
 
 import { BaseError } from './BaseError';
 
@@ -1170,7 +1416,8 @@ export class ValidationError extends BaseError {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\package.json ===
 
 {
   "name": "@kikerepo/domain-user",
@@ -1179,8 +1426,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\package.j
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -1191,7 +1437,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\package.j
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -1211,7 +1458,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\tsconfig.
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\index.ts ===
 
 export * from './value-objects';
 export * from './events';
@@ -1222,12 +1470,14 @@ export * from './entities';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\entities\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\entities\index.ts ===
 
 export { User } from './User'
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\entities\User.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\entities\User.ts ===
 
 // domain-user/src/entities/User.ts
 import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
@@ -1338,7 +1588,8 @@ export class User extends AggregateRoot<UserId> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\events\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\events\index.ts ===
 
 // shared/src/domain/valueObjects/index.ts
 export { UserCreatedEvent } from './UserCreatedEvent';
@@ -1347,7 +1598,8 @@ export { UserCreatedEvent } from './UserCreatedEvent';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\events\UserCreatedEvent.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\events\UserCreatedEvent.ts ===
 
 import { DomainEvent } from '@kikerepo/domain-common';
 
@@ -1367,7 +1619,8 @@ export class UserCreatedEvent extends DomainEvent {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\IHashingService.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\IHashingService.ts ===
 
 import { InputPassword } from "../value-objects";
 import { HashedPassword } from "../value-objects/HashedPassword";
@@ -1379,14 +1632,16 @@ export interface IHashingService {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\index.ts ===
 
 
 export { IUserRepository, IUserRepositoryToken } from './IUserRepository';
 export { IHashingService, IHashingServiceToken } from './IHashingService';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\IUserRepository.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\interfaces\IUserRepository.ts ===
 
 import { User } from '../entities/User';
 
@@ -1402,7 +1657,8 @@ export interface IUserRepository {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\Email.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\Email.ts ===
 
 import { ValueObject } from '@kikerepo/domain-common';
 
@@ -1420,7 +1676,8 @@ export class Email extends ValueObject<string> {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\HashedPassword.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\HashedPassword.ts ===
 
 import { ValueObject } from '@kikerepo/domain-common';
 
@@ -1434,7 +1691,8 @@ export class HashedPassword extends ValueObject<string> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\index.ts ===
 
 export { Email } from './Email';
 export { HashedPassword } from './HashedPassword';
@@ -1446,7 +1704,8 @@ export { InputPassword } from './InputPassword';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\InputPassword.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\InputPassword.ts ===
 
 import { ValueObject } from '@kikerepo/domain-common';
 
@@ -1459,7 +1718,8 @@ export class InputPassword extends ValueObject<string> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\Phone.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\Phone.ts ===
 
 import { ValueObject } from '@kikerepo/domain-common';
 
@@ -1479,7 +1739,8 @@ export class Phone extends ValueObject<string> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\UserId.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\user\src\value-objects\UserId.ts ===
 
 
 import { ValueObject } from '@kikerepo/domain-common';
@@ -1497,7 +1758,8 @@ export class UserId extends ValueObject<string> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\package.json ===
 
 {
   "name": "@kikerepo/domain-common",
@@ -1506,8 +1768,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\packag
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -1518,7 +1779,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\packag
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -1538,7 +1800,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\tsconf
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRoot.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRoot.ts ===
 
 // packages/shared/src/domain/aggregateRoots/AggregateRoot.ts
 
@@ -1575,7 +1838,8 @@ export abstract class AggregateRoot<TId extends ValueObject<string>> extends Ent
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRootId.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRootId.ts ===
 
 // packages/shared/src/domain/valueObjects/AggregateRootId.ts
 import { ValueObject } from './ValueObject';
@@ -1593,7 +1857,8 @@ export class AggregateRootId extends ValueObject<string> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainError.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainError.ts ===
 
 export class DomainError extends Error {
   constructor(message: string) {
@@ -1604,7 +1869,8 @@ export class DomainError extends Error {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainEvent.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainEvent.ts ===
 
 export abstract class DomainEvent {
   public readonly occurredAt: Date;
@@ -1625,7 +1891,8 @@ export abstract class DomainEvent {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\Entity.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\Entity.ts ===
 
 // packages/shared/src/domain/entities/Entity.ts
 
@@ -1686,7 +1953,8 @@ export abstract class Entity<TId extends ValueObject<string>> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\index.ts ===
 
 export * from './ValueObject';
 export * from './Entity';
@@ -1697,7 +1965,8 @@ export * from './value-objects';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\ValueObject.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\ValueObject.ts ===
 
 export abstract class ValueObject<T> {
   private readonly _value: T;
@@ -1740,7 +2009,8 @@ export abstract class ValueObject<T> {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IEntityId.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IEntityId.ts ===
 
 export interface IEntityId {
   /**
@@ -1758,7 +2028,8 @@ export interface IEntityId {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IErrorResponse.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IErrorResponse.ts ===
 
 // packages/shared/src/errors/interfaces/IErrorResponse.ts
 
@@ -1770,7 +2041,8 @@ export interface IErrorResponse {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\index.ts ===
 
 // shared/src/domain/interfaces/index.ts
 export * from './IEntityId';
@@ -1779,7 +2051,8 @@ export * from './IErrorResponse';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\CreationDate.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\CreationDate.ts ===
 
 export class CreationDate {
     private readonly _value: Date;
@@ -1815,7 +2088,8 @@ export class CreationDate {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\DeletionDate.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\DeletionDate.ts ===
 
 export class DeletionDate {
     private readonly _value: Date;
@@ -1851,14 +2125,16 @@ export class DeletionDate {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\index.ts ===
 
 export * from './CreationDate';
 export * from './DeletionDate';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\package.json ===
 
 {
   "name": "@kikerepo/infrastructure-user",
@@ -1867,8 +2143,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\p
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -1885,7 +2160,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\p
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -1905,19 +2181,22 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\t
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\index.ts ===
 
 export * from './services';
 export * from './persistance'
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\index.ts ===
 
 export * from './UserDatabase';
 export * from './UserRepository';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\UserDatabase.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\UserDatabase.ts ===
 
 // services/service-authentication/src/bootstrap/prismaClient.ts
 
@@ -1948,7 +2227,8 @@ export { prisma };
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\UserRepository.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\persistance\UserRepository.ts ===
 
 import { IUserRepository} from '@kikerepo/domain-user';
 import { User } from '@kikerepo/domain-user';
@@ -2012,7 +2292,8 @@ export class UserRepository implements IUserRepository {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\Argon2HashingService.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\Argon2HashingService.ts ===
 
 // infrastructure/services/Argon2HashingService.ts
 import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/domain-user';
@@ -2032,12 +2313,14 @@ export class Argon2HashingService implements IHashingService {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\user\src\services\index.ts ===
 
 export {Argon2HashingService} from './Argon2HashingService';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\package.json ===
 
 {
   "name": "@kikerepo/infrastructure-common",
@@ -2046,8 +2329,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -2060,7 +2342,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -2080,14 +2363,16 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_commo
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\index.ts ===
 
 export * from './middleware';
 export * from './authentication';
 export * from './logging';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\authenticationToken.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\authenticationToken.ts ===
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
 
@@ -2113,17 +2398,20 @@ export const verifyToken = (token: string): JwtPayload => {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\authentication\index.ts ===
 
 export { generateToken, verifyToken } from './authenticationToken';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\index.ts ===
 
 export {logger} from './logger';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\logger.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\logger.ts ===
 
 // packages/infrastructure/_common/src/logging/logger.ts
 import { createLogger, format, transports } from 'winston';
@@ -2233,7 +2521,8 @@ export const logger = createLogger({
 */
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\AuthenticationMiddleware.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\AuthenticationMiddleware.ts ===
 
 import { Request, Response, NextFunction } from 'express';
 
@@ -2271,14 +2560,16 @@ export function AuthenticationMiddleware(
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\index.ts ===
 
 export { RequestLoggerMiddleware } from './RequestLoggerMiddleware';
 export { AuthenticationMiddleware } from './AuthenticationMiddleware';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\RequestLoggerMiddleware.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\RequestLoggerMiddleware.ts ===
 
 import { Request, Response, NextFunction } from 'express';
 import { logger } from '../logging/logger';
@@ -2294,13 +2585,15 @@ export const RequestLoggerMiddleware = (
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\index.ts ===
 
 export * from './src/requireEnv';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\package.json ===
 
 {
   "name": "@kikerepo/utils-env",
@@ -2309,8 +2602,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\package.jso
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -2321,7 +2613,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\package.jso
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -2338,13 +2631,15 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\tsconfig.js
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\src\index.ts ===
 
 // shared/src/domain/index.ts
 export * from './requireEnv';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\src\requireEnv.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\src\requireEnv.ts ===
 
 export function requireEnv(varName: string): string {
   const value = process.env[varName];
@@ -2356,7 +2651,8 @@ export function requireEnv(varName: string): string {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\__tests__\basic.spec.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\env\__tests__\basic.spec.ts ===
 
 import { generateUUIDv6, isValidUUIDv6 } from "../src/uuid6";
 
@@ -2466,7 +2762,8 @@ describe('generateUUIDv6', () => {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\jest.config.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\jest.config.ts ===
 
 import type { Config } from 'jest';
 
@@ -2485,35 +2782,34 @@ export default config;
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\package.json ===
 
 {
-  "name": "@kikerepo/utils-redis-client",
+  "name": "@kikerepo/utils-kafka-client",
   "version": "1.0.0",
-  "description": "Enhanced Redis client with retry, fallback, and circuit breaker capabilities",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
-    "test": "jest --passWithNoTests",
-    "lint": "eslint 'src/**/*.ts'",
-    "start": "node dist/index.js"
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
   },
   "dependencies": {
-    "opossum": "^8.4.0",
-    "redis": "^4.6.7"
+    "kafkajs": "^2.2.4"
   },
   "devDependencies": {
-    "@types/opossum": "^8",
-    "jest": "^29.7.0"
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "typescript": "^5.7.3"
   }
 }
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -2530,13 +2826,172 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\ts
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\src\index.ts ===
+
+// packages/utils/kafka-client/src/index.ts
+export * from './KafkaClient';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\src\KafkaClient.ts ===
+
+// packages/utils/kafka-client/src/KafkaClient.ts
+import { Kafka, Producer, Consumer, logLevel } from 'kafkajs';
+
+export interface KafkaClientConfig {
+  brokers: string[];
+  clientId: string;
+  consumerGroupId?: string;
+}
+
+export class KafkaClient {
+  private kafka: Kafka;
+  public producer: Producer;
+  public consumer: Consumer;
+
+  constructor(config: KafkaClientConfig) {
+    this.kafka = new Kafka({
+      clientId: config.clientId,
+      brokers: config.brokers,
+      logLevel: logLevel.INFO
+    });
+
+    this.producer = this.kafka.producer();
+    this.consumer = this.kafka.consumer({
+      groupId: config.consumerGroupId || `${config.clientId}-group`
+    });
+  }
+
+  async connect(): Promise<void> {
+    await Promise.all([
+      this.producer.connect(),
+      this.consumer.connect()
+    ]);
+  }
+
+  async disconnect(): Promise<void> {
+    await Promise.all([
+      this.producer.disconnect(),
+      this.consumer.disconnect()
+    ]);
+  }
+
+  /**
+   * Publishes messages to the given topic.
+   * @param topic The topic to send messages to.
+   * @param messages An array of messages.
+   */
+  async publish(topic: string, messages: { key?: string; value: string }[]): Promise<void> {
+    await this.producer.send({
+      topic,
+      messages
+    });
+  }
+
+  /**
+   * Subscribes to a topic and runs the provided message handler.
+   * @param topic The topic to subscribe to.
+   * @param handler An async function that will process each message.
+   */
+  async subscribe(topic: string, handler: (message: { topic: string; partition: number; key: string | null; value: string | null }) => Promise<void>): Promise<void> {
+    await this.consumer.subscribe({ topic, fromBeginning: true });
+    await this.consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        await handler({
+          topic,
+          partition,
+          key: message.key?.toString() || null,
+          value: message.value?.toString() || null
+        });
+      }
+    });
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\__tests__\kafkaclient.spec.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\jest.config.ts ===
+
+import type { Config } from 'jest';
+
+const config: Config = {
+  preset: 'ts-jest',
+  testEnvironment: 'node',
+  testMatch: ['**/?(*.)+(spec|test).[tj]s?(x)'], // Match .spec.ts or .test.ts files
+  moduleFileExtensions: ['ts', 'js'],
+  modulePathIgnorePatterns: ['<rootDir>/dist/', '.*/dist/'], // Ignore all dist folders
+  transform: {
+    '^.+\\.ts$': 'ts-jest', // Use ts-jest to transform TypeScript files
+  },
+};
+
+export default config;
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\package.json ===
+
+{
+  "name": "@kikerepo/utils-redis-client",
+  "version": "1.0.0",
+  "description": "Enhanced Redis client with retry, fallback, and circuit breaker capabilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint 'src/**/*.ts'",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "opossum": "^8.4.0",
+    "redis": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/opossum": "^8",
+    "jest": "^29.7.0"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\index.ts ===
 
 export { RedisClient } from './RedisClient';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\RedisClient.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\RedisClient.ts ===
 
 import { createClient, RedisClientType } from '@redis/client';
 
@@ -2604,7 +3059,8 @@ export class RedisClient {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\__tests__\redisclient.spec.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\__tests__\redisclient.spec.ts ===
 
 import {RedisClient} from '../src/RedisClient';
 
@@ -2638,13 +3094,15 @@ describe('RedisClient', () => {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\index.ts ===
 
 export * from './src/uuid6';
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\package.json ===
 
 {
   "name": "@kikerepo/utils-uuid6",
@@ -2653,8 +3111,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\package.j
   "types": "./dist/index.d.ts",
   "scripts": {
     "build": "tsc -b",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
   },
@@ -2665,7 +3122,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\package.j
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -2682,13 +3140,15 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\tsconfig.
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\src\index.ts ===
 
 // shared/src/domain/index.ts
 export * from './uuid6';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\src\uuid6.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\src\uuid6.ts ===
 
 import { randomBytes } from 'crypto';
 
@@ -2753,7 +3213,8 @@ export function isValidUUIDv6(uuid: string): boolean {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\__tests__\basic.spec.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\uuid6\__tests__\basic.spec.ts ===
 
 import { generateUUIDv6, isValidUUIDv6 } from "../src/uuid6";
 
@@ -2863,7 +3324,87 @@ describe('generateUUIDv6', () => {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\jest.config.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\.env ===
+
+#express settings
+APP_HOST=*****
+APP_PORT=*****
+#redis settings
+REDIS_HOST=*****
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+#database settings
+#use ipv4 if possible
+#DATABASE_URL="postgresql://postgres:K9z1OIGr6FERGO9i@db.xxwztdkwreeeqibqxbym.supabase.co:5432/postgres" 
+#alternative connection string for ipv6
+DATABASE_URL=*****
+#jwt settings
+JWT_SECRET=*****
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\.env.development ===
+
+#express settings
+APP_HOST=*****
+APP_PORT=*****
+#redis settings
+REDIS_HOST=*****
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+#database settings
+#use ipv4 if possible
+#DATABASE_URL="postgresql://postgres:K9z1OIGr6FERGO9i@db.xxwztdkwreeeqibqxbym.supabase.co:5432/postgres" 
+#alternative connection string for ipv6
+DATABASE_URL=*****
+#jwt settings
+JWT_SECRET=*****
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\Dockerfile.development ===
+
+# Usa una imagen base de Node (versi√≥n LTS recomendada)
+FROM node:18-alpine
+
+# Directorio de trabajo en el contenedor
+WORKDIR /app
+
+# --- CAPA DE DEPENDENCIAS ---
+# Copia archivos de configuraci√≥n del monorepo necesarios para instalar dependencias
+# Estos archivos se encuentran en la ra√≠z del monorepo
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+# Si usas Yarn v4 con la carpeta .yarn, c√≥piala tambi√©n:
+COPY .yarn .yarn
+
+# Instala todas las dependencias (usando workspaces)
+RUN yarn install
+
+# --- CAPA DE C√ìDIGO ---
+# Copia todo el c√≥digo del monorepo al contenedor
+COPY . .
+
+# Establece el directorio de trabajo al servicio de autenticaci√≥n
+WORKDIR /app/services/service-authentication
+
+# Expone el puerto en el que el servicio escucha (aj√∫stalo seg√∫n corresponda)
+EXPOSE 5001
+
+# Define la variable de entorno para desarrollo
+ENV NODE_ENV=development
+
+# Ejecuta el comando de desarrollo definido en el package.json del servicio.
+# Por ejemplo, se asume que en services/service-authentication/package.json existe:
+# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
+CMD ["yarn", "dev"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\jest.config.ts ===
 
 // services/service-authentication/jest.config.mjs
 
@@ -2887,21 +3428,23 @@ export default {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\package.json ===
 
 {
   "name": "@kikerepo/service-authentication",
   "version": "1.0.0",
   "main": "dist/index.js",
   "scripts": {
-    "dev": "ts-node-dev --respawn -- src/index.ts --transpileOnly",
+    "prisma:generate": "prisma generate",
+    "dev": "yarn prisma:generate && ts-node-dev --respawn -- src/index.ts --transpileOnly",
     "build": "tsc -p tsconfig.json",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "lint": "eslint 'src/**/*.ts'"
   },
   "devDependencies": {
+    "@types/express": "^5.0.0",
     "@types/jsonwebtoken": "^9.0.7",
     "eslint": "^8.0.0",
     "prisma": "^6.2.1",
@@ -2917,13 +3460,15 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authenticatio
     "@kikerepo/infrastructure-user": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
+    "express": "^4.21.2",
     "tsyringe": "^4.8.0"
   }
 }
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\tsconfig.json ===
 
 {
   "extends": "../../tsconfig.json",
@@ -2943,7 +3488,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authenticatio
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\index.ts ===
 
 // services/service-authentication/src/index.ts
 import 'reflect-metadata';
@@ -2977,7 +3523,8 @@ startServer().catch((err) => {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\container.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\container.ts ===
 
 // services/service-authentication/src/bootstrap/container.ts
 import { Container } from 'inversify';
@@ -3024,17 +3571,20 @@ export { container };
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\index.ts ===
 
 export * from './container';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\controllers\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\controllers\index.ts ===
 
 export * from './UserController';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\controllers\UserController.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\controllers\UserController.ts ===
 
 // services/service-authentication/src/controllers/UserController.ts
 
@@ -3087,12 +3637,14 @@ export class UserController {
 }
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\index.ts ===
 
 export { userRoutes } from './UserRoutes';
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\UserRoutes.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\UserRoutes.ts ===
 
 // services/service-authentication/src/routes/UserRoutes.ts
 
@@ -3135,7 +3687,8 @@ export { userRoutes };
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\__tests__\basic.spec.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\__tests__\basic.spec.ts ===
 
 describe('Mailing Service test', () => {
   it('should do a sample test in service-mailing', () => {
@@ -3145,7 +3698,146 @@ describe('Mailing Service test', () => {
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\.env.development ===
+
+# Kafka settings for development
+# The advertised listeners are set so that other containers (on the same network) can resolve the Kafka broker
+KAFKA_BROKER_ID=*****
+KAFKA_ZOOKEEPER_CONNECT=*****
+KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=*****
+KAFKA_ADVERTISED_LISTENERS=*****
+KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=*****
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\docker-compose.yml ===
+
+version: '3.8'
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID:-1}
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT:-zookeeper:2181}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:-PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:-PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    networks:
+      - kafka-net
+
+networks:
+  kafka-net:
+    external: true
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\Dockerfile.development ===
+
+# Use Node LTS image
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy root-level files (so Yarn workspaces work correctly)
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+
+# (Optional) If you have a .yarn folder, copy it too
+COPY .yarn .yarn
+
+# Install dependencies from the root (Yarn will hoist workspaces if needed)
+RUN yarn install --immutable
+
+# Copy all files
+COPY . .
+
+# Change directory to the service folder
+WORKDIR /app/services/service-kafka
+
+# Expose the port
+EXPOSE 3100
+
+# Set environment (development)
+ENV NODE_ENV=development
+
+# Start the service
+CMD ["yarn", "dev"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\package.json ===
+
+{
+  "name": "service-kafka",
+  "version": "1.0.0",
+  "description": "Kafka server for the monorepo",
+  "scripts": {
+    "dev": "docker-compose up -d",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\.env.development ===
+
+APP_HOST=*****
+APP_PORT=*****
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\Dockerfile.development ===
+
+# Usa una imagen base de Node (versi√≥n LTS recomendada)
+FROM node:18-alpine
+
+# Directorio de trabajo en el contenedor
+WORKDIR /app
+
+# --- CAPA DE DEPENDENCIAS ---
+# Copia archivos de configuraci√≥n del monorepo necesarios para instalar dependencias
+# Estos archivos se encuentran en la ra√≠z del monorepo
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+# Si usas Yarn v4 con la carpeta .yarn, c√≥piala tambi√©n:
+COPY .yarn .yarn
+
+# Instala todas las dependencias (usando workspaces)
+RUN yarn install
+
+# --- CAPA DE C√ìDIGO ---
+# Copia todo el c√≥digo del monorepo al contenedor
+COPY . .
+
+# Establece el directorio de trabajo al servicio de autenticaci√≥n
+WORKDIR /app/services/service-mailing
+
+# Expone el puerto en el que el servicio escucha (aj√∫stalo seg√∫n corresponda)
+EXPOSE 5002
+
+# Define la variable de entorno para desarrollo
+ENV NODE_ENV=development
+
+# Ejecuta el comando de desarrollo definido en el package.json del servicio.
+# Por ejemplo, se asume que en services/service-authentication/package.json existe:
+# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
+CMD ["yarn", "dev"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\package.json ===
 
 {
   "name": "@kikerepo/service-mailing",
@@ -3154,8 +3846,7 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\packa
   "scripts": {
     "dev": "ts-node-dev --respawn -- src/index.ts --transpileOnly",
     "build": "tsc -p tsconfig.json",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "lint": "eslint 'src/**/*.ts'"
   },
@@ -3168,7 +3859,8 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\packa
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\tsconfig.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\tsconfig.json ===
 
 {
   "extends": "../../tsconfig.json",
@@ -3182,12 +3874,14 @@ C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\tscon
 
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\src\index.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\src\index.ts ===
 
 console.log('Hello from service-mailing!');
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\__tests__\basic.spec.ts
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-mailing\__tests__\basic.spec.ts ===
 
 describe('Simple test in Authentication Service', () => {
     it('should pass a basic truthy test', () => {
@@ -3197,19 +3891,508 @@ describe('Simple test in Authentication Service', () => {
   
 
 
-C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\package.json
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\.env.development ===
+
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\docker-compose.yml ===
+
+version: '3.8'
+services:
+  redis:
+    image: redis:latest
+    command: ["redis-server", "--requirepass", $(REDIS_PASSWORD)]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis-data:/data
+    networks:
+      - redis-network
+
+volumes:
+  redis-data:
+
+networks:
+  redis-network:
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\Dockerfile.development ===
+
+FROM redis:7.0-alpine
+
+# Optional: Add custom Redis configuration
+# COPY redis.conf /usr/local/etc/redis/redis.conf
+
+# CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\package.json ===
 
 {
   "name": "redis-server",
   "version": "1.0.0",
   "description": "Redis server for the monorepo",
   "scripts": {
+    "dev": "docker-compose up -d",
     "start": "docker-compose up -d",
     "stop": "docker-compose down",
-    "logs": "docker-compose logs -f",
-    "clean": "docker-compose down -v"
+    "logs": "docker-compose logs -f"
   }
 }
 
 
 
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-zoekeeper\.env.development ===
+
+# Port on which the Kafka broker listens inside the container
+KAFKA_BROKER_PORT=*****
+
+# For simplicity, you can define hostnames as they will be used inside docker-compose
+KAFKA_BROKER_HOST=*****
+
+# Zookeeper settings (if needed)
+ZOOKEEPER_CLIENT_PORT=*****
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-zoekeeper\docker-compose.yml ===
+
+version: '3.8'
+services:
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    environment:
+      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID:-1}
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT:-zookeeper:2181}
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:-PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:-PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}
+    ports:
+      - "9092:9092"
+      - "29092:29092"
+    depends_on:
+      - zookeeper
+    networks:
+      - kafka-net
+
+networks:
+  kafka-net:
+    driver: bridge
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-zoekeeper\Dockerfile.development ===
+
+# Use Node LTS image
+FROM node:18-alpine
+
+# Set the working directory
+WORKDIR /app
+
+# Copy root-level files (so Yarn workspaces work correctly)
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+
+# (Optional) If you have a .yarn folder, copy it too
+COPY .yarn .yarn
+
+# Install dependencies from the root (Yarn will hoist workspaces if needed)
+RUN yarn install --immutable
+
+# Copy all files
+COPY . .
+
+# Change directory to the service folder
+WORKDIR /app/services/service-kafka
+
+# Expose the port
+EXPOSE 3100
+
+# Set environment (development)
+ENV NODE_ENV=development
+
+# Start the service
+CMD ["yarn", "dev"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-zoekeeper\package.json ===
+
+{
+  "name": "service-zoekeeper",
+  "version": "1.0.0",
+  "description": "zoekeeper server for the monorepo",
+  "scripts": {
+    "dev": "docker-compose up -d",
+    "start": "docker-compose up -d",
+    "stop": "docker-compose down",
+    "logs": "docker-compose logs -f"
+  }
+}
+
+
+
+
+
+
+=== DIRECTORY TREE ===
+Listado de rutas de carpetas
+El n˙mero de serie del volumen es 000000FB EA56:DBC0
+C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
+¶   .gitignore
+¶   .yarnrc.yml
+¶   combined.txt
+¶   Dockerfile.development
+¶   jest.config.ts
+¶   MergeAll 2.ps1
+¶   MergeAll.ps1
+¶   package.json
+¶   tsconfig.json
+¶   turbo.json
+¶   yarn.lock
+¶   
++---.vscode
+¶       launch.json
+¶       tasks.json
+¶       
++---.yarn
+¶   ¶   install-state.gz
+¶   ¶   
+¶   +---releases
+¶           yarn-berry.js
+¶           
++---docker
+¶   +---development
+¶   ¶       .env
+¶   ¶       docker-compose.yml
+¶   ¶       
+¶   +---production
+¶           .env
+¶           docker-compose.yml
+¶           
++---packages
+¶   +---application
+¶   ¶   +---user
+¶   ¶   ¶   ¶   package.json
+¶   ¶   ¶   ¶   tsconfig.json
+¶   ¶   ¶   ¶   
+¶   ¶   ¶   +---src
+¶   ¶   ¶       ¶   index.ts
+¶   ¶   ¶       ¶   
+¶   ¶   ¶       +---commands
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       RegisterCommand.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---errors
+¶   ¶   ¶       ¶       EmailAlreadyInUseError.ts
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---events
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       UserLoggedInEvent.ts
+¶   ¶   ¶       ¶       UserRegisteredEvent.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---handlers
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       LoginQueryHandler.ts
+¶   ¶   ¶       ¶       RegisterCommandHandler.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---mappers
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       RegisterRequestToRegisterCommandMapper.ts
+¶   ¶   ¶       ¶       RegisterResultToRegisterResponseMapper.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---queries
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       LoginQuery.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---results
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       LoginResult.ts
+¶   ¶   ¶       ¶       RegisterResult.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---validators
+¶   ¶   ¶               index.ts
+¶   ¶   ¶               IsPhoneNumber.ts
+¶   ¶   ¶               IsStrongPassword.ts
+¶   ¶   ¶               
+¶   ¶   +---_common
+¶   ¶       ¶   package.json
+¶   ¶       ¶   tsconfig.json
+¶   ¶       ¶   
+¶   ¶       +---src
+¶   ¶           ¶   index.ts
+¶   ¶           ¶   Result.ts
+¶   ¶           ¶   
+¶   ¶           +---behaviours
+¶   ¶           ¶       AuthorizationBehaviour.ts
+¶   ¶           ¶       index.ts
+¶   ¶           ¶       ValidationBehaviour.ts
+¶   ¶           ¶       
+¶   ¶           +---enums
+¶   ¶           +---middleware
+¶   ¶                   ErrorHandlerMiddleware.ts
+¶   ¶                   index.ts
+¶   ¶                   ValidationMiddleware.ts
+¶   ¶                   
+¶   +---contracts
+¶   ¶   +---user
+¶   ¶   ¶   ¶   package.json
+¶   ¶   ¶   ¶   tsconfig.json
+¶   ¶   ¶   ¶   
+¶   ¶   ¶   +---src
+¶   ¶   ¶       ¶   index.ts
+¶   ¶   ¶       ¶   
+¶   ¶   ¶       +---requests
+¶   ¶   ¶       ¶       ChangePasswordRequest.ts
+¶   ¶   ¶       ¶       ForgotPasswordRequest.ts
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       LoginRequest.ts
+¶   ¶   ¶       ¶       RegisterRequest.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---responses
+¶   ¶   ¶               ChangePasswordResponse.ts
+¶   ¶   ¶               ForgotPaswordResponse.ts
+¶   ¶   ¶               index.ts
+¶   ¶   ¶               LoginResponse.ts
+¶   ¶   ¶               RegisterResponse.ts
+¶   ¶   ¶               
+¶   ¶   +---_common
+¶   ¶       ¶   package.json
+¶   ¶       ¶   tsconfig.json
+¶   ¶       ¶   
+¶   ¶       +---src
+¶   ¶           ¶   index.ts
+¶   ¶           ¶   
+¶   ¶           +---errors
+¶   ¶           ¶       BaseError.ts
+¶   ¶           ¶       ConflictError.ts
+¶   ¶           ¶       index.ts
+¶   ¶           ¶       InternalError.ts
+¶   ¶           ¶       NotFoundError.ts
+¶   ¶           ¶       ValidationError.ts
+¶   ¶           ¶       
+¶   ¶           +---responses
+¶   +---domain
+¶   ¶   +---user
+¶   ¶   ¶   ¶   package.json
+¶   ¶   ¶   ¶   tsconfig.json
+¶   ¶   ¶   ¶   
+¶   ¶   ¶   +---src
+¶   ¶   ¶       ¶   index.ts
+¶   ¶   ¶       ¶   
+¶   ¶   ¶       +---entities
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       User.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---events
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       UserCreatedEvent.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---interfaces
+¶   ¶   ¶       ¶       IHashingService.ts
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       IUserRepository.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---value-objects
+¶   ¶   ¶               Email.ts
+¶   ¶   ¶               HashedPassword.ts
+¶   ¶   ¶               index.ts
+¶   ¶   ¶               InputPassword.ts
+¶   ¶   ¶               Phone.ts
+¶   ¶   ¶               UserId.ts
+¶   ¶   ¶               
+¶   ¶   +---_common
+¶   ¶       ¶   package.json
+¶   ¶       ¶   tsconfig.json
+¶   ¶       ¶   
+¶   ¶       +---src
+¶   ¶           ¶   AggregateRoot.ts
+¶   ¶           ¶   AggregateRootId.ts
+¶   ¶           ¶   DomainError.ts
+¶   ¶           ¶   DomainEvent.ts
+¶   ¶           ¶   Entity.ts
+¶   ¶           ¶   index.ts
+¶   ¶           ¶   ValueObject.ts
+¶   ¶           ¶   
+¶   ¶           +---interfaces
+¶   ¶           ¶       IEntityId.ts
+¶   ¶           ¶       IErrorResponse.ts
+¶   ¶           ¶       index.ts
+¶   ¶           ¶       
+¶   ¶           +---value-objects
+¶   ¶                   CreationDate.ts
+¶   ¶                   DeletionDate.ts
+¶   ¶                   index.ts
+¶   ¶                   
+¶   +---infrastructure
+¶   ¶   +---user
+¶   ¶   ¶   ¶   package.json
+¶   ¶   ¶   ¶   tsconfig.json
+¶   ¶   ¶   ¶   
+¶   ¶   ¶   +---src
+¶   ¶   ¶       ¶   index.ts
+¶   ¶   ¶       ¶   
+¶   ¶   ¶       +---persistance
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       UserDatabase.ts
+¶   ¶   ¶       ¶       UserRepository.ts
+¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---services
+¶   ¶   ¶               Argon2HashingService.ts
+¶   ¶   ¶               index.ts
+¶   ¶   ¶               
+¶   ¶   +---_common
+¶   ¶       ¶   package.json
+¶   ¶       ¶   tsconfig.json
+¶   ¶       ¶   
+¶   ¶       +---src
+¶   ¶           ¶   index.ts
+¶   ¶           ¶   
+¶   ¶           +---authentication
+¶   ¶           ¶       authenticationToken.ts
+¶   ¶           ¶       index.ts
+¶   ¶           ¶       
+¶   ¶           +---logging
+¶   ¶           ¶       index.ts
+¶   ¶           ¶       logger.ts
+¶   ¶           ¶       
+¶   ¶           +---middleware
+¶   ¶                   AuthenticationMiddleware.ts
+¶   ¶                   index.ts
+¶   ¶                   RequestLoggerMiddleware.ts
+¶   ¶                   
+¶   +---utils
+¶       +---env
+¶       ¶   ¶   index.ts
+¶       ¶   ¶   package.json
+¶       ¶   ¶   tsconfig.json
+¶       ¶   ¶   
+¶       ¶   +---src
+¶       ¶   ¶       index.ts
+¶       ¶   ¶       requireEnv.ts
+¶       ¶   ¶       
+¶       ¶   +---__tests__
+¶       ¶           basic.spec.ts
+¶       ¶           
+¶       +---kafka-client
+¶       ¶   ¶   jest.config.ts
+¶       ¶   ¶   package.json
+¶       ¶   ¶   tsconfig.json
+¶       ¶   ¶   
+¶       ¶   +---src
+¶       ¶   ¶       index.ts
+¶       ¶   ¶       KafkaClient.ts
+¶       ¶   ¶       
+¶       ¶   +---__tests__
+¶       ¶           kafkaclient.spec.ts
+¶       ¶           
+¶       +---redis-client
+¶       ¶   ¶   jest.config.ts
+¶       ¶   ¶   package.json
+¶       ¶   ¶   tsconfig.json
+¶       ¶   ¶   
+¶       ¶   +---src
+¶       ¶   ¶       index.ts
+¶       ¶   ¶       RedisClient.ts
+¶       ¶   ¶       
+¶       ¶   +---__tests__
+¶       ¶           redisclient.spec.ts
+¶       ¶           
+¶       +---uuid6
+¶           ¶   index.ts
+¶           ¶   package.json
+¶           ¶   tsconfig.json
+¶           ¶   
+¶           +---src
+¶           ¶       index.ts
+¶           ¶       uuid6.ts
+¶           ¶       
+¶           +---__tests__
+¶                   basic.spec.ts
+¶                   
++---services
+    +---service-authentication
+    ¶   ¶   .env
+    ¶   ¶   .env.development
+    ¶   ¶   Dockerfile.development
+    ¶   ¶   jest.config.ts
+    ¶   ¶   package.json
+    ¶   ¶   tsconfig.json
+    ¶   ¶   
+    ¶   +---prisma
+    ¶   ¶   ¶   schema.prisma
+    ¶   ¶   ¶   
+    ¶   ¶   +---migrations
+    ¶   ¶       ¶   migration_lock.toml
+    ¶   ¶       ¶   
+    ¶   ¶       +---20250120232605_init
+    ¶   ¶       ¶       migration.sql
+    ¶   ¶       ¶       
+    ¶   ¶       +---20250122200614_add_deleted
+    ¶   ¶               migration.sql
+    ¶   ¶               
+    ¶   +---src
+    ¶   ¶   ¶   index.ts
+    ¶   ¶   ¶   
+    ¶   ¶   +---bootstrap
+    ¶   ¶   ¶       container.ts
+    ¶   ¶   ¶       index.ts
+    ¶   ¶   ¶       
+    ¶   ¶   +---controllers
+    ¶   ¶   ¶       index.ts
+    ¶   ¶   ¶       UserController.ts
+    ¶   ¶   ¶       
+    ¶   ¶   +---routes
+    ¶   ¶       ¶   index.ts
+    ¶   ¶       ¶   UserRoutes.ts
+    ¶   ¶       ¶   
+    ¶   ¶       +---v1
+    ¶   +---__http__
+    ¶   ¶       login.http
+    ¶   ¶       register.http
+    ¶   ¶       
+    ¶   +---__tests__
+    ¶           basic.spec.ts
+    ¶           
+    +---service-kafka
+    ¶       .env.development
+    ¶       docker-compose.yml
+    ¶       Dockerfile.development
+    ¶       package.json
+    ¶       
+    +---service-mailing
+    ¶   ¶   .env.development
+    ¶   ¶   Dockerfile.development
+    ¶   ¶   package.json
+    ¶   ¶   tsconfig.json
+    ¶   ¶   
+    ¶   +---src
+    ¶   ¶       index.ts
+    ¶   ¶       
+    ¶   +---__tests__
+    ¶           basic.spec.ts
+    ¶           
+    +---service-redis-server
+    ¶       .env.development
+    ¶       docker-compose.yml
+    ¶       Dockerfile.development
+    ¶       package.json
+    ¶       
+    +---service-zoekeeper
+            .env.development
+            docker-compose.yml
+            Dockerfile.development
+            package.json
+            

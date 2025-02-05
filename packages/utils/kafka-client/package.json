@@ -1,5 +1,5 @@
 {
-  "name": "@kikerepo/contracts-common",
+  "name": "@kikerepo/utils-kafka-client",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -8,5 +8,13 @@
     "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "test": "jest"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "typescript": "^5.7.3"
   }
 }

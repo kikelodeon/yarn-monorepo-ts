@@ -5,8 +5,7 @@
   "scripts": {
     "dev": "ts-node-dev --respawn -- src/index.ts --transpileOnly",
     "build": "tsc -p tsconfig.json",
-    "clean": "rimraf dist tsconfig.tsbuildinfo",
-    "clear": "rimraf dist tsconfig.tsbuildinfo node_modules",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
     "lint": "eslint 'src/**/*.ts'"
   },
