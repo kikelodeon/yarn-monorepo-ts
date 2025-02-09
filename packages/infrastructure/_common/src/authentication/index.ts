@@ -1,1 +1,0 @@
-export { generateToken, verifyToken } from './authenticationToken';

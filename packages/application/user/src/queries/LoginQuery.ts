@@ -10,12 +10,10 @@ import { IsStrongPassword } from '../validators';
  */
 export class LoginQuery {
   @IsEmail()
-  @ValidateNested()
   @Type(() => Email)
   public readonly email: Email;
 
   @IsStrongPassword()
-  @ValidateNested()
   @Type(() => InputPassword)
   public readonly password: InputPassword;
 

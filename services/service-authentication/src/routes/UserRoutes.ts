@@ -1,38 +1,35 @@
 // services/service-authentication/src/routes/UserRoutes.ts
-
 import { Router, Request, Response, NextFunction } from 'express';
 import { container } from '../bootstrap/container';
-import { UserController, UserControllerToken } from '../controllers/UserController'; 
+import { UserController, UserControllerToken } from '../controllers/UserController';
 import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/application-common';
-import { RegisterCommand } from '@kikerepo/application-user';
+import { LoginQuery, RegisterCommand } from '@kikerepo/application-user';
+import { LoginRequest } from '@kikerepo/contracts-user';
 import { NotFoundError } from '@kikerepo/contracts-common';
 
 const userRoutes = Router();
-
-// Resolve the UserController from the container using the defined token
 const userController = container.get<UserController>(UserControllerToken);
 
-// Define the POST /register route with validation and controller handler
+// Ruta de registro
 userRoutes.post(
   '/register',
   ValidationMiddleware(RegisterCommand),
-  userController.register.bind(userController) // Ensure correct 'this' context
+  userController.register.bind(userController)
 );
 
-// Optional: Define other user-related routes here
-// Example:
-// userRoutes.post(
-//   '/login',
-//   ValidationMiddleware(LoginCommand),
-//   userController.login.bind(userController)
-// );
+// Ruta de login
+userRoutes.post(
+  '/login',
+  ValidationMiddleware(LoginQuery), // O utiliza un DTO específico para login (LoginRequest)
+  userController.login.bind(userController)
+);
 
-// 404 Handler for Undefined Routes within this Router
+// 404 Handler para rutas no definidas
 userRoutes.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json( new NotFoundError( ));
+  res.status(404).json(new NotFoundError());
 });
 
-// Error Handling Middleware
+// Middleware de manejo de errores
 userRoutes.use(ErrorHandlerMiddleware);
 
 export { userRoutes };

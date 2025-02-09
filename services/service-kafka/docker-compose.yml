@@ -1,19 +1,32 @@
 version: '3.8'
 services:
   kafka:
-    image: confluentinc/cp-kafka:latest
+    image: bitnami/kafka:latest
     environment:
-      KAFKA_BROKER_ID: ${KAFKA_BROKER_ID:-1}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT:-zookeeper:2181}
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: ${KAFKA_LISTENER_SECURITY_PROTOCOL_MAP:-PLAINTEXT:PLAINTEXT,PLAINTEXT_HOST:PLAINTEXT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS:-PLAINTEXT://kafka:9092,PLAINTEXT_HOST://localhost:29092}
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR:-1}
+      # Identificador único para el broker
+      KAFKA_BROKER_ID: 1
+      # Indicamos a Kafka que ejecute ambos roles: broker y controller (modo KRaft)
+      KAFKA_PROCESS_ROLES: "broker,controller"
+      # Definimos el quorum para el controlador (en este caso, un único nodo)
+      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
+      # Configuramos los listeners:
+      # - PLAINTEXT para comunicación entre clientes y brokers
+      # - CONTROLLER para la comunicación interna del clúster KRaft
+      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
+      # Configuramos el listener que se anunciará a los clientes (normalmente, el PLAINTEXT)
+      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
+      # Listener para la comunicación interna entre brokers
+      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
+      # Variables adicionales que pueden ser necesarias (ajusta según tu necesidad)
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
+      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
+      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
     ports:
       - "9092:9092"
-      - "29092:29092"
+      - "9093:9093"
     networks:
       - kafka-net
 
 networks:
   kafka-net:
-    external: true
+    driver: bridge
