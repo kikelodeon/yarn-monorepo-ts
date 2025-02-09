@@ -1,35 +1,39 @@
 // services/service-authentication/src/routes/UserRoutes.ts
+
 import { Router, Request, Response, NextFunction } from 'express';
-import { container } from '../bootstrap/container';
-import { UserController, UserControllerToken } from '../controllers/UserController';
 import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/application-common';
-import { LoginQuery, RegisterCommand } from '@kikerepo/application-user';
-import { LoginRequest } from '@kikerepo/contracts-user';
 import { NotFoundError } from '@kikerepo/contracts-common';
 
-const userRoutes = Router();
-const userController = container.get<UserController>(UserControllerToken);
+import { LoginQuery, RegisterCommand } from '@kikerepo/application-user';
+// Aquí no importamos container ni resolvemos el controlador.
+// Simplemente exportamos una función que recibe el controlador ya instanciado.
+export function CreateUserRoutes(userController: { 
+  login: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+  register: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+}): Router {
+  const router = Router();
 
-// Ruta de registro
-userRoutes.post(
-  '/register',
-  ValidationMiddleware(RegisterCommand),
-  userController.register.bind(userController)
-);
+  // Ruta de registro
+  router.post(
+    '/register',
+    ValidationMiddleware(RegisterCommand),
+    userController.register.bind(userController)
+  );
 
-// Ruta de login
-userRoutes.post(
-  '/login',
-  ValidationMiddleware(LoginQuery), // O utiliza un DTO específico para login (LoginRequest)
-  userController.login.bind(userController)
-);
+  // Ruta de login
+  router.post(
+    '/login',
+    ValidationMiddleware(LoginQuery),
+    userController.login.bind(userController)
+  );
 
-// 404 Handler para rutas no definidas
-userRoutes.use((req: Request, res: Response, next: NextFunction) => {
-  res.status(404).json(new NotFoundError());
-});
+  // 404 Handler para rutas no definidas
+  router.use((req: Request, res: Response, next: NextFunction) => {
+    res.status(404).json(new NotFoundError());
+  });
 
-// Middleware de manejo de errores
-userRoutes.use(ErrorHandlerMiddleware);
+  // Middleware de manejo de errores
+  router.use(ErrorHandlerMiddleware);
 
-export { userRoutes };
+  return router;
+}

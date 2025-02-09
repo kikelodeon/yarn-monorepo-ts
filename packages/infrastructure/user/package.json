@@ -10,6 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
+    "@kikerepo/application-user": "workspace:*",
+    "@kikerepo/contracts-user": "workspace:*",
     "@kikerepo/domain-user": "workspace:*",
     "@kikerepo/infrastructure-common": "workspace:*",
     "@prisma/client": "^6.2.1",

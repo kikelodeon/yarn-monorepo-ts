@@ -1343,7 +1343,6 @@ __metadata:
     "@kikerepo/application-common": "workspace:*"
     "@kikerepo/contracts-common": "workspace:*"
     "@kikerepo/domain-user": "workspace:*"
-    "@kikerepo/infrastructure-user": "workspace:*"
     class-transformer: "npm:^0.5.1"
     class-validator: "npm:^0.14.1"
     libphonenumber-js: "npm:^1.11.18"
@@ -1394,6 +1393,8 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kikerepo/infrastructure-user@workspace:packages/infrastructure/user"
   dependencies:
+    "@kikerepo/application-user": "workspace:*"
+    "@kikerepo/contracts-user": "workspace:*"
     "@kikerepo/domain-user": "workspace:*"
     "@kikerepo/infrastructure-common": "workspace:*"
     "@prisma/client": "npm:^6.2.1"
@@ -6280,12 +6281,6 @@ __metadata:
 "service-kafka@workspace:services/service-kafka":
   version: 0.0.0-use.local
   resolution: "service-kafka@workspace:services/service-kafka"
-  languageName: unknown
-  linkType: soft
-
-"service-zoekeeper@workspace:services/service-zoekeeper":
-  version: 0.0.0-use.local
-  resolution: "service-zoekeeper@workspace:services/service-zoekeeper"
   languageName: unknown
   linkType: soft
 

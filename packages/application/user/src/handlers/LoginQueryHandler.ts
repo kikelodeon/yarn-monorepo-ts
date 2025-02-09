@@ -5,6 +5,7 @@ import { LoginQuery } from '../queries/LoginQuery';
 import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-user';
 import { generateAccessToken, generateRefreshToken } from '@kikerepo/infrastructure-user/src/authentication/Token';
 import { LoginResult } from '../results/LoginResult';
+import { LoginCredentialsError } from '../errors';
 
 export const LoginQueryHandlerToken = Symbol('LoginQueryHandlerToken');
 
@@ -19,13 +20,13 @@ export class LoginQueryHandler {
     // Buscar al usuario por email.
     const user = await this.userRepository.findByEmail(query.email.value);
     if (!user) {
-      return new Error('User not found');
+      return new LoginCredentialsError(); //Generic error for not found user (security prevention)
     }
 
     // Verificar la contraseña.
     const isValid = await this.hashingService.verify(user.password, query.password);
     if (!isValid) {
-      return new Error('Invalid credentials');
+      return new LoginCredentialsError(); //Generic error for not found user (security prevention)
     }
 
     // Generar tokens usando nuestras funciones que retornan Value Objects.

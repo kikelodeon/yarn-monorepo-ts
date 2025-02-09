@@ -3,14 +3,14 @@
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
 import { logger } from '@kikerepo/infrastructure-common';
-import { AuthenticationService } from '@kikerepo/infrastructure-user';
+import { AuthenticationService,AuthenticationServiceToken  } from '@kikerepo/infrastructure-user';
 
 export const UserControllerToken = Symbol('UserControllerToken');
 
 @injectable()
 export class UserController {
   constructor(
-    @inject('AuthenticationServiceToken')
+    @inject(AuthenticationServiceToken)
     private readonly authenticationService: AuthenticationService,
   ) {}
 
