@@ -4,7 +4,7 @@
   "main": "dist/index.js",
   "scripts": {
     "prisma:generate": "prisma generate",
-    "dev": "yarn prisma:generate && ts-node-dev --respawn -- src/index.ts --transpileOnly",
+    "dev": "yarn prisma:generate && ts-node-dev --respawn --transpile-only ./src/index.ts",
     "build": "tsc -p tsconfig.json",
     "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
@@ -20,11 +20,11 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@kikerepo/application-user": "workspace:*",
-    "@kikerepo/contracts-user": "workspace:*",
-    "@kikerepo/domain-user": "workspace:*",
+    "@kikerepo/application-authentication": "workspace:*",
+    "@kikerepo/contracts-authentication": "workspace:*",
+    "@kikerepo/domain-authentication": "workspace:*",
+    "@kikerepo/infrastructure-authentication": "workspace:*",
     "@kikerepo/infrastructure-common": "workspace:*",
-    "@kikerepo/infrastructure-user": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

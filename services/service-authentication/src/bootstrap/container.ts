@@ -8,7 +8,7 @@ import {
 import {
   IUserRepository, IUserRepositoryToken,
   IHashingService, IHashingServiceToken
-} from '@kikerepo/domain-user';
+} from '@kikerepo/domain-authentication';
 
 import {
    UserRepository,
@@ -16,14 +16,14 @@ import {
    connectPrisma, 
    AuthenticationService, 
    AuthenticationServiceToken
-} from '@kikerepo/infrastructure-user';
+} from '@kikerepo/infrastructure-authentication';
 
 import { 
   RegisterCommandHandler, 
   RegisterCommandHandlerToken, 
   LoginQueryHandler, 
   LoginQueryHandlerToken 
-}from '@kikerepo/application-user';
+}from '@kikerepo/application-authentication';
 
 import {
    UserController, 

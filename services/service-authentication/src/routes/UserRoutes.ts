@@ -4,7 +4,7 @@ import { Router, Request, Response, NextFunction } from 'express';
 import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/application-common';
 import { NotFoundError } from '@kikerepo/contracts-common';
 
-import { LoginQuery, RegisterCommand } from '@kikerepo/application-user';
+import { LoginQuery, RegisterCommand } from '@kikerepo/application-authentication';
 // Aquí no importamos container ni resolvemos el controlador.
 // Simplemente exportamos una función que recibe el controlador ya instanciado.
 export function CreateUserRoutes(userController: { 

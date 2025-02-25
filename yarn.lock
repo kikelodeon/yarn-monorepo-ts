@@ -1326,6 +1326,19 @@ __metadata:
   languageName: node
   linkType: hard
 
+"@kikerepo/application-authentication@workspace:*, @kikerepo/application-authentication@workspace:packages/application/authentication":
+  version: 0.0.0-use.local
+  resolution: "@kikerepo/application-authentication@workspace:packages/application/authentication"
+  dependencies:
+    "@kikerepo/application-common": "workspace:*"
+    "@kikerepo/contracts-common": "workspace:*"
+    "@kikerepo/domain-authentication": "workspace:*"
+    class-transformer: "npm:^0.5.1"
+    class-validator: "npm:^0.14.1"
+    libphonenumber-js: "npm:^1.11.18"
+  languageName: unknown
+  linkType: soft
+
 "@kikerepo/application-common@workspace:*, @kikerepo/application-common@workspace:packages/application/_common":
   version: 0.0.0-use.local
   resolution: "@kikerepo/application-common@workspace:packages/application/_common"
@@ -1336,16 +1349,11 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/application-user@workspace:*, @kikerepo/application-user@workspace:packages/application/user":
+"@kikerepo/contracts-authentication@workspace:*, @kikerepo/contracts-authentication@workspace:packages/contracts/authentication":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/application-user@workspace:packages/application/user"
+  resolution: "@kikerepo/contracts-authentication@workspace:packages/contracts/authentication"
   dependencies:
-    "@kikerepo/application-common": "workspace:*"
-    "@kikerepo/contracts-common": "workspace:*"
-    "@kikerepo/domain-user": "workspace:*"
-    class-transformer: "npm:^0.5.1"
-    class-validator: "npm:^0.14.1"
-    libphonenumber-js: "npm:^1.11.18"
+    "@kikerepo/domain-common": "workspace:*"
   languageName: unknown
   linkType: soft
 
@@ -1355,9 +1363,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/contracts-user@workspace:*, @kikerepo/contracts-user@workspace:packages/contracts/user":
+"@kikerepo/domain-authentication@workspace:*, @kikerepo/domain-authentication@workspace:packages/domain/authentication":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/contracts-user@workspace:packages/contracts/user"
+  resolution: "@kikerepo/domain-authentication@workspace:packages/domain/authentication"
   dependencies:
     "@kikerepo/domain-common": "workspace:*"
   languageName: unknown
@@ -1371,11 +1379,17 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/domain-user@workspace:*, @kikerepo/domain-user@workspace:packages/domain/user":
+"@kikerepo/infrastructure-authentication@workspace:*, @kikerepo/infrastructure-authentication@workspace:packages/infrastructure/authentication":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/domain-user@workspace:packages/domain/user"
+  resolution: "@kikerepo/infrastructure-authentication@workspace:packages/infrastructure/authentication"
   dependencies:
-    "@kikerepo/domain-common": "workspace:*"
+    "@kikerepo/application-authentication": "workspace:*"
+    "@kikerepo/contracts-authentication": "workspace:*"
+    "@kikerepo/domain-authentication": "workspace:*"
+    "@kikerepo/infrastructure-common": "workspace:*"
+    "@prisma/client": "npm:^6.2.1"
+    mongoose: "npm:^6.8.0"
+    prisma: "npm:^6.2.1"
   languageName: unknown
   linkType: soft
 
@@ -1389,29 +1403,15 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/infrastructure-user@workspace:*, @kikerepo/infrastructure-user@workspace:packages/infrastructure/user":
-  version: 0.0.0-use.local
-  resolution: "@kikerepo/infrastructure-user@workspace:packages/infrastructure/user"
-  dependencies:
-    "@kikerepo/application-user": "workspace:*"
-    "@kikerepo/contracts-user": "workspace:*"
-    "@kikerepo/domain-user": "workspace:*"
-    "@kikerepo/infrastructure-common": "workspace:*"
-    "@prisma/client": "npm:^6.2.1"
-    mongoose: "npm:^6.8.0"
-    prisma: "npm:^6.2.1"
-  languageName: unknown
-  linkType: soft
-
 "@kikerepo/service-authentication@workspace:services/service-authentication":
   version: 0.0.0-use.local
   resolution: "@kikerepo/service-authentication@workspace:services/service-authentication"
   dependencies:
-    "@kikerepo/application-user": "workspace:*"
-    "@kikerepo/contracts-user": "workspace:*"
-    "@kikerepo/domain-user": "workspace:*"
+    "@kikerepo/application-authentication": "workspace:*"
+    "@kikerepo/contracts-authentication": "workspace:*"
+    "@kikerepo/domain-authentication": "workspace:*"
+    "@kikerepo/infrastructure-authentication": "workspace:*"
     "@kikerepo/infrastructure-common": "workspace:*"
-    "@kikerepo/infrastructure-user": "workspace:*"
     "@kikerepo/utils-env": "workspace:*"
     "@types/express": "npm:^5.0.0"
     "@types/jsonwebtoken": "npm:^9.0.7"
