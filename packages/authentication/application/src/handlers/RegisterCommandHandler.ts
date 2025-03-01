@@ -1,10 +1,10 @@
 import { injectable, inject } from 'inversify';
-import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-authentication';
-import { User } from '@kikerepo/domain-authentication';
+import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/authentication-domain';
+import { User } from '@kikerepo/authentication-domain';
 import { EmailAlreadyInUseError } from '../errors';
 import { RegisterCommand } from '../commands/RegisterCommand';
 import { RegisterResult } from '../results/RegisterResult';
-import { logger } from '@kikerepo/infrastructure-common'; // <--- Importa tu logger
+import { logger } from '@kikerepo/common-infrastructure'; // <--- Importa tu logger
 export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
 
 @injectable()

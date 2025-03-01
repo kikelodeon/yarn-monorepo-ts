@@ -1,6 +1,6 @@
-import { RegisterRequest } from '@kikerepo/contracts-authentication';
+import { RegisterRequest } from '@kikerepo/authentication-contracts';
 import { RegisterCommand } from '../commands';
-import { Email, InputPassword, Phone } from '@kikerepo/domain-authentication';
+import { Email, InputPassword, Phone } from '@kikerepo/authentication-domain';
 
 export class RegisterRequestToRegisterCommandMapper {
   static toCommand(dto: RegisterRequest): RegisterCommand {

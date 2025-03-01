@@ -1,5 +1,5 @@
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
 
 /**

@@ -1,5 +1,5 @@
 {
-  "name": "@kikerepo/infrastructure-authentication",
+  "name": "@kikerepo/authentication-infrastructure",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -10,10 +10,10 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/application-authentication": "workspace:*",
-    "@kikerepo/contracts-authentication": "workspace:*",
-    "@kikerepo/domain-authentication": "workspace:*",
-    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/authentication-application": "workspace:*",
+    "@kikerepo/authentication-contracts": "workspace:*",
+    "@kikerepo/authentication-domain": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
     "@prisma/client": "^6.2.1",
     "mongoose": "^6.8.0"
   },

@@ -1,4 +1,4 @@
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 
 export class HashedPassword extends ValueObject<string> {

@@ -1,6 +1,6 @@
 // src/application/common/services/ValidationService.ts
 import { validate } from 'class-validator'; // validate function from class-validator
-import { ValidationError } from '@kikerepo/contracts-common'; // Custom error class
+import { ValidationError } from '@kikerepo/common-contracts'; // Custom error class
 
 export class ValidationBehaviour {
   /**

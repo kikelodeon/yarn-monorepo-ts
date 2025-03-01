@@ -7,14 +7,14 @@ import {
   RegisterResultToRegisterResponseMapper,
   RegisterRequestToRegisterCommandMapper,
   LoginRequestToLoginQueryMapper
-} from '@kikerepo/application-authentication';
+} from '@kikerepo/authentication-application';
 
 import {
   LoginResponse,
   RegisterResponse,
   LoginRequest,
   RegisterRequest
-} from '@kikerepo/contracts-authentication';
+} from '@kikerepo/authentication-contracts';
 
 /**
  * Servicio de autenticación que integra las operaciones de login y registro.

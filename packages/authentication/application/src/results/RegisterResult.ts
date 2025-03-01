@@ -1,4 +1,4 @@
-import { UserId,Email } from "@kikerepo/domain-authentication";
+import { UserId,Email } from "@kikerepo/authentication-domain";
 
 export class RegisterResult {
   userId: UserId;

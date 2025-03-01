@@ -1,5 +1,5 @@
 // domain-user/src/entities/User.ts
-import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
+import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/common-domain';
 import { UserId, Email, HashedPassword, Phone} from '../value-objects';
 import { UserCreatedEvent } from '../events/UserCreatedEvent';
 

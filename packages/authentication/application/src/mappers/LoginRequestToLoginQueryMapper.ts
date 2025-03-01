@@ -1,8 +1,8 @@
 // packages/application/user/src/mappers/LoginRequestToLoginQueryMapper.ts
 
-import { LoginRequest } from '@kikerepo/contracts-authentication/src/requests/LoginRequest';
+import { LoginRequest } from '@kikerepo/authentication-contracts/src/requests/LoginRequest';
 import { LoginQuery } from '../queries/LoginQuery';
-import { Email, InputPassword } from '@kikerepo/domain-authentication';
+import { Email, InputPassword } from '@kikerepo/authentication-domain';
 
 /**
  * Mapper para transformar el DTO de request (LoginRequest)

@@ -3,7 +3,7 @@
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { requireEnv } from '@kikerepo/utils-env';
 import { TokenGenerationError, TokenVerificationError } from './errors';
-import { AccessToken , RefreshToken} from '@kikerepo/domain-authentication';
+import { AccessToken , RefreshToken} from '@kikerepo/authentication-domain';
 
 /**
  * Interfaz extendida para el payload, asegurando la existencia de userId.

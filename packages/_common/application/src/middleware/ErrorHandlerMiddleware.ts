@@ -1,6 +1,6 @@
-import { BaseError, InternalError, ValidationError } from '@kikerepo/contracts-common';
+import { BaseError, InternalError, ValidationError } from '@kikerepo/common-contracts';
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '@kikerepo/infrastructure-common';
+import { logger } from '@kikerepo/common-infrastructure';
 // Función para manejar la respuesta de errores
 const handleErrorResponse = (err: BaseError, res: Response): void => {
   const { message, errorCode, statusCode, timestamp, context, stack } = err;

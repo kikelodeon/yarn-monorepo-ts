@@ -10,6 +10,6 @@
   "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../../_common/domain" } // Uses compiled @kikerepo/domain-common
+    { "path": "../../_common/domain" } // Uses compiled @kikerepo/common-domain
   ]
 }

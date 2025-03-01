@@ -1,6 +1,6 @@
 // packages/domain/user/src/value-objects/AccessToken.ts
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 export class AccessToken extends ValueObject<string> {
   constructor(token: string) {

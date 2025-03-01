@@ -2,7 +2,7 @@
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { ValidationError } from '@kikerepo/contracts-common';
+import { ValidationError } from '@kikerepo/common-contracts';
 
 /**
  * Validation middleware for Express using class-transformer + class-validator.

@@ -1,5 +1,5 @@
 {
-  "name": "@kikerepo/infrastructure-common",
+  "name": "@kikerepo/common-infrastructure",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -10,7 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/contracts-common": "workspace:*",
+    "@kikerepo/common-contracts": "workspace:*",
     "jsonwebtoken": "^9.0.2",
     "winston": "^3.17.0"
   }

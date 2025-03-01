@@ -20,11 +20,11 @@
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@kikerepo/application-authentication": "workspace:*",
-    "@kikerepo/contracts-authentication": "workspace:*",
-    "@kikerepo/domain-authentication": "workspace:*",
-    "@kikerepo/infrastructure-authentication": "workspace:*",
-    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/authentication-application": "workspace:*",
+    "@kikerepo/authentication-contracts": "workspace:*",
+    "@kikerepo/authentication-domain": "workspace:*",
+    "@kikerepo/authentication-infrastructure": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",

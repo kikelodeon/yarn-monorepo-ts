@@ -1,4 +1,4 @@
-import { DomainEvent } from '@kikerepo/domain-common';
+import { DomainEvent } from '@kikerepo/common-domain';
 
 export class UserCreatedEvent extends DomainEvent {
   constructor(

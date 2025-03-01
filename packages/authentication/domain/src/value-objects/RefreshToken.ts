@@ -1,6 +1,6 @@
 // packages/domain/user/src/value-objects/RefreshToken.ts
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 export class RefreshToken extends ValueObject<string> {
   constructor(token: string) {

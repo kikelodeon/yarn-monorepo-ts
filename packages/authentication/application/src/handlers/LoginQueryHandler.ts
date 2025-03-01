@@ -2,8 +2,8 @@
 
 import { injectable, inject } from 'inversify';
 import { LoginQuery } from '../queries/LoginQuery';
-import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-authentication';
-import { generateAccessToken, generateRefreshToken } from '@kikerepo/infrastructure-authentication/src/authentication/Token';
+import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/authentication-domain';
+import { generateAccessToken, generateRefreshToken } from '@kikerepo/authentication-infrastructure/src/authentication/Token';
 import { LoginResult } from '../results/LoginResult';
 import { LoginCredentialsError } from '../errors';
 

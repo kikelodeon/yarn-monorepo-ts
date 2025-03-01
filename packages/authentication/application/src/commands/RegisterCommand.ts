@@ -2,7 +2,7 @@
 import { IsEmail, IsString, IsOptional, Length } from 'class-validator';
 
 import { IsStrongPassword,IsPhoneNumber } from '../validators';
-import { Email, InputPassword, Phone } from '@kikerepo/domain-authentication';
+import { Email, InputPassword, Phone } from '@kikerepo/authentication-domain';
 export class RegisterCommand {
   @IsEmail()
   email: Email;

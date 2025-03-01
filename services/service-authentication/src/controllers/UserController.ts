@@ -2,8 +2,8 @@
 
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
-import { logger } from '@kikerepo/infrastructure-common';
-import { AuthenticationService,AuthenticationServiceToken  } from '@kikerepo/infrastructure-authentication';
+import { logger } from '@kikerepo/common-infrastructure';
+import { AuthenticationService,AuthenticationServiceToken  } from '@kikerepo/authentication-infrastructure';
 
 export const UserControllerToken = Symbol('UserControllerToken');
 

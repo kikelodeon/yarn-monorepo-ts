@@ -1,7 +1,7 @@
 // packages/application/user/src/mappers/LoginResultToLoginResponseMapper.ts
 
 import { LoginResult } from '../results';
-import { LoginResponse } from '@kikerepo/contracts-authentication';
+import { LoginResponse } from '@kikerepo/authentication-contracts';
 
 /**
  * Mapper para transformar el resultado del dominio (LoginResult)

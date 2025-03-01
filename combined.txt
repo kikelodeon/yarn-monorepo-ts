@@ -244,7 +244,7 @@ volumes:
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\package.json ===
 
 {
-  "name": "@kikerepo/application-authentication",
+  "name": "@kikerepo/authentication-application",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -255,9 +255,9 @@ volumes:
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/application-common": "workspace:*",
-    "@kikerepo/contracts-common": "workspace:*",
-    "@kikerepo/domain-authentication": "workspace:*",
+    "@kikerepo/common-application": "workspace:*",
+    "@kikerepo/common-contracts": "workspace:*",
+    "@kikerepo/authentication-domain": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "libphonenumber-js": "^1.11.18"
@@ -286,7 +286,7 @@ volumes:
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+    { "path": "../_common" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
@@ -320,7 +320,7 @@ export * from './RegisterCommand';
 import { IsEmail, IsString, IsOptional, Length } from 'class-validator';
 
 import { IsStrongPassword,IsPhoneNumber } from '../validators';
-import { Email, InputPassword, Phone } from '@kikerepo/domain-authentication';
+import { Email, InputPassword, Phone } from '@kikerepo/authentication-domain';
 export class RegisterCommand {
   @IsEmail()
   email: Email;
@@ -347,7 +347,7 @@ export class RegisterCommand {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\errors\EmailAlreadyInUseError.ts ===
 
 // src/application/user/errors/EmailAlreadyInUseError.ts
-import { ConflictError } from '@kikerepo/contracts-common'; // Import the ValidationError from contracts
+import { ConflictError } from '@kikerepo/common-contracts'; // Import the ValidationError from contracts
 
 export class EmailAlreadyInUseError extends ConflictError {
   constructor(email: string) {
@@ -374,7 +374,7 @@ export { LoginCredentialsError } from './LoginCredentialsError';
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\errors\LoginCredentialsError.ts ===
 
 // src/application/user/errors/EmailAlreadyInUseError.ts
-import { ConflictError } from '@kikerepo/contracts-common'; // Import the ValidationError from contracts
+import { ConflictError } from '@kikerepo/common-contracts'; // Import the ValidationError from contracts
 
 export class LoginCredentialsError extends ConflictError {
   constructor() {
@@ -435,8 +435,8 @@ export { RegisterCommandHandler,RegisterCommandHandlerToken } from './RegisterCo
 
 import { injectable, inject } from 'inversify';
 import { LoginQuery } from '../queries/LoginQuery';
-import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-authentication';
-import { generateAccessToken, generateRefreshToken } from '@kikerepo/infrastructure-authentication/src/authentication/Token';
+import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/authentication-domain';
+import { generateAccessToken, generateRefreshToken } from '@kikerepo/authentication-infrastructure/src/authentication/Token';
 import { LoginResult } from '../results/LoginResult';
 import { LoginCredentialsError } from '../errors';
 
@@ -477,12 +477,12 @@ export class LoginQueryHandler {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\handlers\RegisterCommandHandler.ts ===
 
 import { injectable, inject } from 'inversify';
-import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/domain-authentication';
-import { User } from '@kikerepo/domain-authentication';
+import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/authentication-domain';
+import { User } from '@kikerepo/authentication-domain';
 import { EmailAlreadyInUseError } from '../errors';
 import { RegisterCommand } from '../commands/RegisterCommand';
 import { RegisterResult } from '../results/RegisterResult';
-import { logger } from '@kikerepo/infrastructure-common'; // <--- Importa tu logger
+import { logger } from '@kikerepo/common-infrastructure'; // <--- Importa tu logger
 export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
 
 @injectable()
@@ -528,9 +528,9 @@ export { LoginRequestToLoginQueryMapper } from './LoginRequestToLoginQueryMapper
 
 // packages/application/user/src/mappers/LoginRequestToLoginQueryMapper.ts
 
-import { LoginRequest } from '@kikerepo/contracts-authentication/src/requests/LoginRequest';
+import { LoginRequest } from '@kikerepo/authentication-contracts/src/requests/LoginRequest';
 import { LoginQuery } from '../queries/LoginQuery';
-import { Email, InputPassword } from '@kikerepo/domain-authentication';
+import { Email, InputPassword } from '@kikerepo/authentication-domain';
 
 /**
  * Mapper para transformar el DTO de request (LoginRequest)
@@ -552,7 +552,7 @@ export class LoginRequestToLoginQueryMapper {
 // packages/application/user/src/mappers/LoginResultToLoginResponseMapper.ts
 
 import { LoginResult } from '../results';
-import { LoginResponse } from '@kikerepo/contracts-authentication';
+import { LoginResponse } from '@kikerepo/authentication-contracts';
 
 /**
  * Mapper para transformar el resultado del dominio (LoginResult)
@@ -573,9 +573,9 @@ export class LoginResultToLoginResponseMapper {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\mappers\RegisterRequestToRegisterCommandMapper.ts ===
 
-import { RegisterRequest } from '@kikerepo/contracts-authentication';
+import { RegisterRequest } from '@kikerepo/authentication-contracts';
 import { RegisterCommand } from '../commands';
-import { Email, InputPassword, Phone } from '@kikerepo/domain-authentication';
+import { Email, InputPassword, Phone } from '@kikerepo/authentication-domain';
 
 export class RegisterRequestToRegisterCommandMapper {
   static toCommand(dto: RegisterRequest): RegisterCommand {
@@ -593,7 +593,7 @@ export class RegisterRequestToRegisterCommandMapper {
 
 // src/application/user/mappers/UserRegisterResultToResponseMapper.ts
 import { RegisterResult as RegisterResult } from '../results/RegisterResult';  // Assuming this is the result class
-import { RegisterResponse } from '@kikerepo/contracts-authentication';   // Assuming this is the response DTO
+import { RegisterResponse } from '@kikerepo/authentication-contracts';   // Assuming this is the response DTO
 
 export class RegisterResultToRegisterResponseMapper {
   static toResponse(result: RegisterResult): RegisterResponse {
@@ -620,7 +620,7 @@ export * from './LoginQuery';
 
 import { IsEmail, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Email,InputPassword } from "@kikerepo/domain-authentication";
+import { Email,InputPassword } from "@kikerepo/authentication-domain";
 import { IsStrongPassword } from '../validators';
 
 /**
@@ -655,8 +655,8 @@ export * from './RegisterResult';
 
 // packages/application/user/src/results/LoginResult.ts
 
-import { UserId } from '@kikerepo/domain-authentication';
-import { AccessToken, RefreshToken } from '@kikerepo/domain-authentication';
+import { UserId } from '@kikerepo/authentication-domain';
+import { AccessToken, RefreshToken } from '@kikerepo/authentication-domain';
 
 export class LoginResult {
   constructor(
@@ -671,7 +671,7 @@ export class LoginResult {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\results\RegisterResult.ts ===
 
-import { UserId,Email } from "@kikerepo/domain-authentication";
+import { UserId,Email } from "@kikerepo/authentication-domain";
 
 export class RegisterResult {
   userId: UserId;
@@ -806,7 +806,7 @@ export function IsStrongPassword(
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\package.json ===
 
 {
-  "name": "@kikerepo/application-common",
+  "name": "@kikerepo/common-application",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -817,8 +817,8 @@ export function IsStrongPassword(
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/contracts-common": "workspace:*",
-    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/common-contracts": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
     "fp-ts": "^2.16.9"
   }
 }
@@ -921,7 +921,7 @@ export { ValidationBehaviour } from './ValidationBehaviour';
 
 // src/application/common/services/ValidationService.ts
 import { validate } from 'class-validator'; // validate function from class-validator
-import { ValidationError } from '@kikerepo/contracts-common'; // Custom error class
+import { ValidationError } from '@kikerepo/common-contracts'; // Custom error class
 
 export class ValidationBehaviour {
   /**
@@ -954,9 +954,9 @@ export class ValidationBehaviour {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ErrorHandlerMiddleware.ts ===
 
-import { BaseError, InternalError, ValidationError } from '@kikerepo/contracts-common';
+import { BaseError, InternalError, ValidationError } from '@kikerepo/common-contracts';
 import { Request, Response, NextFunction } from 'express';
-import { logger } from '@kikerepo/infrastructure-common';
+import { logger } from '@kikerepo/common-infrastructure';
 // Funci√≥n para manejar la respuesta de errores
 const handleErrorResponse = (err: BaseError, res: Response): void => {
   const { message, errorCode, statusCode, timestamp, context, stack } = err;
@@ -1043,7 +1043,7 @@ export {ValidationMiddleware} from './ValidationMiddleware';
 import { plainToInstance } from 'class-transformer';
 import { validate } from 'class-validator';
 import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { ValidationError } from '@kikerepo/contracts-common';
+import { ValidationError } from '@kikerepo/common-contracts';
 
 /**
  * Validation middleware for Express using class-transformer + class-validator.
@@ -1093,7 +1093,7 @@ export function ValidationMiddleware(
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\package.json ===
 
 {
-  "name": "@kikerepo/contracts-authentication",
+  "name": "@kikerepo/authentication-contracts",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -1104,7 +1104,7 @@ export function ValidationMiddleware(
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/domain-common": "workspace:*"
+    "@kikerepo/common-domain": "workspace:*"
   }
 }
 
@@ -1125,7 +1125,7 @@ export function ValidationMiddleware(
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/contracts-common
+    { "path": "../_common" } // Uses compiled @kikerepo/common-contracts
   ]
 }
 
@@ -1253,7 +1253,7 @@ export class RegisterResponse {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\package.json ===
 
 {
-  "name": "@kikerepo/contracts-common",
+  "name": "@kikerepo/common-contracts",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -1422,7 +1422,7 @@ export class ValidationError extends BaseError {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\package.json ===
 
 {
-  "name": "@kikerepo/domain-authentication",
+  "name": "@kikerepo/authentication-domain",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -1433,7 +1433,7 @@ export class ValidationError extends BaseError {
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/domain-common": "workspace:*"
+    "@kikerepo/common-domain": "workspace:*"
   }
 }
 
@@ -1454,7 +1454,7 @@ export class ValidationError extends BaseError {
   "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+    { "path": "../_common" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
@@ -1482,7 +1482,7 @@ export { User } from './User'
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\entities\User.ts ===
 
 // domain-user/src/entities/User.ts
-import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/domain-common';
+import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/common-domain';
 import { UserId, Email, HashedPassword, Phone} from '../value-objects';
 import { UserCreatedEvent } from '../events/UserCreatedEvent';
 
@@ -1603,7 +1603,7 @@ export { UserCreatedEvent } from './UserCreatedEvent';
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\events\UserCreatedEvent.ts ===
 
-import { DomainEvent } from '@kikerepo/domain-common';
+import { DomainEvent } from '@kikerepo/common-domain';
 
 export class UserCreatedEvent extends DomainEvent {
   constructor(
@@ -1664,7 +1664,7 @@ export interface IUserRepository {
 
 // packages/domain/user/src/value-objects/AccessToken.ts
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 export class AccessToken extends ValueObject<string> {
   constructor(token: string) {
@@ -1684,7 +1684,7 @@ export class AccessToken extends ValueObject<string> {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\Email.ts ===
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 export class Email extends ValueObject<string> {
   constructor(email: string) {
@@ -1703,7 +1703,7 @@ export class Email extends ValueObject<string> {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\HashedPassword.ts ===
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 
 export class HashedPassword extends ValueObject<string> {
@@ -1733,7 +1733,7 @@ export { RefreshToken } from './RefreshToken';
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\InputPassword.ts ===
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 
 export class InputPassword extends ValueObject<string> {
@@ -1747,7 +1747,7 @@ export class InputPassword extends ValueObject<string> {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\Phone.ts ===
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 
 export class Phone extends ValueObject<string> {
@@ -1770,7 +1770,7 @@ export class Phone extends ValueObject<string> {
 
 // packages/domain/user/src/value-objects/RefreshToken.ts
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 
 export class RefreshToken extends ValueObject<string> {
   constructor(token: string) {
@@ -1789,7 +1789,7 @@ export class RefreshToken extends ValueObject<string> {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\UserId.ts ===
 
 
-import { ValueObject } from '@kikerepo/domain-common';
+import { ValueObject } from '@kikerepo/common-domain';
 import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
 
 /**
@@ -1808,7 +1808,7 @@ export class UserId extends ValueObject<string> {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\package.json ===
 
 {
-  "name": "@kikerepo/domain-common",
+  "name": "@kikerepo/common-domain",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -2183,7 +2183,7 @@ export * from './DeletionDate';
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\package.json ===
 
 {
-  "name": "@kikerepo/infrastructure-authentication",
+  "name": "@kikerepo/authentication-infrastructure",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -2194,10 +2194,10 @@ export * from './DeletionDate';
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/application-authentication": "workspace:*",
-    "@kikerepo/contracts-authentication": "workspace:*",
-    "@kikerepo/domain-authentication": "workspace:*",
-    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/authentication-application": "workspace:*",
+    "@kikerepo/authentication-contracts": "workspace:*",
+    "@kikerepo/authentication-domain": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
     "@prisma/client": "^6.2.1",
     "mongoose": "^6.8.0"
   },
@@ -2223,7 +2223,7 @@ export * from './DeletionDate';
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+    { "path": "../_common" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
@@ -2249,14 +2249,14 @@ import {
   RegisterResultToRegisterResponseMapper,
   RegisterRequestToRegisterCommandMapper,
   LoginRequestToLoginQueryMapper
-} from '@kikerepo/application-authentication';
+} from '@kikerepo/authentication-application';
 
 import {
   LoginResponse,
   RegisterResponse,
   LoginRequest,
   RegisterRequest
-} from '@kikerepo/contracts-authentication';
+} from '@kikerepo/authentication-contracts';
 
 /**
  * Servicio de autenticaci√≥n que integra las operaciones de login y registro.
@@ -2333,7 +2333,7 @@ export * from './errors';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { requireEnv } from '@kikerepo/utils-env';
 import { TokenGenerationError, TokenVerificationError } from './errors';
-import { AccessToken , RefreshToken} from '@kikerepo/domain-authentication';
+import { AccessToken , RefreshToken} from '@kikerepo/authentication-domain';
 
 /**
  * Interfaz extendida para el payload, asegurando la existencia de userId.
@@ -2495,11 +2495,11 @@ export { prisma };
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\persistance\UserRepository.ts ===
 
-import { IUserRepository} from '@kikerepo/domain-authentication';
-import { User } from '@kikerepo/domain-authentication';
+import { IUserRepository} from '@kikerepo/authentication-domain';
+import { User } from '@kikerepo/authentication-domain';
 import { prisma } from './UserDatabase';
 import { injectable } from 'inversify';
-import { logger } from '@kikerepo/infrastructure-common'; // <--- Logger
+import { logger } from '@kikerepo/common-infrastructure'; // <--- Logger
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -2561,7 +2561,7 @@ export class UserRepository implements IUserRepository {
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\services\Argon2HashingService.ts ===
 
 // infrastructure/services/Argon2HashingService.ts
-import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/domain-authentication';
+import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/authentication-domain';
 import argon2 from 'argon2';
 import { injectable } from 'inversify';
 @injectable()
@@ -2588,7 +2588,7 @@ export {Argon2HashingService} from './Argon2HashingService';
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\package.json ===
 
 {
-  "name": "@kikerepo/infrastructure-common",
+  "name": "@kikerepo/common-infrastructure",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -2599,7 +2599,7 @@ export {Argon2HashingService} from './Argon2HashingService';
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/contracts-common": "workspace:*",
+    "@kikerepo/common-contracts": "workspace:*",
     "jsonwebtoken": "^9.0.2",
     "winston": "^3.17.0"
   }
@@ -2622,7 +2622,7 @@ export {Argon2HashingService} from './Argon2HashingService';
   "include": ["src", "types"]  ,
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../../contracts/_common" } // Uses compiled @kikerepo/contracts-common
+    { "path": "../../contracts/_common" } // Uses compiled @kikerepo/common-contracts
   ]
 }
 
@@ -3623,11 +3623,11 @@ CMD ["yarn", "dev"]
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@kikerepo/application-authentication": "workspace:*",
-    "@kikerepo/contracts-authentication": "workspace:*",
-    "@kikerepo/domain-authentication": "workspace:*",
-    "@kikerepo/infrastructure-authentication": "workspace:*",
-    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/authentication-application": "workspace:*",
+    "@kikerepo/authentication-contracts": "workspace:*",
+    "@kikerepo/authentication-domain": "workspace:*",
+    "@kikerepo/authentication-infrastructure": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
@@ -3710,7 +3710,7 @@ import {
 import {
   IUserRepository, IUserRepositoryToken,
   IHashingService, IHashingServiceToken
-} from '@kikerepo/domain-authentication';
+} from '@kikerepo/authentication-domain';
 
 import {
    UserRepository,
@@ -3718,14 +3718,14 @@ import {
    connectPrisma, 
    AuthenticationService, 
    AuthenticationServiceToken
-} from '@kikerepo/infrastructure-authentication';
+} from '@kikerepo/authentication-infrastructure';
 
 import { 
   RegisterCommandHandler, 
   RegisterCommandHandlerToken, 
   LoginQueryHandler, 
   LoginQueryHandlerToken 
-}from '@kikerepo/application-authentication';
+}from '@kikerepo/authentication-application';
 
 import {
    UserController, 
@@ -3781,8 +3781,8 @@ export * from './UserController';
 
 import { Request, Response, NextFunction } from 'express';
 import { injectable, inject } from 'inversify';
-import { logger } from '@kikerepo/infrastructure-common';
-import { AuthenticationService,AuthenticationServiceToken  } from '@kikerepo/infrastructure-authentication';
+import { logger } from '@kikerepo/common-infrastructure';
+import { AuthenticationService,AuthenticationServiceToken  } from '@kikerepo/authentication-infrastructure';
 
 export const UserControllerToken = Symbol('UserControllerToken');
 
@@ -3830,10 +3830,10 @@ export *from './UserRoutes';
 // services/service-authentication/src/routes/UserRoutes.ts
 
 import { Router, Request, Response, NextFunction } from 'express';
-import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/application-common';
-import { NotFoundError } from '@kikerepo/contracts-common';
+import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/common-application';
+import { NotFoundError } from '@kikerepo/common-contracts';
 
-import { LoginQuery, RegisterCommand } from '@kikerepo/application-authentication';
+import { LoginQuery, RegisterCommand } from '@kikerepo/authentication-application';
 // Aqu√≠ no importamos container ni resolvemos el controlador.
 // Simplemente exportamos una funci√≥n que recibe el controlador ya instanciado.
 export function CreateUserRoutes(userController: { 
@@ -4150,343 +4150,343 @@ FROM redis:7.0-alpine
 
 === DIRECTORY TREE ===
 Listado de rutas de carpetas
-El n˙mero de serie del volumen es 00000048 EA56:DBC0
+El nÔøΩmero de serie del volumen es 00000048 EA56:DBC0
 C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
-¶   .gitignore
-¶   .yarnrc.yml
-¶   combined.txt
-¶   jest.config.ts
-¶   MergeAll 2.ps1
-¶   MergeAll.ps1
-¶   package.json
-¶   tsconfig.json
-¶   turbo.json
-¶   yarn.lock
-¶   
+ÔøΩ   .gitignore
+ÔøΩ   .yarnrc.yml
+ÔøΩ   combined.txt
+ÔøΩ   jest.config.ts
+ÔøΩ   MergeAll 2.ps1
+ÔøΩ   MergeAll.ps1
+ÔøΩ   package.json
+ÔøΩ   tsconfig.json
+ÔøΩ   turbo.json
+ÔøΩ   yarn.lock
+ÔøΩ   
 +---.yarn
-¶   ¶   install-state.gz
-¶   ¶   
-¶   +---releases
-¶           yarn-berry.js
-¶           
+ÔøΩ   ÔøΩ   install-state.gz
+ÔøΩ   ÔøΩ   
+ÔøΩ   +---releases
+ÔøΩ           yarn-berry.js
+ÔøΩ           
 +---docker
-¶   +---development
-¶   ¶       docker-compose.yml
-¶   ¶       
-¶   +---production
-¶           docker-compose.yml
-¶           
+ÔøΩ   +---development
+ÔøΩ   ÔøΩ       docker-compose.yml
+ÔøΩ   ÔøΩ       
+ÔøΩ   +---production
+ÔøΩ           docker-compose.yml
+ÔøΩ           
 +---packages
-¶   +---application
-¶   ¶   +---authentication
-¶   ¶   ¶   ¶   package.json
-¶   ¶   ¶   ¶   tsconfig.json
-¶   ¶   ¶   ¶   
-¶   ¶   ¶   +---src
-¶   ¶   ¶       ¶   index.ts
-¶   ¶   ¶       ¶   
-¶   ¶   ¶       +---commands
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       RegisterCommand.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---errors
-¶   ¶   ¶       ¶       EmailAlreadyInUseError.ts
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       LoginCredentialsError.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---events
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       UserLoggedInEvent.ts
-¶   ¶   ¶       ¶       UserRegisteredEvent.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---handlers
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       LoginQueryHandler.ts
-¶   ¶   ¶       ¶       RegisterCommandHandler.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---mappers
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       LoginRequestToLoginQueryMapper.ts
-¶   ¶   ¶       ¶       LoginResultToLoginResponseMapper.ts
-¶   ¶   ¶       ¶       RegisterRequestToRegisterCommandMapper.ts
-¶   ¶   ¶       ¶       RegisterResultToRegisterResponseMapper.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---queries
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       LoginQuery.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---results
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       LoginResult.ts
-¶   ¶   ¶       ¶       RegisterResult.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---validators
-¶   ¶   ¶               index.ts
-¶   ¶   ¶               IsPhoneNumber.ts
-¶   ¶   ¶               IsStrongPassword.ts
-¶   ¶   ¶               
-¶   ¶   +---_common
-¶   ¶       ¶   package.json
-¶   ¶       ¶   tsconfig.json
-¶   ¶       ¶   
-¶   ¶       +---src
-¶   ¶           ¶   index.ts
-¶   ¶           ¶   Result.ts
-¶   ¶           ¶   
-¶   ¶           +---behaviours
-¶   ¶           ¶       AuthorizationBehaviour.ts
-¶   ¶           ¶       index.ts
-¶   ¶           ¶       ValidationBehaviour.ts
-¶   ¶           ¶       
-¶   ¶           +---middleware
-¶   ¶                   ErrorHandlerMiddleware.ts
-¶   ¶                   index.ts
-¶   ¶                   ValidationMiddleware.ts
-¶   ¶                   
-¶   +---contracts
-¶   ¶   +---authentication
-¶   ¶   ¶   ¶   package.json
-¶   ¶   ¶   ¶   tsconfig.json
-¶   ¶   ¶   ¶   
-¶   ¶   ¶   +---src
-¶   ¶   ¶       ¶   index.ts
-¶   ¶   ¶       ¶   
-¶   ¶   ¶       +---requests
-¶   ¶   ¶       ¶       ChangePasswordRequest.ts
-¶   ¶   ¶       ¶       ForgotPasswordRequest.ts
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       LoginRequest.ts
-¶   ¶   ¶       ¶       RegisterRequest.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---responses
-¶   ¶   ¶               ChangePasswordResponse.ts
-¶   ¶   ¶               ForgotPaswordResponse.ts
-¶   ¶   ¶               index.ts
-¶   ¶   ¶               LoginResponse.ts
-¶   ¶   ¶               RegisterResponse.ts
-¶   ¶   ¶               
-¶   ¶   +---_common
-¶   ¶       ¶   package.json
-¶   ¶       ¶   tsconfig.json
-¶   ¶       ¶   
-¶   ¶       +---src
-¶   ¶           ¶   index.ts
-¶   ¶           ¶   
-¶   ¶           +---errors
-¶   ¶                   BaseError.ts
-¶   ¶                   ConflictError.ts
-¶   ¶                   index.ts
-¶   ¶                   InternalError.ts
-¶   ¶                   NotFoundError.ts
-¶   ¶                   ValidationError.ts
-¶   ¶                   
-¶   +---domain
-¶   ¶   +---authentication
-¶   ¶   ¶   ¶   package.json
-¶   ¶   ¶   ¶   tsconfig.json
-¶   ¶   ¶   ¶   
-¶   ¶   ¶   +---src
-¶   ¶   ¶       ¶   index.ts
-¶   ¶   ¶       ¶   
-¶   ¶   ¶       +---entities
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       User.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---events
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       UserCreatedEvent.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---interfaces
-¶   ¶   ¶       ¶       IHashingService.ts
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       IUserRepository.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---value-objects
-¶   ¶   ¶               AccessToken.ts
-¶   ¶   ¶               Email.ts
-¶   ¶   ¶               HashedPassword.ts
-¶   ¶   ¶               index.ts
-¶   ¶   ¶               InputPassword.ts
-¶   ¶   ¶               Phone.ts
-¶   ¶   ¶               RefreshToken.ts
-¶   ¶   ¶               UserId.ts
-¶   ¶   ¶               
-¶   ¶   +---_common
-¶   ¶       ¶   package.json
-¶   ¶       ¶   tsconfig.json
-¶   ¶       ¶   
-¶   ¶       +---src
-¶   ¶           ¶   AggregateRoot.ts
-¶   ¶           ¶   AggregateRootId.ts
-¶   ¶           ¶   DomainError.ts
-¶   ¶           ¶   DomainEvent.ts
-¶   ¶           ¶   Entity.ts
-¶   ¶           ¶   index.ts
-¶   ¶           ¶   ValueObject.ts
-¶   ¶           ¶   
-¶   ¶           +---interfaces
-¶   ¶           ¶       IEntityId.ts
-¶   ¶           ¶       IErrorResponse.ts
-¶   ¶           ¶       index.ts
-¶   ¶           ¶       
-¶   ¶           +---value-objects
-¶   ¶                   CreationDate.ts
-¶   ¶                   DeletionDate.ts
-¶   ¶                   index.ts
-¶   ¶                   
-¶   +---infrastructure
-¶   ¶   +---authentication
-¶   ¶   ¶   ¶   package.json
-¶   ¶   ¶   ¶   tsconfig.json
-¶   ¶   ¶   ¶   
-¶   ¶   ¶   +---src
-¶   ¶   ¶       ¶   index.ts
-¶   ¶   ¶       ¶   
-¶   ¶   ¶       +---authentication
-¶   ¶   ¶       ¶   ¶   AuthenticationService.ts
-¶   ¶   ¶       ¶   ¶   index.ts
-¶   ¶   ¶       ¶   ¶   Token.ts
-¶   ¶   ¶       ¶   ¶   
-¶   ¶   ¶       ¶   +---errors
-¶   ¶   ¶       ¶           index.ts
-¶   ¶   ¶       ¶           TokenGenerationError.ts
-¶   ¶   ¶       ¶           TokenVerificationError.ts
-¶   ¶   ¶       ¶           
-¶   ¶   ¶       +---persistance
-¶   ¶   ¶       ¶       index.ts
-¶   ¶   ¶       ¶       UserDatabase.ts
-¶   ¶   ¶       ¶       UserRepository.ts
-¶   ¶   ¶       ¶       
-¶   ¶   ¶       +---services
-¶   ¶   ¶               Argon2HashingService.ts
-¶   ¶   ¶               index.ts
-¶   ¶   ¶               
-¶   ¶   +---_common
-¶   ¶       ¶   package.json
-¶   ¶       ¶   tsconfig.json
-¶   ¶       ¶   
-¶   ¶       +---src
-¶   ¶           ¶   index.ts
-¶   ¶           ¶   
-¶   ¶           +---logging
-¶   ¶           ¶       index.ts
-¶   ¶           ¶       logger.ts
-¶   ¶           ¶       
-¶   ¶           +---middleware
-¶   ¶                   AuthenticationMiddleware.ts
-¶   ¶                   index.ts
-¶   ¶                   RequestLoggerMiddleware.ts
-¶   ¶                   
-¶   +---utils
-¶       +---env
-¶       ¶   ¶   index.ts
-¶       ¶   ¶   package.json
-¶       ¶   ¶   tsconfig.json
-¶       ¶   ¶   
-¶       ¶   +---src
-¶       ¶   ¶   ¶   index.ts
-¶       ¶   ¶   ¶   requireEnv.ts
-¶       ¶   ¶   ¶   
-¶       ¶   ¶   +---errors
-¶       ¶   ¶           index.ts
-¶       ¶   ¶           MissingEnvVarError.ts
-¶       ¶   ¶           
-¶       ¶   +---__tests__
-¶       ¶           basic.spec.ts
-¶       ¶           
-¶       +---kafka-client
-¶       ¶   ¶   package.json
-¶       ¶   ¶   tsconfig.json
-¶       ¶   ¶   
-¶       ¶   +---src
-¶       ¶   ¶       index.ts
-¶       ¶   ¶       KafkaClient.ts
-¶       ¶   ¶       
-¶       ¶   +---__tests__
-¶       ¶           kafkaclient.spec.ts
-¶       ¶           
-¶       +---redis-client
-¶       ¶   ¶   package.json
-¶       ¶   ¶   tsconfig.json
-¶       ¶   ¶   
-¶       ¶   +---src
-¶       ¶   ¶       index.ts
-¶       ¶   ¶       RedisClient.ts
-¶       ¶   ¶       
-¶       ¶   +---__tests__
-¶       ¶           redisclient.spec.ts
-¶       ¶           
-¶       +---uuid6
-¶           ¶   index.ts
-¶           ¶   package.json
-¶           ¶   tsconfig.json
-¶           ¶   
-¶           +---src
-¶           ¶       index.ts
-¶           ¶       uuid6.ts
-¶           ¶       
-¶           +---__tests__
-¶                   basic.spec.ts
-¶                   
+ÔøΩ   +---application
+ÔøΩ   ÔøΩ   +---authentication
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   package.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ   +---src
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ       +---commands
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       RegisterCommand.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---errors
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       EmailAlreadyInUseError.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginCredentialsError.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---events
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       UserLoggedInEvent.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       UserRegisteredEvent.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---handlers
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginQueryHandler.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       RegisterCommandHandler.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---mappers
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginRequestToLoginQueryMapper.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginResultToLoginResponseMapper.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       RegisterRequestToRegisterCommandMapper.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       RegisterResultToRegisterResponseMapper.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---queries
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginQuery.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---results
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginResult.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       RegisterResult.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---validators
+ÔøΩ   ÔøΩ   ÔøΩ               index.ts
+ÔøΩ   ÔøΩ   ÔøΩ               IsPhoneNumber.ts
+ÔøΩ   ÔøΩ   ÔøΩ               IsStrongPassword.ts
+ÔøΩ   ÔøΩ   ÔøΩ               
+ÔøΩ   ÔøΩ   +---_common
+ÔøΩ   ÔøΩ       ÔøΩ   package.json
+ÔøΩ   ÔøΩ       ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ       +---src
+ÔøΩ   ÔøΩ           ÔøΩ   index.ts
+ÔøΩ   ÔøΩ           ÔøΩ   Result.ts
+ÔøΩ   ÔøΩ           ÔøΩ   
+ÔøΩ   ÔøΩ           +---behaviours
+ÔøΩ   ÔøΩ           ÔøΩ       AuthorizationBehaviour.ts
+ÔøΩ   ÔøΩ           ÔøΩ       index.ts
+ÔøΩ   ÔøΩ           ÔøΩ       ValidationBehaviour.ts
+ÔøΩ   ÔøΩ           ÔøΩ       
+ÔøΩ   ÔøΩ           +---middleware
+ÔøΩ   ÔøΩ                   ErrorHandlerMiddleware.ts
+ÔøΩ   ÔøΩ                   index.ts
+ÔøΩ   ÔøΩ                   ValidationMiddleware.ts
+ÔøΩ   ÔøΩ                   
+ÔøΩ   +---contracts
+ÔøΩ   ÔøΩ   +---authentication
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   package.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ   +---src
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ       +---requests
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       ChangePasswordRequest.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       ForgotPasswordRequest.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       LoginRequest.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       RegisterRequest.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---responses
+ÔøΩ   ÔøΩ   ÔøΩ               ChangePasswordResponse.ts
+ÔøΩ   ÔøΩ   ÔøΩ               ForgotPaswordResponse.ts
+ÔøΩ   ÔøΩ   ÔøΩ               index.ts
+ÔøΩ   ÔøΩ   ÔøΩ               LoginResponse.ts
+ÔøΩ   ÔøΩ   ÔøΩ               RegisterResponse.ts
+ÔøΩ   ÔøΩ   ÔøΩ               
+ÔøΩ   ÔøΩ   +---_common
+ÔøΩ   ÔøΩ       ÔøΩ   package.json
+ÔøΩ   ÔøΩ       ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ       +---src
+ÔøΩ   ÔøΩ           ÔøΩ   index.ts
+ÔøΩ   ÔøΩ           ÔøΩ   
+ÔøΩ   ÔøΩ           +---errors
+ÔøΩ   ÔøΩ                   BaseError.ts
+ÔøΩ   ÔøΩ                   ConflictError.ts
+ÔøΩ   ÔøΩ                   index.ts
+ÔøΩ   ÔøΩ                   InternalError.ts
+ÔøΩ   ÔøΩ                   NotFoundError.ts
+ÔøΩ   ÔøΩ                   ValidationError.ts
+ÔøΩ   ÔøΩ                   
+ÔøΩ   +---domain
+ÔøΩ   ÔøΩ   +---authentication
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   package.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ   +---src
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ       +---entities
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       User.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---events
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       UserCreatedEvent.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---interfaces
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       IHashingService.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       IUserRepository.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---value-objects
+ÔøΩ   ÔøΩ   ÔøΩ               AccessToken.ts
+ÔøΩ   ÔøΩ   ÔøΩ               Email.ts
+ÔøΩ   ÔøΩ   ÔøΩ               HashedPassword.ts
+ÔøΩ   ÔøΩ   ÔøΩ               index.ts
+ÔøΩ   ÔøΩ   ÔøΩ               InputPassword.ts
+ÔøΩ   ÔøΩ   ÔøΩ               Phone.ts
+ÔøΩ   ÔøΩ   ÔøΩ               RefreshToken.ts
+ÔøΩ   ÔøΩ   ÔøΩ               UserId.ts
+ÔøΩ   ÔøΩ   ÔøΩ               
+ÔøΩ   ÔøΩ   +---_common
+ÔøΩ   ÔøΩ       ÔøΩ   package.json
+ÔøΩ   ÔøΩ       ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ       +---src
+ÔøΩ   ÔøΩ           ÔøΩ   AggregateRoot.ts
+ÔøΩ   ÔøΩ           ÔøΩ   AggregateRootId.ts
+ÔøΩ   ÔøΩ           ÔøΩ   DomainError.ts
+ÔøΩ   ÔøΩ           ÔøΩ   DomainEvent.ts
+ÔøΩ   ÔøΩ           ÔøΩ   Entity.ts
+ÔøΩ   ÔøΩ           ÔøΩ   index.ts
+ÔøΩ   ÔøΩ           ÔøΩ   ValueObject.ts
+ÔøΩ   ÔøΩ           ÔøΩ   
+ÔøΩ   ÔøΩ           +---interfaces
+ÔøΩ   ÔøΩ           ÔøΩ       IEntityId.ts
+ÔøΩ   ÔøΩ           ÔøΩ       IErrorResponse.ts
+ÔøΩ   ÔøΩ           ÔøΩ       index.ts
+ÔøΩ   ÔøΩ           ÔøΩ       
+ÔøΩ   ÔøΩ           +---value-objects
+ÔøΩ   ÔøΩ                   CreationDate.ts
+ÔøΩ   ÔøΩ                   DeletionDate.ts
+ÔøΩ   ÔøΩ                   index.ts
+ÔøΩ   ÔøΩ                   
+ÔøΩ   +---infrastructure
+ÔøΩ   ÔøΩ   +---authentication
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   package.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ   ÔøΩ   ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ   +---src
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ       +---authentication
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   ÔøΩ   AuthenticationService.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   ÔøΩ   index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   ÔøΩ   Token.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   ÔøΩ   
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ   +---errors
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ           index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ           TokenGenerationError.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ           TokenVerificationError.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ           
+ÔøΩ   ÔøΩ   ÔøΩ       +---persistance
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       index.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       UserDatabase.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       UserRepository.ts
+ÔøΩ   ÔøΩ   ÔøΩ       ÔøΩ       
+ÔøΩ   ÔøΩ   ÔøΩ       +---services
+ÔøΩ   ÔøΩ   ÔøΩ               Argon2HashingService.ts
+ÔøΩ   ÔøΩ   ÔøΩ               index.ts
+ÔøΩ   ÔøΩ   ÔøΩ               
+ÔøΩ   ÔøΩ   +---_common
+ÔøΩ   ÔøΩ       ÔøΩ   package.json
+ÔøΩ   ÔøΩ       ÔøΩ   tsconfig.json
+ÔøΩ   ÔøΩ       ÔøΩ   
+ÔøΩ   ÔøΩ       +---src
+ÔøΩ   ÔøΩ           ÔøΩ   index.ts
+ÔøΩ   ÔøΩ           ÔøΩ   
+ÔøΩ   ÔøΩ           +---logging
+ÔøΩ   ÔøΩ           ÔøΩ       index.ts
+ÔøΩ   ÔøΩ           ÔøΩ       logger.ts
+ÔøΩ   ÔøΩ           ÔøΩ       
+ÔøΩ   ÔøΩ           +---middleware
+ÔøΩ   ÔøΩ                   AuthenticationMiddleware.ts
+ÔøΩ   ÔøΩ                   index.ts
+ÔøΩ   ÔøΩ                   RequestLoggerMiddleware.ts
+ÔøΩ   ÔøΩ                   
+ÔøΩ   +---utils
+ÔøΩ       +---env
+ÔøΩ       ÔøΩ   ÔøΩ   index.ts
+ÔøΩ       ÔøΩ   ÔøΩ   package.json
+ÔøΩ       ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ       ÔøΩ   ÔøΩ   
+ÔøΩ       ÔøΩ   +---src
+ÔøΩ       ÔøΩ   ÔøΩ   ÔøΩ   index.ts
+ÔøΩ       ÔøΩ   ÔøΩ   ÔøΩ   requireEnv.ts
+ÔøΩ       ÔøΩ   ÔøΩ   ÔøΩ   
+ÔøΩ       ÔøΩ   ÔøΩ   +---errors
+ÔøΩ       ÔøΩ   ÔøΩ           index.ts
+ÔøΩ       ÔøΩ   ÔøΩ           MissingEnvVarError.ts
+ÔøΩ       ÔøΩ   ÔøΩ           
+ÔøΩ       ÔøΩ   +---__tests__
+ÔøΩ       ÔøΩ           basic.spec.ts
+ÔøΩ       ÔøΩ           
+ÔøΩ       +---kafka-client
+ÔøΩ       ÔøΩ   ÔøΩ   package.json
+ÔøΩ       ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ       ÔøΩ   ÔøΩ   
+ÔøΩ       ÔøΩ   +---src
+ÔøΩ       ÔøΩ   ÔøΩ       index.ts
+ÔøΩ       ÔøΩ   ÔøΩ       KafkaClient.ts
+ÔøΩ       ÔøΩ   ÔøΩ       
+ÔøΩ       ÔøΩ   +---__tests__
+ÔøΩ       ÔøΩ           kafkaclient.spec.ts
+ÔøΩ       ÔøΩ           
+ÔøΩ       +---redis-client
+ÔøΩ       ÔøΩ   ÔøΩ   package.json
+ÔøΩ       ÔøΩ   ÔøΩ   tsconfig.json
+ÔøΩ       ÔøΩ   ÔøΩ   
+ÔøΩ       ÔøΩ   +---src
+ÔøΩ       ÔøΩ   ÔøΩ       index.ts
+ÔøΩ       ÔøΩ   ÔøΩ       RedisClient.ts
+ÔøΩ       ÔøΩ   ÔøΩ       
+ÔøΩ       ÔøΩ   +---__tests__
+ÔøΩ       ÔøΩ           redisclient.spec.ts
+ÔøΩ       ÔøΩ           
+ÔøΩ       +---uuid6
+ÔøΩ           ÔøΩ   index.ts
+ÔøΩ           ÔøΩ   package.json
+ÔøΩ           ÔøΩ   tsconfig.json
+ÔøΩ           ÔøΩ   
+ÔøΩ           +---src
+ÔøΩ           ÔøΩ       index.ts
+ÔøΩ           ÔøΩ       uuid6.ts
+ÔøΩ           ÔøΩ       
+ÔøΩ           +---__tests__
+ÔøΩ                   basic.spec.ts
+ÔøΩ                   
 +---services
     +---service-authentication
-    ¶   ¶   .env.development
-    ¶   ¶   Dockerfile.development
-    ¶   ¶   package.json
-    ¶   ¶   tsconfig.json
-    ¶   ¶   
-    ¶   +---prisma
-    ¶   ¶   ¶   schema.prisma
-    ¶   ¶   ¶   
-    ¶   ¶   +---migrations
-    ¶   ¶       ¶   migration_lock.toml
-    ¶   ¶       ¶   
-    ¶   ¶       +---20250120232605_init
-    ¶   ¶       ¶       migration.sql
-    ¶   ¶       ¶       
-    ¶   ¶       +---20250122200614_add_deleted
-    ¶   ¶               migration.sql
-    ¶   ¶               
-    ¶   +---src
-    ¶   ¶   ¶   index.ts
-    ¶   ¶   ¶   
-    ¶   ¶   +---bootstrap
-    ¶   ¶   ¶       container.ts
-    ¶   ¶   ¶       index.ts
-    ¶   ¶   ¶       
-    ¶   ¶   +---controllers
-    ¶   ¶   ¶       index.ts
-    ¶   ¶   ¶       UserController.ts
-    ¶   ¶   ¶       
-    ¶   ¶   +---routes
-    ¶   ¶           index.ts
-    ¶   ¶           UserRoutes.ts
-    ¶   ¶           
-    ¶   +---__http__
-    ¶   ¶       login.http
-    ¶   ¶       register.http
-    ¶   ¶       
-    ¶   +---__tests__
-    ¶           basic.spec.ts
-    ¶           
+    ÔøΩ   ÔøΩ   .env.development
+    ÔøΩ   ÔøΩ   Dockerfile.development
+    ÔøΩ   ÔøΩ   package.json
+    ÔøΩ   ÔøΩ   tsconfig.json
+    ÔøΩ   ÔøΩ   
+    ÔøΩ   +---prisma
+    ÔøΩ   ÔøΩ   ÔøΩ   schema.prisma
+    ÔøΩ   ÔøΩ   ÔøΩ   
+    ÔøΩ   ÔøΩ   +---migrations
+    ÔøΩ   ÔøΩ       ÔøΩ   migration_lock.toml
+    ÔøΩ   ÔøΩ       ÔøΩ   
+    ÔøΩ   ÔøΩ       +---20250120232605_init
+    ÔøΩ   ÔøΩ       ÔøΩ       migration.sql
+    ÔøΩ   ÔøΩ       ÔøΩ       
+    ÔøΩ   ÔøΩ       +---20250122200614_add_deleted
+    ÔøΩ   ÔøΩ               migration.sql
+    ÔøΩ   ÔøΩ               
+    ÔøΩ   +---src
+    ÔøΩ   ÔøΩ   ÔøΩ   index.ts
+    ÔøΩ   ÔøΩ   ÔøΩ   
+    ÔøΩ   ÔøΩ   +---bootstrap
+    ÔøΩ   ÔøΩ   ÔøΩ       container.ts
+    ÔøΩ   ÔøΩ   ÔøΩ       index.ts
+    ÔøΩ   ÔøΩ   ÔøΩ       
+    ÔøΩ   ÔøΩ   +---controllers
+    ÔøΩ   ÔøΩ   ÔøΩ       index.ts
+    ÔøΩ   ÔøΩ   ÔøΩ       UserController.ts
+    ÔøΩ   ÔøΩ   ÔøΩ       
+    ÔøΩ   ÔøΩ   +---routes
+    ÔøΩ   ÔøΩ           index.ts
+    ÔøΩ   ÔøΩ           UserRoutes.ts
+    ÔøΩ   ÔøΩ           
+    ÔøΩ   +---__http__
+    ÔøΩ   ÔøΩ       login.http
+    ÔøΩ   ÔøΩ       register.http
+    ÔøΩ   ÔøΩ       
+    ÔøΩ   +---__tests__
+    ÔøΩ           basic.spec.ts
+    ÔøΩ           
     +---service-kafka
-    ¶       .env.development
-    ¶       docker-compose.yml
-    ¶       Dockerfile.development
-    ¶       package.json
-    ¶       
+    ÔøΩ       .env.development
+    ÔøΩ       docker-compose.yml
+    ÔøΩ       Dockerfile.development
+    ÔøΩ       package.json
+    ÔøΩ       
     +---service-mailing
-    ¶   ¶   .env.development
-    ¶   ¶   Dockerfile.development
-    ¶   ¶   package.json
-    ¶   ¶   tsconfig.json
-    ¶   ¶   
-    ¶   +---src
-    ¶   ¶       index.ts
-    ¶   ¶       
-    ¶   +---__tests__
-    ¶           basic.spec.ts
-    ¶           
+    ÔøΩ   ÔøΩ   .env.development
+    ÔøΩ   ÔøΩ   Dockerfile.development
+    ÔøΩ   ÔøΩ   package.json
+    ÔøΩ   ÔøΩ   tsconfig.json
+    ÔøΩ   ÔøΩ   
+    ÔøΩ   +---src
+    ÔøΩ   ÔøΩ       index.ts
+    ÔøΩ   ÔøΩ       
+    ÔøΩ   +---__tests__
+    ÔøΩ           basic.spec.ts
+    ÔøΩ           
     +---service-redis-server
             .env.development
             docker-compose.yml

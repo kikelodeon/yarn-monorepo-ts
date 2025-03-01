@@ -1,5 +1,5 @@
 {
-  "name": "@kikerepo/application-common",
+  "name": "@kikerepo/common-application",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -10,8 +10,8 @@
     "test": "jest"
   },
   "dependencies": {
-    "@kikerepo/contracts-common": "workspace:*",
-    "@kikerepo/infrastructure-common": "workspace:*",
+    "@kikerepo/common-contracts": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
     "fp-ts": "^2.16.9"
   }
 }

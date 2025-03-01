@@ -2,7 +2,7 @@
 
 import { IsEmail, ValidateNested } from 'class-validator';
 import { Type } from 'class-transformer';
-import { Email,InputPassword } from "@kikerepo/domain-authentication";
+import { Email,InputPassword } from "@kikerepo/authentication-domain";
 import { IsStrongPassword } from '../validators';
 
 /**

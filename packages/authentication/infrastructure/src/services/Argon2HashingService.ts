@@ -1,5 +1,5 @@
 // infrastructure/services/Argon2HashingService.ts
-import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/domain-authentication';
+import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/authentication-domain';
 import argon2 from 'argon2';
 import { injectable } from 'inversify';
 @injectable()
