@@ -1360,7 +1360,6 @@ __metadata:
   resolution: "@kikerepo/authentication-infrastructure@workspace:packages/authentication/infrastructure"
   dependencies:
     "@kikerepo/authentication-application": "workspace:*"
-    "@kikerepo/authentication-contracts": "workspace:*"
     "@kikerepo/authentication-domain": "workspace:*"
     "@kikerepo/common-infrastructure": "workspace:*"
     "@prisma/client": "npm:^6.2.1"

@@ -11,7 +11,6 @@
   },
   "dependencies": {
     "@kikerepo/authentication-application": "workspace:*",
-    "@kikerepo/authentication-contracts": "workspace:*",
     "@kikerepo/authentication-domain": "workspace:*",
     "@kikerepo/common-infrastructure": "workspace:*",
     "@prisma/client": "^6.2.1",
