@@ -18,15 +18,15 @@
     { "path": "./packages/utils/env" },
     { "path": "./packages/utils/uuid6" },
     //Common
-    { "path": "./packages/domain/_common" },
-    { "path": "./packages/infrastructure/_common" },
-    { "path": "./packages/contracts/_common" },
-    { "path": "./packages/application/_common" },
+    { "path": "./packages/_common/domain" },
+    { "path": "./packages/_common/infrastructure" },
+    { "path": "./packages/_common/contracts" },
+    { "path": "./packages/_common/application" },
     //User
-    { "path": "./packages/domain/user" },
-    { "path": "./packages/infrastructure/user" },
-    { "path": "./packages/contracts/user" },
-    { "path": "./packages/application/user" },
+    { "path": "./packages/authentication/domain" },
+    { "path": "./packages/authentication/infrastructure" },
+    { "path": "./packages/authentication/contracts" },
+    { "path": "./packages/authentication/application" },
     //Session
   /*  { "path": "./packages/domain/session" },
     { "path": "./packages/infrastructure/session" },

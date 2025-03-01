@@ -10,6 +10,6 @@
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/contracts-common
+    { "path": "../../_common/infrastructure" } // Uses compiled @kikerepo/infrastructure-common
   ]
 }

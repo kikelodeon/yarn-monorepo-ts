@@ -1326,9 +1326,9 @@ __metadata:
   languageName: node
   linkType: hard
 
-"@kikerepo/application-authentication@workspace:*, @kikerepo/application-authentication@workspace:packages/application/authentication":
+"@kikerepo/application-authentication@workspace:*, @kikerepo/application-authentication@workspace:packages/authentication/application":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/application-authentication@workspace:packages/application/authentication"
+  resolution: "@kikerepo/application-authentication@workspace:packages/authentication/application"
   dependencies:
     "@kikerepo/application-common": "workspace:*"
     "@kikerepo/contracts-common": "workspace:*"
@@ -1339,9 +1339,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/application-common@workspace:*, @kikerepo/application-common@workspace:packages/application/_common":
+"@kikerepo/application-common@workspace:*, @kikerepo/application-common@workspace:packages/_common/application":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/application-common@workspace:packages/application/_common"
+  resolution: "@kikerepo/application-common@workspace:packages/_common/application"
   dependencies:
     "@kikerepo/contracts-common": "workspace:*"
     "@kikerepo/infrastructure-common": "workspace:*"
@@ -1349,39 +1349,39 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/contracts-authentication@workspace:*, @kikerepo/contracts-authentication@workspace:packages/contracts/authentication":
+"@kikerepo/contracts-authentication@workspace:*, @kikerepo/contracts-authentication@workspace:packages/authentication/contracts":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/contracts-authentication@workspace:packages/contracts/authentication"
+  resolution: "@kikerepo/contracts-authentication@workspace:packages/authentication/contracts"
   dependencies:
     "@kikerepo/domain-common": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/contracts-common@workspace:*, @kikerepo/contracts-common@workspace:packages/contracts/_common":
+"@kikerepo/contracts-common@workspace:*, @kikerepo/contracts-common@workspace:packages/_common/contracts":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/contracts-common@workspace:packages/contracts/_common"
+  resolution: "@kikerepo/contracts-common@workspace:packages/_common/contracts"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/domain-authentication@workspace:*, @kikerepo/domain-authentication@workspace:packages/domain/authentication":
+"@kikerepo/domain-authentication@workspace:*, @kikerepo/domain-authentication@workspace:packages/authentication/domain":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/domain-authentication@workspace:packages/domain/authentication"
+  resolution: "@kikerepo/domain-authentication@workspace:packages/authentication/domain"
   dependencies:
     "@kikerepo/domain-common": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/domain-common@workspace:*, @kikerepo/domain-common@workspace:packages/domain/_common":
+"@kikerepo/domain-common@workspace:*, @kikerepo/domain-common@workspace:packages/_common/domain":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/domain-common@workspace:packages/domain/_common"
+  resolution: "@kikerepo/domain-common@workspace:packages/_common/domain"
   dependencies:
     "@kikerepo/utils-uuid6": "workspace:*"
   languageName: unknown
   linkType: soft
 
-"@kikerepo/infrastructure-authentication@workspace:*, @kikerepo/infrastructure-authentication@workspace:packages/infrastructure/authentication":
+"@kikerepo/infrastructure-authentication@workspace:*, @kikerepo/infrastructure-authentication@workspace:packages/authentication/infrastructure":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/infrastructure-authentication@workspace:packages/infrastructure/authentication"
+  resolution: "@kikerepo/infrastructure-authentication@workspace:packages/authentication/infrastructure"
   dependencies:
     "@kikerepo/application-authentication": "workspace:*"
     "@kikerepo/contracts-authentication": "workspace:*"
@@ -1393,9 +1393,9 @@ __metadata:
   languageName: unknown
   linkType: soft
 
-"@kikerepo/infrastructure-common@workspace:*, @kikerepo/infrastructure-common@workspace:packages/infrastructure/_common":
+"@kikerepo/infrastructure-common@workspace:*, @kikerepo/infrastructure-common@workspace:packages/_common/infrastructure":
   version: 0.0.0-use.local
-  resolution: "@kikerepo/infrastructure-common@workspace:packages/infrastructure/_common"
+  resolution: "@kikerepo/infrastructure-common@workspace:packages/_common/infrastructure"
   dependencies:
     "@kikerepo/contracts-common": "workspace:*"
     jsonwebtoken: "npm:^9.0.2"

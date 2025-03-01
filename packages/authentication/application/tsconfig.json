@@ -5,11 +5,16 @@
     "rootDir": "./src", // Only source files are included
     "composite": true, // Required for project references
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
   },
-  "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/domain-common
+    { "path": "../../_common/application" } // Uses compiled @kikerepo/domain-common
   ]
 }
