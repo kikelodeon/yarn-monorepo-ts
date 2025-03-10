@@ -1,7 +1,6 @@
 // packages/application/user/src/results/LoginResult.ts
 
-import { UserId } from '@kikerepo/authentication-domain';
-import { AccessToken, RefreshToken } from '@kikerepo/authentication-domain';
+import { UserId ,AccessToken ,RefreshToken } from '@kikerepo/authentication-domain';
 
 export class LoginResult {
   constructor(

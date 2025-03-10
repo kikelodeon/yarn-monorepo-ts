@@ -91,15 +91,15 @@ export default config;
     { "path": "./packages/utils/env" },
     { "path": "./packages/utils/uuid6" },
     //Common
-    { "path": "./packages/domain/_common" },
-    { "path": "./packages/infrastructure/_common" },
-    { "path": "./packages/contracts/_common" },
-    { "path": "./packages/application/_common" },
+    { "path": "./packages/_common/domain" },
+    { "path": "./packages/_common/infrastructure" },
+    { "path": "./packages/_common/contracts" },
+    { "path": "./packages/_common/application" },
     //User
-    { "path": "./packages/domain/user" },
-    { "path": "./packages/infrastructure/user" },
-    { "path": "./packages/contracts/user" },
-    { "path": "./packages/application/user" },
+    { "path": "./packages/authentication/domain" },
+    { "path": "./packages/authentication/infrastructure" },
+    { "path": "./packages/authentication/contracts" },
+    { "path": "./packages/authentication/application" },
     //Session
   /*  { "path": "./packages/domain/session" },
     { "path": "./packages/infrastructure/session" },
@@ -241,7 +241,7 @@ volumes:
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\package.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\package.json ===
 
 {
   "name": "@kikerepo/authentication-application",
@@ -255,9 +255,9 @@ volumes:
     "test": "jest"
   },
   "dependencies": {
+    "@kikerepo/authentication-domain": "workspace:*",
     "@kikerepo/common-application": "workspace:*",
     "@kikerepo/common-contracts": "workspace:*",
-    "@kikerepo/authentication-domain": "workspace:*",
     "class-transformer": "^0.5.1",
     "class-validator": "^0.14.1",
     "libphonenumber-js": "^1.11.18"
@@ -267,7 +267,7 @@ volumes:
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\tsconfig.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -286,14 +286,14 @@ volumes:
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/common-domain
+    { "path": "../../_common/application" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\index.ts ===
 
 export * from './commands';
 export * from './queries';
@@ -306,7 +306,7 @@ export * from './errors';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\commands\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\commands\index.ts ===
 
 
 export * from './RegisterCommand';
@@ -314,7 +314,7 @@ export * from './RegisterCommand';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\commands\RegisterCommand.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\commands\RegisterCommand.ts ===
 
 // src/application/user/commands/RegisterCommand.ts
 import { IsEmail, IsString, IsOptional, Length } from 'class-validator';
@@ -344,7 +344,7 @@ export class RegisterCommand {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\errors\EmailAlreadyInUseError.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\errors\EmailAlreadyInUseError.ts ===
 
 // src/application/user/errors/EmailAlreadyInUseError.ts
 import { ConflictError } from '@kikerepo/common-contracts'; // Import the ValidationError from contracts
@@ -363,7 +363,7 @@ export class EmailAlreadyInUseError extends ConflictError {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\errors\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\errors\index.ts ===
 
 
 export { EmailAlreadyInUseError } from './EmailAlreadyInUseError';
@@ -371,7 +371,7 @@ export { LoginCredentialsError } from './LoginCredentialsError';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\errors\LoginCredentialsError.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\errors\LoginCredentialsError.ts ===
 
 // src/application/user/errors/EmailAlreadyInUseError.ts
 import { ConflictError } from '@kikerepo/common-contracts'; // Import the ValidationError from contracts
@@ -390,7 +390,7 @@ export class LoginCredentialsError extends ConflictError {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\events\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\events\index.ts ===
 
 
 export * from './UserLoggedInEvent';
@@ -399,7 +399,7 @@ export * from './UserRegisteredEvent';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\events\UserLoggedInEvent.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\events\UserLoggedInEvent.ts ===
 
 export class UserLoggedInEvent {
     constructor(public readonly userId: string, public readonly timestamp: Date) {}
@@ -408,7 +408,7 @@ export class UserLoggedInEvent {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\events\UserRegisteredEvent.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\events\UserRegisteredEvent.ts ===
 
 export class UserRegisteredEvent {
     constructor(
@@ -421,7 +421,7 @@ export class UserRegisteredEvent {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\handlers\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\handlers\index.ts ===
 
 // src/shared/validation/index.ts
 export { LoginQueryHandler,LoginQueryHandlerToken } from './LoginQueryHandler';
@@ -429,7 +429,7 @@ export { RegisterCommandHandler,RegisterCommandHandlerToken } from './RegisterCo
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\handlers\LoginQueryHandler.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\handlers\LoginQueryHandler.ts ===
 
 // packages/application/user/src/handlers/LoginQueryHandler.ts
 
@@ -474,7 +474,7 @@ export class LoginQueryHandler {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\handlers\RegisterCommandHandler.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\handlers\RegisterCommandHandler.ts ===
 
 import { injectable, inject } from 'inversify';
 import { IUserRepository, IUserRepositoryToken, IHashingService, IHashingServiceToken } from '@kikerepo/authentication-domain';
@@ -513,7 +513,7 @@ export class RegisterCommandHandler {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\mappers\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\mappers\index.ts ===
 
 // src/shared/validation/index.ts
 export { RegisterResultToRegisterResponseMapper } from './RegisterResultToRegisterResponseMapper';
@@ -524,7 +524,7 @@ export { LoginRequestToLoginQueryMapper } from './LoginRequestToLoginQueryMapper
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\mappers\LoginRequestToLoginQueryMapper.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\mappers\LoginRequestToLoginQueryMapper.ts ===
 
 // packages/application/user/src/mappers/LoginRequestToLoginQueryMapper.ts
 
@@ -547,7 +547,7 @@ export class LoginRequestToLoginQueryMapper {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\mappers\LoginResultToLoginResponseMapper.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\mappers\LoginResultToLoginResponseMapper.ts ===
 
 // packages/application/user/src/mappers/LoginResultToLoginResponseMapper.ts
 
@@ -571,7 +571,7 @@ export class LoginResultToLoginResponseMapper {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\mappers\RegisterRequestToRegisterCommandMapper.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\mappers\RegisterRequestToRegisterCommandMapper.ts ===
 
 import { RegisterRequest } from '@kikerepo/authentication-contracts';
 import { RegisterCommand } from '../commands';
@@ -589,7 +589,7 @@ export class RegisterRequestToRegisterCommandMapper {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\mappers\RegisterResultToRegisterResponseMapper.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\mappers\RegisterResultToRegisterResponseMapper.ts ===
 
 // src/application/user/mappers/UserRegisterResultToResponseMapper.ts
 import { RegisterResult as RegisterResult } from '../results/RegisterResult';  // Assuming this is the result class
@@ -608,13 +608,13 @@ export class RegisterResultToRegisterResponseMapper {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\queries\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\queries\index.ts ===
 
 export * from './LoginQuery';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\queries\LoginQuery.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\queries\LoginQuery.ts ===
 
 // src/application/queries/LoginQuery.ts
 
@@ -643,7 +643,7 @@ export class LoginQuery {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\results\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\results\index.ts ===
 
 export * from './LoginResult';
 export * from './RegisterResult';
@@ -651,12 +651,13 @@ export * from './RegisterResult';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\results\LoginResult.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\results\LoginResult.ts ===
 
 // packages/application/user/src/results/LoginResult.ts
 
 import { UserId } from '@kikerepo/authentication-domain';
-import { AccessToken, RefreshToken } from '@kikerepo/authentication-domain';
+import {  RefreshToken } from '@kikerepo/authentication-domain';
+import { AccessToken } from '@kikerepo/common-domain';
 
 export class LoginResult {
   constructor(
@@ -669,7 +670,7 @@ export class LoginResult {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\results\RegisterResult.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\results\RegisterResult.ts ===
 
 import { UserId,Email } from "@kikerepo/authentication-domain";
 
@@ -686,7 +687,7 @@ export class RegisterResult {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\validators\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\validators\index.ts ===
 
 // src/shared/validation/index.ts
 export { IsStrongPassword } from './IsStrongPassword';
@@ -695,7 +696,7 @@ export { IsPhoneNumberCustom as IsPhoneNumber } from './IsPhoneNumber';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\validators\IsPhoneNumber.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\validators\IsPhoneNumber.ts ===
 
 // src/shared/validation/decorators/IsPhoneNumber.ts
 import {
@@ -749,7 +750,7 @@ export function IsPhoneNumberCustom(validationOptions?: ValidationOptions) {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\authentication\src\validators\IsStrongPassword.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\validators\IsStrongPassword.ts ===
 
 // src/shared/validation/decorators/IsStrongPassword.ts
 import {
@@ -803,294 +804,7 @@ export function IsStrongPassword(
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\package.json ===
-
-{
-  "name": "@kikerepo/common-application",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -b",
-    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
-    "uninstall": "rimraf node_modules",
-    "test": "jest"
-  },
-  "dependencies": {
-    "@kikerepo/common-contracts": "workspace:*",
-    "@kikerepo/common-infrastructure": "workspace:*",
-    "fp-ts": "^2.16.9"
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\tsconfig.json ===
-
-{
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-
-  ]
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\index.ts ===
-
-export * from './middleware';
-export * from './behaviours';
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\Result.ts ===
-
-import { Either, left, right } from 'fp-ts/Either';
-
-/**
- * Represents the outcome of an operation, which can be either an error or a success.
- */
-export type Result<E, T> = Either<E, T>;
-
-/**
- * Helper function to create a failure result.
- * @param error The error value.
- */
-export const failure = <E, T = never>(error: E): Result<E, T> => left(error);
-
-/**
- * Helper function to create a success result.
- * @param value The success value.
- */
-export const success = <E = never, T = any>(value: T): Result<E, T> => right(value);
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\AuthorizationBehaviour.ts ===
-
- /* export const AuthorizationBehaviour = (
-  req: Request,
-    res: Response,
-    next: NextFunction
-  ): void => {
-    // 1) Leer el header Authorization
-    const authHeader = req.headers.authorization;
-    if (!authHeader) {
-      return res.status(401).json({ message: 'No token provided' });
-    }
-
-    // 2) Verificar formato: "Bearer <token>"
-    const parts = authHeader.split(' ');
-    if (parts.length !== 2 || parts[0] !== 'Bearer') {
-      return res.status(401).json({ message: 'Invalid token format' });
-    }
-
-    const token = parts[1];
-
-    // 3) Comprobar el token (tokenFake en este ejemplo)
-    if (token !== 'tokenFake') {
-      return res.status(401).json({ message: 'Invalid token' });
-    }
-
-    // 4) Si es vÃ¡lido, continuar con la ejecuciÃ³n
-    next();
-  };
-*/
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\index.ts ===
-
-export { ValidationBehaviour } from './ValidationBehaviour';
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\behaviours\ValidationBehaviour.ts ===
-
-// src/application/common/services/ValidationService.ts
-import { validate } from 'class-validator'; // validate function from class-validator
-import { ValidationError } from '@kikerepo/common-contracts'; // Custom error class
-
-export class ValidationBehaviour {
-  /**
-   * Validate an object based on class-validator decorators.
-   * @param target - The object to validate (must be an instance of a class with class-validator decorators).
-   * @throws ValidationError - If validation fails, an error is thrown with the formatted errors.
-   */
-  public async validate<T extends object>(target: T): Promise<void> {
-    // Perform the validation using class-validator
-    const validationErrors = await validate(target);
-
-    if (validationErrors.length > 0) {
-      // Map validation errors into Record<string, string[]>
-      const formattedErrors: Record<string, string[]> = {};
-
-      validationErrors.forEach((error) => {
-        const property = error.property;
-        const messages = error.constraints ? Object.values(error.constraints) : [];
-        formattedErrors[property] = messages;
-      });
-
-      // Throw a formatted validation error
-      throw new ValidationError(formattedErrors);
-    }
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ErrorHandlerMiddleware.ts ===
-
-import { BaseError, InternalError, ValidationError } from '@kikerepo/common-contracts';
-import { Request, Response, NextFunction } from 'express';
-import { logger } from '@kikerepo/common-infrastructure';
-// FunciÃ³n para manejar la respuesta de errores
-const handleErrorResponse = (err: BaseError, res: Response): void => {
-  const { message, errorCode, statusCode, timestamp, context, stack } = err;
-
-  // Control de entorno para ocultar detalles en producciÃ³n
-  const isProduction = process.env.NODE_ENV === 'production';
-
-  // Si el entorno es producciÃ³n, ocultamos detalles sensibles como el stack trace
-  const errorResponse: any = {
-    code: errorCode,
-    message,
-    statusCode,
-    timestamp,
-    context,
-  };
-
-  // En producciÃ³n no se debe exponer el stack trace
-  if (!isProduction && stack) {
-    errorResponse.stack = stack;  // Agregamos el stack solo si no es producciÃ³n
-  }
-
-  res.status(statusCode).json(errorResponse);
-};
-
-// Middleware para manejar errores
-export const ErrorHandlerMiddleware = (
-  err: Error,
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  let context = {};
-
-  // Si el error es de validaciÃ³n, manejamos el caso por separado
-  if (err instanceof ValidationError) {
-    context = {
-      input: req.body,  // AquÃ­ se incluyen los datos de la solicitud, si es relevante
-      fieldErrors: err.validationErrors,  // Los errores de validaciÃ³n
-    };
-    logger.debug(err.name, context);
-    return handleErrorResponse(err, res);
-  }
-
-  // Para cualquier otro error que sea instancia de BaseError, usamos la misma lÃ³gica
-  if (err instanceof BaseError) {
-    context = {
-      requestBody: req.body,
-      endpoint: req.url,
-    };
-    logger.debug(err.name, context);
-    return handleErrorResponse(err, res);  // Llamamos a la funciÃ³n de manejo de errores para BaseError
-  }
-
-  // Para errores no controlados o cualquier otro tipo de error, lo manejamos como un error genÃ©rico
-  const internalError = new InternalError();
-
-  // AquÃ­ agregamos el stack trace en el error interno para depuraciÃ³n
-  internalError.stack = err.stack;
-
-  // Si hay un error interno, puedes agregar mÃ¡s contexto si es necesario
-  context = {
-    environment: process.env.NODE_ENV,
-    endpoint: req.url,
-    requestBody: req.body,
-  };
-  logger.debug(internalError.name, context);
-  return handleErrorResponse(internalError, res);  // Llamamos a la funciÃ³n para manejar el error interno
-};
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\index.ts ===
-
-export {ErrorHandlerMiddleware} from './ErrorHandlerMiddleware';
-export {ValidationMiddleware} from './ValidationMiddleware';
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\application\_common\src\middleware\ValidationMiddleware.ts ===
-
-// packages/infrastructure/_common/src/middleware/ValidationMiddleware.ts
-import { plainToInstance } from 'class-transformer';
-import { validate } from 'class-validator';
-import { Request, Response, NextFunction, RequestHandler } from 'express';
-import { ValidationError } from '@kikerepo/common-contracts';
-
-/**
- * Validation middleware for Express using class-transformer + class-validator.
- * 
- * @param dtoClass The DTO class to validate (must have class-validator decorators).
- * @returns A RequestHandler that validates req.body and either returns 400 or calls next().
- */
-export function ValidationMiddleware(
-  dtoClass: new (...args: any[]) => object
-): RequestHandler {
-  return async (req: Request, res: Response, next: NextFunction) => {
-    try {
-      // 1) Transform the plain JSON body into an instance of dtoClass
-      const dtoObject = plainToInstance(dtoClass, req.body);
-
-      // 2) Validate the instance
-      const errors = await validate(dtoObject);
-
-      if (errors.length > 0) {
-        // 3) If errors, format them
-        const formatted: Record<string, string[]> = {};
-
-        for (const err of errors) {
-          const property = err.property;
-          const constraints = err.constraints ? Object.values(err.constraints) : [];
-          formatted[property] = constraints;
-        }
-
-        // 4) Respond with 400 and a ValidationError shape
-        //    Note: Do NOT return the `Response` object; call `res.json(...)` then `return;`
-        res.status(400).json(new ValidationError(formatted));
-        return; // ensures TypeScript sees our function returning void
-      }
-
-      // 5) No errors: move on to the next middleware / route handler
-      next();
-    } catch (err) {
-      // For unexpected errors, let your global ErrorHandlerMiddleware handle it
-      next(err);
-    }
-  };
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\package.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\package.json ===
 
 {
   "name": "@kikerepo/authentication-contracts",
@@ -1111,7 +825,7 @@ export function ValidationMiddleware(
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\tsconfig.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -1125,14 +839,14 @@ export function ValidationMiddleware(
   "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/common-contracts
+    { "path": "../../_common/contracts" } // Uses compiled @kikerepo/common-contracts
   ]
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\index.ts ===
 
 export * from './responses';
 export * from './requests';
@@ -1140,28 +854,28 @@ export * from './requests';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\requests\ChangePasswordRequest.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\requests\ChangePasswordRequest.ts ===
 
 
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\requests\ForgotPasswordRequest.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\requests\ForgotPasswordRequest.ts ===
 
 
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\requests\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\requests\index.ts ===
 
 export * from './LoginRequest';
 export * from './RegisterRequest';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\requests\LoginRequest.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\requests\LoginRequest.ts ===
 
 
 // packages/contracts/user/src/requests/UserLoginRequest.ts
@@ -1173,7 +887,7 @@ export interface LoginRequest {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\requests\RegisterRequest.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\requests\RegisterRequest.ts ===
 
 export class RegisterRequest {
   email: string;
@@ -1190,21 +904,21 @@ export class RegisterRequest {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\responses\ChangePasswordResponse.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\responses\ChangePasswordResponse.ts ===
 
 
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\responses\ForgotPaswordResponse.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\responses\ForgotPaswordResponse.ts ===
 
 
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\responses\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\responses\index.ts ===
 
 export * from './LoginResponse';
 export * from './RegisterResponse';
@@ -1212,7 +926,7 @@ export * from './RegisterResponse';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\responses\LoginResponse.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\responses\LoginResponse.ts ===
 
 // packages/contracts/user/src/responses/LoginResponse.ts
 
@@ -1234,7 +948,7 @@ export class LoginResponse {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\authentication\src\responses\RegisterResponse.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\contracts\src\responses\RegisterResponse.ts ===
 
 // src/application/user/commands/UserRegisterResponse.ts
 export class RegisterResponse {
@@ -1250,176 +964,7 @@ export class RegisterResponse {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\package.json ===
-
-{
-  "name": "@kikerepo/common-contracts",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -b",
-    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
-    "uninstall": "rimraf node_modules",
-    "test": "jest"
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\tsconfig.json ===
-
-{
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-
-  ]
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\index.ts ===
-
-export * from './errors';
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\BaseError.ts ===
-
-export abstract class BaseError extends Error {
-  public readonly statusCode: number;
-  public readonly timestamp: string;
-  public readonly errorCode: string;
-  public readonly context?: any;
-
-  constructor(
-    message: string,
-    statusCode: number,
-    errorCode: string,
-    context?: any
-  ) {
-    super(message);
-    this.statusCode = statusCode;
-    this.errorCode = errorCode;
-    this.timestamp = new Date().toISOString(); // Marca de tiempo en formato ISO
-    this.context = context; // InformaciÃ³n adicional si es necesario
-
-    // Asegurarse de que el nombre del error estÃ© configurado correctamente
-    this.name = this.constructor.name;
-
-    // Este mÃ©todo permite la correcta herencia del stack trace
-    if (Error.captureStackTrace) {
-      Error.captureStackTrace(this, this.constructor);
-    }
-  }
-
-  // MÃ©todo para serializar el error en formato JSON
-  public toJSON() {
-    return {
-      message: this.message,
-      code: this.errorCode,
-      statusCode: this.statusCode,
-      timestamp: this.timestamp,
-      context: this.context,
-    };
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ConflictError.ts ===
-
-import { BaseError } from './BaseError';
-
-export class ConflictError extends BaseError {
-  constructor(message: string = 'An internal server error occurred', context?: any) {
-    super(message, 409, 'CONFLICT', context); // Llamamos al constructor de BaseError
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\index.ts ===
-
-export * from './BaseError';
-export * from './InternalError';
-export * from './ValidationError';
-export * from './NotFoundError';
-export * from './ConflictError';
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\InternalError.ts ===
-
-import { BaseError } from './BaseError';
-
-export class InternalError extends BaseError {
-  constructor(message: string = 'An internal server error occurred', context?: any) {
-    super(message, 500, 'INTERNAL_ERROR', context); // Llamamos al constructor de BaseError
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\NotFoundError.ts ===
-
-import { BaseError } from './BaseError';
-
-export class NotFoundError extends BaseError {
-  constructor(message: string = 'The resource was not found.', context?: any) {
-    super(message, 404, 'NOT FOUND', context); // Llamamos al constructor de BaseError
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\contracts\_common\src\errors\ValidationError.ts ===
-
-import { BaseError } from './BaseError';
-
-export class ValidationError extends BaseError {
-  public readonly validationErrors: Record<string, string[]>;
-
-  constructor(validationErrors: Record<string, string[]>, context?: any) {
-    // Usamos el constructor de BaseError, agregamos un mensaje y el cÃ³digo de estado 400 para errores de validaciÃ³n
-    super('One or more validation errors occurred.', 400, 'VALIDATION_ERROR', context);
-    this.validationErrors = validationErrors;
-  }
-
-  /**
-   * Converts the ValidationError into a JSON-serializable format.
-   */
-  toJSON() {
-    return {
-      message: this.message,
-      code: this.errorCode,  // Usamos errorCode en lugar de un valor estÃ¡tico
-      statusCode: this.statusCode,
-      timestamp: this.timestamp,  // Agregamos el timestamp de la clase base
-      validationErrors: this.validationErrors,
-      context: this.context,  // Contexto adicional si se pasÃ³
-    };
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\package.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\package.json ===
 
 {
   "name": "@kikerepo/authentication-domain",
@@ -1440,7 +985,7 @@ export class ValidationError extends BaseError {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\tsconfig.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -1454,14 +999,14 @@ export class ValidationError extends BaseError {
   "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/common-domain
+    { "path": "../../_common/domain" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\index.ts ===
 
 export * from './value-objects';
 export * from './events';
@@ -1473,13 +1018,13 @@ export * from './entities';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\entities\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\entities\index.ts ===
 
 export { User } from './User'
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\entities\User.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\entities\User.ts ===
 
 // domain-user/src/entities/User.ts
 import { AggregateRoot, CreationDate, DeletionDate } from '@kikerepo/common-domain';
@@ -1591,7 +1136,7 @@ export class User extends AggregateRoot<UserId> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\events\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\events\index.ts ===
 
 // shared/src/domain/valueObjects/index.ts
 export { UserCreatedEvent } from './UserCreatedEvent';
@@ -1601,7 +1146,7 @@ export { UserCreatedEvent } from './UserCreatedEvent';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\events\UserCreatedEvent.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\events\UserCreatedEvent.ts ===
 
 import { DomainEvent } from '@kikerepo/common-domain';
 
@@ -1622,7 +1167,7 @@ export class UserCreatedEvent extends DomainEvent {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\interfaces\IHashingService.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\interfaces\IHashingService.ts ===
 
 import { InputPassword } from "../value-objects";
 import { HashedPassword } from "../value-objects/HashedPassword";
@@ -1635,7 +1180,7 @@ export interface IHashingService {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\interfaces\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\interfaces\index.ts ===
 
 
 export { IUserRepository, IUserRepositoryToken } from './IUserRepository';
@@ -1643,7 +1188,7 @@ export { IHashingService, IHashingServiceToken } from './IHashingService';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\interfaces\IUserRepository.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\interfaces\IUserRepository.ts ===
 
 import { User } from '../entities/User';
 
@@ -1660,29 +1205,7 @@ export interface IUserRepository {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\AccessToken.ts ===
-
-// packages/domain/user/src/value-objects/AccessToken.ts
-
-import { ValueObject } from '@kikerepo/common-domain';
-
-export class AccessToken extends ValueObject<string> {
-  constructor(token: string) {
-    // AquÃ­ podrÃ­as agregar validaciones, por ejemplo, verificar si el token
-    // cumple con un formato JWT (opcional, segÃºn tus necesidades)
-    if (!token || typeof token !== 'string') {
-      throw new Error('Access token must be a non-empty string.');
-    }
-    super(token);
-  }
-  
-  // Puedes agregar mÃ©todos adicionales, por ejemplo, para obtener la expiraciÃ³n, etc.
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\Email.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\Email.ts ===
 
 import { ValueObject } from '@kikerepo/common-domain';
 
@@ -1701,7 +1224,7 @@ export class Email extends ValueObject<string> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\HashedPassword.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\HashedPassword.ts ===
 
 import { ValueObject } from '@kikerepo/common-domain';
 
@@ -1716,14 +1239,13 @@ export class HashedPassword extends ValueObject<string> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\index.ts ===
 
 export { Email } from './Email';
 export { HashedPassword } from './HashedPassword';
 export { Phone } from './Phone';
 export { UserId } from './UserId';
 export { InputPassword } from './InputPassword';
-export { AccessToken } from './AccessToken';
 export { RefreshToken } from './RefreshToken';
 
 
@@ -1731,7 +1253,7 @@ export { RefreshToken } from './RefreshToken';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\InputPassword.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\InputPassword.ts ===
 
 import { ValueObject } from '@kikerepo/common-domain';
 
@@ -1745,7 +1267,7 @@ export class InputPassword extends ValueObject<string> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\Phone.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\Phone.ts ===
 
 import { ValueObject } from '@kikerepo/common-domain';
 
@@ -1766,7 +1288,7 @@ export class Phone extends ValueObject<string> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\RefreshToken.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\RefreshToken.ts ===
 
 // packages/domain/user/src/value-objects/RefreshToken.ts
 
@@ -1786,7 +1308,7 @@ export class RefreshToken extends ValueObject<string> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\authentication\src\value-objects\UserId.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\UserId.ts ===
 
 
 import { ValueObject } from '@kikerepo/common-domain';
@@ -1805,382 +1327,7 @@ export class UserId extends ValueObject<string> {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\package.json ===
-
-{
-  "name": "@kikerepo/common-domain",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -b",
-    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
-    "uninstall": "rimraf node_modules",
-    "test": "jest"
-  },
-  "dependencies": {
-    "@kikerepo/utils-uuid6": "workspace:*"
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\tsconfig.json ===
-
-{
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"],
-  "references": [
-    { "path": "../../utils/uuid6" } // Explicit dependency on @kikerepo/utils-uuid6
-  ]
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRoot.ts ===
-
-// packages/shared/src/domain/aggregateRoots/AggregateRoot.ts
-
-import { Entity } from './Entity';
-import { ValueObject } from './ValueObject';
-import { DomainEvent } from './DomainEvent';
-
-export abstract class AggregateRoot<TId extends ValueObject<string>> extends Entity<TId> {
-  private readonly _domainEvents: DomainEvent[] = [];
-
-  /**
-   * Adds a new domain event to the aggregate.
-   * @param event The domain event to add.
-   */
-  protected addDomainEvent(event: DomainEvent): void {
-    this._domainEvents.push(event);
-  }
-
-  /**
-   * Returns all domain events emitted by this aggregate.
-   * @returns A copy of the list of domain events.
-   */
-  public get domainEvents(): DomainEvent[] {
-    return [...this._domainEvents];
-  }
-
-  /**
-   * Clears all domain events from the aggregate.
-   */
-  public clearDomainEvents(): void {
-    this._domainEvents.length = 0;
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\AggregateRootId.ts ===
-
-// packages/shared/src/domain/valueObjects/AggregateRootId.ts
-import { ValueObject } from './ValueObject';
-// Replace with your actual UUID v6 generator
-import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
-
-export class AggregateRootId extends ValueObject<string> {
-  constructor(value?: string) {
-    super(value ? value : generateUUIDv6());
-  }
-  toString(): string {
-    throw new Error('Method not implemented.');
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainError.ts ===
-
-export class DomainError extends Error {
-  constructor(message: string) {
-    super(message);
-    this.name += '[DomainError]';
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\DomainEvent.ts ===
-
-export abstract class DomainEvent {
-  public readonly occurredAt: Date;
-  public readonly eventId: string;
-
-  constructor() {
-    this.occurredAt = new Date();
-    this.eventId = DomainEvent.generateId();
-  }
-
-  private static generateId(): string {
-    // Generate a unique identifier for the event (can be UUID or similar)
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
-  }
-
-  abstract eventName(): string; // Each event should define its own name
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\Entity.ts ===
-
-// packages/shared/src/domain/entities/Entity.ts
-
-import { CreationDate, DeletionDate } from './value-objects';
-import { ValueObject } from './ValueObject';
-
-export abstract class Entity<TId extends ValueObject<string>> {
-  protected readonly _id: TId;
-  protected readonly _creationDate: CreationDate;
-  private _deletionDate?: DeletionDate;
-
-  constructor(id: TId, creationDate?: CreationDate, deletionDate?: DeletionDate) {
-    this._id = id;
-    this._creationDate = creationDate?? new CreationDate();
-    this._deletionDate = deletionDate?? undefined;
-  }
-
-  public get creationDate(): CreationDate {
-    return this._creationDate;
-  }
-
-  public get id(): TId {
-    return this._id;
-  }
-
-  public get deletionDate(): DeletionDate | undefined {
-    return this._deletionDate;
-  }
-
-  public isDeleted(): boolean {
-    return !!this._deletionDate;
-  }
-
-  
-  public delete(deletionDate: DeletionDate): void {
-    if (this._deletionDate) {
-      throw new Error('Entity is already deleted.');
-    }
-    this._deletionDate = deletionDate;
-  }
-
-  public equals(entity?: Entity<TId>): boolean {
-    if (entity === null || entity === undefined) {
-      return false;
-    }
-
-    if (entity === this) {
-      return true;
-    }
-
-    if (entity.constructor !== this.constructor) {
-      return false;
-    }
-
-    return this.id.equals(entity.id);
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\index.ts ===
-
-export * from './ValueObject';
-export * from './Entity';
-export * from './AggregateRoot';
-export * from './DomainEvent';
-export * from './DomainError';
-export * from './value-objects';
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\ValueObject.ts ===
-
-export abstract class ValueObject<T> {
-  private readonly _value: T;
-
-  constructor(value: T) {
-    if (value === null || value === undefined) {
-      throw new Error('ValueObject cannot be null or undefined');
-    }
-    this._value = Object.freeze(value); // Make the value immutable
-  }
-
-  /**
-   * Gets the encapsulated value.
-   */
-  get value(): T {
-    return this._value;
-  }
-
-  /**
-   * Checks equality between two value objects.
-   * @param other - The other value object to compare.
-   * @returns True if the values are equal, false otherwise.
-   */
-  public equals(other: ValueObject<T>): boolean {
-    if (other === null || other === undefined) {
-      return false;
-    }
-
-    return JSON.stringify(this._value) === JSON.stringify(other.value);
-  }
-
-  /**
-   * Converts the value to a string.
-   * @returns The string representation of the encapsulated value.
-   */
-  public toString(): string {
-    return String(this._value);
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IEntityId.ts ===
-
-export interface IEntityId {
-  /**
-   * Returns the string representation of the ID.
-   * Useful for serialization and logging.
-   */
-  toString(): string;
-
-  /**
-   * Compares this ID with another for equality.
-   * @param id - The ID to compare with.
-   * @returns `true` if both IDs are equal, `false` otherwise.
-   */
-  equals(id: IEntityId): boolean;
-}
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\IErrorResponse.ts ===
-
-// packages/shared/src/errors/interfaces/IErrorResponse.ts
-
-export interface IErrorResponse {
-  status: number;
-  message: string;
-  errors?: string[];
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\interfaces\index.ts ===
-
-// shared/src/domain/interfaces/index.ts
-export * from './IEntityId';
-export * from './IErrorResponse';
-// Export other interfaces as needed
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\CreationDate.ts ===
-
-export class CreationDate {
-    private readonly _value: Date;
-  
-    constructor(date?: Date) {
-      this._value = date ? new Date(date) : new Date();
-      this.validate();
-    }
-  
-    private validate() {
-      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
-        throw new Error('Invalid creation date.');
-      }
-  
-      const now = new Date();
-      if (this._value > now) {
-        throw new Error('Creation date cannot be in the future.');
-      }
-    }
-  
-    get value(): Date {
-      return new Date(this._value);
-    }
-  
-    equals(other: CreationDate): boolean {
-      return this._value.getTime() === other._value.getTime();
-    }
-  
-    toString(): string {
-      return this._value.toISOString();
-    }
-  }
-  
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\DeletionDate.ts ===
-
-export class DeletionDate {
-    private readonly _value: Date;
-  
-    constructor(date?: Date) {
-      this._value = date ? new Date(date) : new Date();
-      this.validate();
-    }
-  
-    private validate() {
-      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
-        throw new Error('Invalid deletion date.');
-      }
-  
-      const now = new Date();
-      if (this._value > now) {
-        throw new Error('Creation date cannot be in the future.');
-      }
-    }
-  
-    get value(): Date {
-      return new Date(this._value);
-    }
-  
-    equals(other: DeletionDate): boolean {
-      return this._value.getTime() === other._value.getTime();
-    }
-  
-    toString(): string {
-      return this._value.toISOString();
-    }
-  }
-  
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\domain\_common\src\value-objects\index.ts ===
-
-export * from './CreationDate';
-export * from './DeletionDate';
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\package.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\package.json ===
 
 {
   "name": "@kikerepo/authentication-infrastructure",
@@ -2195,7 +1342,6 @@ export * from './DeletionDate';
   },
   "dependencies": {
     "@kikerepo/authentication-application": "workspace:*",
-    "@kikerepo/authentication-contracts": "workspace:*",
     "@kikerepo/authentication-domain": "workspace:*",
     "@kikerepo/common-infrastructure": "workspace:*",
     "@prisma/client": "^6.2.1",
@@ -2209,7 +1355,7 @@ export * from './DeletionDate';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\tsconfig.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
@@ -2220,17 +1366,17 @@ export * from './DeletionDate';
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src"],
+  "include": ["src", "../../_common/infrastructure/src/persistance/PrismaClient.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../_common" } // Uses compiled @kikerepo/common-domain
+    { "path": "../../_common/infrastructure" } // Uses compiled @kikerepo/common-infrastructure
   ]
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\index.ts ===
 
 export * from './services';
 export * from './persistance'
@@ -2238,7 +1384,7 @@ export * from './authentication'
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\authentication\AuthenticationService.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\authentication\AuthenticationService.ts ===
 
 // packages/infrastructure-user/src/authentication/AuthenticationService.ts
 
@@ -2318,7 +1464,7 @@ export class AuthenticationService {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\authentication\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\authentication\index.ts ===
 
 export * from './Token';
 export * from './AuthenticationService';
@@ -2326,15 +1472,15 @@ export * from './errors';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\authentication\Token.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\authentication\Token.ts ===
 
 // packages/infrastructure-user/src/authentication/Token.ts
 
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { requireEnv } from '@kikerepo/utils-env';
 import { TokenGenerationError, TokenVerificationError } from './errors';
-import { AccessToken , RefreshToken} from '@kikerepo/authentication-domain';
-
+import {  RefreshToken} from '@kikerepo/authentication-domain';
+import { AccessToken } from '@kikerepo/common-domain';
 /**
  * Interfaz extendida para el payload, asegurando la existencia de userId.
  */
@@ -2418,14 +1564,14 @@ export const verifyRefreshToken = (token: string): RefreshToken => {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\authentication\errors\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\authentication\errors\index.ts ===
 
 export * from './TokenGenerationError';
 export * from './TokenVerificationError';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\authentication\errors\TokenGenerationError.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\authentication\errors\TokenGenerationError.ts ===
 
 /**
  * Error lanzado cuando falla la generaciÃ³n del token.
@@ -2440,7 +1586,7 @@ export class TokenGenerationError extends Error {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\authentication\errors\TokenVerificationError.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\authentication\errors\TokenVerificationError.ts ===
 
 /**
  * Error lanzado cuando falla la verificaciÃ³n del token.
@@ -2454,52 +1600,18 @@ export class TokenVerificationError extends Error {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\persistance\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\persistance\index.ts ===
 
-export * from './UserDatabase';
 export * from './UserRepository';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\persistance\UserDatabase.ts ===
-
-// services/service-authentication/src/bootstrap/prismaClient.ts
-
-import { PrismaClient } from '@prisma/client';
-
-const prisma = new PrismaClient();
-
-export async function connectPrisma(): Promise<void> {
-  try {
-    await prisma.$connect();
-    console.log('[PrismaClient] Connected to PostgreSQL');
-  } catch (error) {
-    console.error('[PrismaClient] Connection error:', error);
-    process.exit(1);
-  }
-}
-
-export async function disconnectPrisma(): Promise<void> {
-  try {
-    await prisma.$disconnect();
-    console.log('[PrismaClient] Disconnected from PostgreSQL');
-  } catch (error) {
-    console.error('[PrismaClient] Disconnection error:', error);
-  }
-}
-
-export { prisma };
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\persistance\UserRepository.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\persistance\UserRepository.ts ===
 
 import { IUserRepository} from '@kikerepo/authentication-domain';
 import { User } from '@kikerepo/authentication-domain';
-import { prisma } from './UserDatabase';
 import { injectable } from 'inversify';
-import { logger } from '@kikerepo/common-infrastructure'; // <--- Logger
+import { logger ,prisma} from '@kikerepo/common-infrastructure'; // <--- Logger
 
 @injectable()
 export class UserRepository implements IUserRepository {
@@ -2558,7 +1670,7 @@ export class UserRepository implements IUserRepository {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\services\Argon2HashingService.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\services\Argon2HashingService.ts ===
 
 // infrastructure/services/Argon2HashingService.ts
 import { IHashingService ,HashedPassword, InputPassword } from '@kikerepo/authentication-domain';
@@ -2579,16 +1691,16 @@ export class Argon2HashingService implements IHashingService {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\authentication\src\services\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\infrastructure\src\services\index.ts ===
 
 export {Argon2HashingService} from './Argon2HashingService';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\package.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\package.json ===
 
 {
-  "name": "@kikerepo/common-infrastructure",
+  "name": "@kikerepo/session-application",
   "version": "1.0.0",
   "main": "./dist/index.js",
   "types": "./dist/index.d.ts",
@@ -2599,221 +1711,452 @@ export {Argon2HashingService} from './Argon2HashingService';
     "test": "jest"
   },
   "dependencies": {
+    "@kikerepo/common-application": "workspace:*",
     "@kikerepo/common-contracts": "workspace:*",
-    "jsonwebtoken": "^9.0.2",
-    "winston": "^3.17.0"
+    "@kikerepo/session-domain": "workspace:*",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.14.1",
+    "libphonenumber-js": "^1.11.18"
   }
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\tsconfig.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\tsconfig.json ===
 
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
     "declaration": true,
-    "declarationMap": true
+    "declarationMap": true,
+    "strict": true,
+    "esModuleInterop": true,
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "skipLibCheck": true,
   },
-  "include": ["src", "types"]  ,
+  "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../../contracts/_common" } // Uses compiled @kikerepo/common-contracts
+    { "path": "../../_common/application" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\index.ts ===
-
-export * from './middleware';
-export * from './logging';
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\index.ts ===
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\index.ts ===
 
-export {logger} from './logger';
-
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\commands\index.ts ===
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\logging\logger.ts ===
 
-// packages/infrastructure/_common/src/logging/logger.ts
-import { createLogger, format, transports } from 'winston';
-import chalk from 'chalk';
-import dayjs from 'dayjs';
 
-const { combine, timestamp, printf } = format;
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\errors\index.ts ===
 
-// Formato personalizado
-const consoleFormat = printf((info) => {
-  // Aseguramos que el timestamp es una cadena
-  const rawTimestamp = typeof info.timestamp === 'string' ? info.timestamp : new Date().toISOString();
-  
-  // Formateamos la fecha usando dayjs
-  const formattedDate = dayjs(rawTimestamp).format('YYYY-MM-DD HH:mm:ss');
-  const greyDate = chalk.gray(formattedDate);
 
-  // Asignamos colores al nivel
-  let coloredLevel: string;
-  switch (info.level) {
-    case 'error':
-      coloredLevel = chalk.red(info.level);
-      break;
-    case 'warn':
-      coloredLevel = chalk.yellow(info.level);
-      break;
-    case 'info':
-      coloredLevel = chalk.green(info.level);
-      break;
-    case 'debug':
-      coloredLevel = chalk.blue(info.level);
-      break;
-    default:
-      coloredLevel = info.level; // Sin color para niveles personalizados
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\events\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\handlers\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\mappers\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\queries\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\results\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\validators\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\contracts\package.json ===
+
+{
+  "name": "@kikerepo/session-contracts",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/common-domain": "workspace:*"
   }
-
-  // Extraemos los datos adicionales
-  const { level, message, timestamp, ...rest } = info;
-  const extraData = Object.keys(rest).length ? JSON.stringify(rest) : '';
-
-  return `${greyDate} [${coloredLevel}]: ${message} ${extraData}`;
-});
-
-export const logger = createLogger({
-  level: 'debug',
-  format: combine(
-    timestamp(),
-    consoleFormat
-  ),
-  transports: [
-    new transports.Console(),
-  ],
-});
-/*
-// packages/infrastructure/_common/src/logging/logger.ts
-import { createLogger, format, transports } from 'winston';
-import chalk from 'chalk';
-import dayjs from 'dayjs';
-
-const { combine, timestamp, printf } = format;
-
-// Formato personalizado
-const consoleFormat = printf((info) => {
-  // Aseguramos que el timestamp es una cadena
-  const rawTimestamp = typeof info.timestamp === 'string' ? info.timestamp : new Date().toISOString();
-  
-  // Formateamos la fecha usando dayjs
-  const formattedDate = dayjs(rawTimestamp).format('YYYY-MM-DD HH:mm:ss');
-  const greyDate = chalk.gray(formattedDate);
-
-  // Asignamos colores al nivel
-  let coloredLevel: string;
-  switch (info.level) {
-    case 'error':
-      coloredLevel = chalk.red(info.level);
-      break;
-    case 'warn':
-      coloredLevel = chalk.yellow(info.level);
-      break;
-    case 'info':
-      coloredLevel = chalk.green(info.level);
-      break;
-    case 'debug':
-      coloredLevel = chalk.blue(info.level);
-      break;
-    default:
-      coloredLevel = info.level; // Sin color para niveles personalizados
-  }
-
-  // Extraemos los datos adicionales
-  const { level, message, timestamp, ...rest } = info;
-  const extraData = Object.keys(rest).length ? JSON.stringify(rest) : '';
-
-  return `${greyDate} [${coloredLevel}]: ${message} ${extraData}`;
-});
-
-export const logger = createLogger({
-  level: 'debug',
-  format: combine(
-    timestamp(),
-    consoleFormat
-  ),
-  transports: [
-    new transports.Console(),
-  ],
-});
-*/
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\AuthenticationMiddleware.ts ===
-
-import { Request, Response, NextFunction } from 'express';
-
-/**
- * Middleware de autenticaciÃ³n que comprueba "Authorization: Bearer <token>".
- * Retorna un "Response" si hay error, o "void" si llama a next() sin devolver nada.
- */
-export function AuthenticationMiddleware(
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void | Response {
-  // 1) Leer el header Authorization
-  const authHeader = req.headers.authorization;
-  if (!authHeader) {
-    return res.status(401).json({ message: 'No token provided' });
-  }
-
-  // 2) Verificar formato: "Bearer <token>"
-  const parts = authHeader.split(' ');
-  if (parts.length !== 2 || parts[0] !== 'Bearer') {
-    return res.status(401).json({ message: 'Invalid token format' });
-  }
-
-  const token = parts[1];
-
-  // 3) Comprobar el token (tokenFake en este ejemplo)
-  if (token !== 'tokenFake') {
-    return res.status(401).json({ message: 'Invalid token' });
-  }
-
-  // 4) Si es vÃ¡lido, continuar con la ejecuciÃ³n
-  next();
 }
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\contracts\tsconfig.json ===
 
-export { RequestLoggerMiddleware } from './RequestLoggerMiddleware';
-export { AuthenticationMiddleware } from './AuthenticationMiddleware';
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../_common/contracts" } // Uses compiled @kikerepo/common-contracts
+  ]
+}
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\infrastructure\_common\src\middleware\RequestLoggerMiddleware.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\contracts\src\index.ts ===
 
-import { Request, Response, NextFunction } from 'express';
-import { logger } from '../logging/logger';
 
-export const RequestLoggerMiddleware = (
-  req: Request,
-  res: Response,
-  next: NextFunction
-): void => {
-  logger.info(`[${req.method}] ${req.url}`, { ip: req.ip });
-  next();
-};
 
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\contracts\src\requests\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\contracts\src\responses\index.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\package.json ===
+
+{
+  "name": "@kikerepo/session-domain",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/common-domain": "workspace:*"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../_common/domain" } // Uses compiled @kikerepo/common-domain
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\index.ts ===
+
+export * from './value-objects';
+export * from './events';
+export * from './entities';
+
+
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\entities\index.ts ===
+
+export { Session } from './Session'
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\entities\Session.ts ===
+
+// domain-user/src/entities/User.ts
+import { AggregateRoot, CreationDate, DeletionDate,AccessToken } from '@kikerepo/common-domain';
+import { FingerPrint, SessionId} from '../value-objects';
+import { SessionCreatedEvent } from '../events/';
+export class Session extends AggregateRoot<SessionId> {
+  private _accessToken: AccessToken;
+  private _fingerPrint: FingerPrint;
+
+  /**
+   * El constructor recibe VO ya construidos (y no dispara eventos).
+   * Lo hacemos pÃºblico, pero OJO: 
+   * - Normalmente lo dejarÃ­amos `private` o `protected` 
+   *   si quieres forzar a que siempre usen la factorÃ­a `createUnique`.
+   */
+  private constructor(
+    id: SessionId,
+    accessToken: AccessToken,
+    fingerPrint: FingerPrint,
+    creationDate?: CreationDate,
+    deletionDate?: DeletionDate,
+  ) {
+    super(id,creationDate,deletionDate);
+    this._accessToken = accessToken;
+    this._fingerPrint = fingerPrint;
+    this.validate();
+  }
+
+  /**
+   * MÃ©todo estÃ¡tico/factorÃ­a para crear un "Session" *nuevo*.
+   * Recibe valores primitivos, construye VO, llama al constructor
+   * y emite un evento.
+   */
+  public static createUnique(
+    accessToken: AccessToken,
+    fingerPrint: FingerPrint
+  ): Session {
+    // 1) Generar ID y crear Value Objects
+    const sessionId = new SessionId(); // genera un UUIDv6 (por ejemplo)
+
+    // 2) Llamar al constructor con VO
+    const session = new Session(sessionId, accessToken, fingerPrint);
+
+    // 3) Emitir evento de dominio para un user nuevo
+    session.addDomainEvent(
+      new SessionCreatedEvent(sessionId.value, accessToken.value, fingerPrint.value),
+    );
+
+    return session;
+  }
+  
+  public static map(
+    id: string,
+    fingerprint: string,
+    accessToken: string,
+    creationDate: Date,
+    deletionDate: Date|null
+  ): Session {
+    // 1) Generar ID y crear Value Objects
+    const sessionId = new SessionId(id); // genera un UUIDv6 (por ejemplo)
+    const fingerPrintVO = new FingerPrint(fingerprint); 
+    const accessTokenVO = new AccessToken(accessToken);
+    const creationDateVO = new CreationDate(creationDate) ;
+    const deletionDateVO = deletionDate ? new DeletionDate(deletionDate) : undefined;
+    // 2) Llamar al constructor con VO
+    const session = new Session(sessionId, fingerPrintVO, accessTokenVO,creationDateVO,deletionDateVO);
+    return session;
+  }
+  
+  private validate(): void {
+    // AquÃ­ podrÃ­as poner chequeos complementarios (si fuese necesario)
+    if (!this._fingerPrint) {
+      throw new Error('fingerprint requerido');
+    }
+    if (!this._accessToken) {
+      throw new Error('_accessToken requerido');
+    }
+  }
+
+  // Getters
+  get id(): SessionId {
+    return this._id;
+  }
+
+  get fingerPrint(): FingerPrint {
+    return this._fingerPrint;
+  }
+
+  get accessToken(): AccessToken {
+    return this._accessToken;
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\events\index.ts ===
+
+// shared/src/domain/valueObjects/index.ts
+export { SessionCreatedEvent } from './SessionCreatedEvent';
+export { SessionUpdatedEvent } from './SessionUpdatedEvent';
+
+// Export other value objects as needed
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\events\SessionCreatedEvent.ts ===
+
+import { DomainEvent } from '@kikerepo/common-domain';
+
+export class SessionCreatedEvent extends DomainEvent {
+  constructor(
+    public readonly sessionId: string,
+    public readonly fingerprint: string,
+    public readonly accessToken?: string // Optional phone
+  ) {
+    super();
+  }
+
+  eventName(): string {
+    return 'SessionCreatedEvent';
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\events\SessionUpdatedEvent.ts ===
+
+import { DomainEvent } from '@kikerepo/common-domain';
+
+export class SessionUpdatedEvent extends DomainEvent {
+  constructor(
+    public readonly sessionId: string,
+    public readonly fingerprint: string,
+    public readonly accessToken?: string // Optional phone
+  ) {
+    super();
+  }
+
+  eventName(): string {
+    return 'SessionUpdatedEvent';
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\value-objects\FingerPrint.ts ===
+
+// packages/domain/user/src/value-objects/AccessToken.ts
+
+import { ValueObject } from '@kikerepo/common-domain';
+
+export class FingerPrint extends ValueObject<string> {
+  constructor(fingerprint: string) {
+    super(fingerprint);
+  }
+  
+  // Puedes agregar mÃ©todos adicionales, por ejemplo, para obtener la expiraciÃ³n, etc.
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\value-objects\index.ts ===
+
+export * from './FingerPrint';
+export * from './SessionId';
+
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\value-objects\SessionId.ts ===
+
+
+import { ValueObject } from '@kikerepo/common-domain';
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+
+/**
+ * Value Object representing the ID of a User Entity.
+ */
+export class SessionId extends ValueObject<string> {
+  constructor(id?: string) {
+    super(id ? id : generateUUIDv6());
+  }
+
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\package.json ===
+
+{
+  "name": "@kikerepo/session-infrastructure",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/common-infrastructure": "workspace:*",
+    "@kikerepo/session-application": "workspace:*",
+    "@kikerepo/session-domain": "workspace:*",
+    "@prisma/client": "^6.2.1",
+    "mongoose": "^6.8.0"
+  },
+  "devDependencies": {
+    "prisma": "^6.2.1"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist", // Compiled files go to dist/
+    "rootDir": "./src", // Only source files are included
+    "composite": true, // Required for project references
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../_common/infrastructure" } // Uses compiled @kikerepo/common-infrastructure
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\src\index.ts ===
+
+export const SessionInfrastructureToken = Symbol('SessionInfrastructureToken');
 
 
 
@@ -3540,6 +2883,1185 @@ describe('generateUUIDv6', () => {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\package.json ===
+
+{
+  "name": "@kikerepo/common-application",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/common-contracts": "workspace:*",
+    "@kikerepo/common-infrastructure": "workspace:*",
+    "fp-ts": "^2.16.9"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\index.ts ===
+
+export * from './middleware';
+export * from './behaviours';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\Result.ts ===
+
+import { Either, left, right } from 'fp-ts/Either';
+
+/**
+ * Represents the outcome of an operation, which can be either an error or a success.
+ */
+export type Result<E, T> = Either<E, T>;
+
+/**
+ * Helper function to create a failure result.
+ * @param error The error value.
+ */
+export const failure = <E, T = never>(error: E): Result<E, T> => left(error);
+
+/**
+ * Helper function to create a success result.
+ * @param value The success value.
+ */
+export const success = <E = never, T = any>(value: T): Result<E, T> => right(value);
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\behaviours\AuthorizationBehaviour.ts ===
+
+ /* export const AuthorizationBehaviour = (
+  req: Request,
+    res: Response,
+    next: NextFunction
+  ): void => {
+    // 1) Leer el header Authorization
+    const authHeader = req.headers.authorization;
+    if (!authHeader) {
+      return res.status(401).json({ message: 'No token provided' });
+    }
+
+    // 2) Verificar formato: "Bearer <token>"
+    const parts = authHeader.split(' ');
+    if (parts.length !== 2 || parts[0] !== 'Bearer') {
+      return res.status(401).json({ message: 'Invalid token format' });
+    }
+
+    const token = parts[1];
+
+    // 3) Comprobar el token (tokenFake en este ejemplo)
+    if (token !== 'tokenFake') {
+      return res.status(401).json({ message: 'Invalid token' });
+    }
+
+    // 4) Si es vÃ¡lido, continuar con la ejecuciÃ³n
+    next();
+  };
+*/
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\behaviours\index.ts ===
+
+export { ValidationBehaviour } from './ValidationBehaviour';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\behaviours\ValidationBehaviour.ts ===
+
+// src/application/common/services/ValidationService.ts
+import { validate } from 'class-validator'; // validate function from class-validator
+import { ValidationError } from '@kikerepo/common-contracts'; // Custom error class
+
+export class ValidationBehaviour {
+  /**
+   * Validate an object based on class-validator decorators.
+   * @param target - The object to validate (must be an instance of a class with class-validator decorators).
+   * @throws ValidationError - If validation fails, an error is thrown with the formatted errors.
+   */
+  public async validate<T extends object>(target: T): Promise<void> {
+    // Perform the validation using class-validator
+    const validationErrors = await validate(target);
+
+    if (validationErrors.length > 0) {
+      // Map validation errors into Record<string, string[]>
+      const formattedErrors: Record<string, string[]> = {};
+
+      validationErrors.forEach((error) => {
+        const property = error.property;
+        const messages = error.constraints ? Object.values(error.constraints) : [];
+        formattedErrors[property] = messages;
+      });
+
+      // Throw a formatted validation error
+      throw new ValidationError(formattedErrors);
+    }
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\middleware\ErrorHandlerMiddleware.ts ===
+
+import { BaseError, InternalError, ValidationError } from '@kikerepo/common-contracts';
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '@kikerepo/common-infrastructure';
+// FunciÃ³n para manejar la respuesta de errores
+const handleErrorResponse = (err: BaseError, res: Response): void => {
+  const { message, errorCode, statusCode, timestamp, context, stack } = err;
+
+  // Control de entorno para ocultar detalles en producciÃ³n
+  const isProduction = process.env.NODE_ENV === 'production';
+
+  // Si el entorno es producciÃ³n, ocultamos detalles sensibles como el stack trace
+  const errorResponse: any = {
+    code: errorCode,
+    message,
+    statusCode,
+    timestamp,
+    context,
+  };
+
+  // En producciÃ³n no se debe exponer el stack trace
+  if (!isProduction && stack) {
+    errorResponse.stack = stack;  // Agregamos el stack solo si no es producciÃ³n
+  }
+
+  res.status(statusCode).json(errorResponse);
+};
+
+// Middleware para manejar errores
+export const ErrorHandlerMiddleware = (
+  err: Error,
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  let context = {};
+
+  // Si el error es de validaciÃ³n, manejamos el caso por separado
+  if (err instanceof ValidationError) {
+    context = {
+      input: req.body,  // AquÃ­ se incluyen los datos de la solicitud, si es relevante
+      fieldErrors: err.validationErrors,  // Los errores de validaciÃ³n
+    };
+    logger.debug(err.name, context);
+    return handleErrorResponse(err, res);
+  }
+
+  // Para cualquier otro error que sea instancia de BaseError, usamos la misma lÃ³gica
+  if (err instanceof BaseError) {
+    context = {
+      requestBody: req.body,
+      endpoint: req.url,
+    };
+    logger.debug(err.name, context);
+    return handleErrorResponse(err, res);  // Llamamos a la funciÃ³n de manejo de errores para BaseError
+  }
+
+  // Para errores no controlados o cualquier otro tipo de error, lo manejamos como un error genÃ©rico
+  const internalError = new InternalError();
+
+  // AquÃ­ agregamos el stack trace en el error interno para depuraciÃ³n
+  internalError.stack = err.stack;
+
+  // Si hay un error interno, puedes agregar mÃ¡s contexto si es necesario
+  context = {
+    environment: process.env.NODE_ENV,
+    endpoint: req.url,
+    requestBody: req.body,
+  };
+  logger.debug(internalError.name, context);
+  return handleErrorResponse(internalError, res);  // Llamamos a la funciÃ³n para manejar el error interno
+};
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\middleware\index.ts ===
+
+export {ErrorHandlerMiddleware} from './ErrorHandlerMiddleware';
+export {ValidationMiddleware} from './ValidationMiddleware';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\application\src\middleware\ValidationMiddleware.ts ===
+
+// packages/infrastructure/_common/src/middleware/ValidationMiddleware.ts
+import { plainToInstance } from 'class-transformer';
+import { validate } from 'class-validator';
+import { Request, Response, NextFunction, RequestHandler } from 'express';
+import { ValidationError } from '@kikerepo/common-contracts';
+
+/**
+ * Validation middleware for Express using class-transformer + class-validator.
+ * 
+ * @param dtoClass The DTO class to validate (must have class-validator decorators).
+ * @returns A RequestHandler that validates req.body and either returns 400 or calls next().
+ */
+export function ValidationMiddleware(
+  dtoClass: new (...args: any[]) => object
+): RequestHandler {
+  return async (req: Request, res: Response, next: NextFunction) => {
+    try {
+      // 1) Transform the plain JSON body into an instance of dtoClass
+      const dtoObject = plainToInstance(dtoClass, req.body);
+
+      // 2) Validate the instance
+      const errors = await validate(dtoObject);
+
+      if (errors.length > 0) {
+        // 3) If errors, format them
+        const formatted: Record<string, string[]> = {};
+
+        for (const err of errors) {
+          const property = err.property;
+          const constraints = err.constraints ? Object.values(err.constraints) : [];
+          formatted[property] = constraints;
+        }
+
+        // 4) Respond with 400 and a ValidationError shape
+        //    Note: Do NOT return the `Response` object; call `res.json(...)` then `return;`
+        res.status(400).json(new ValidationError(formatted));
+        return; // ensures TypeScript sees our function returning void
+      }
+
+      // 5) No errors: move on to the next middleware / route handler
+      next();
+    } catch (err) {
+      // For unexpected errors, let your global ErrorHandlerMiddleware handle it
+      next(err);
+    }
+  };
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\package.json ===
+
+{
+  "name": "@kikerepo/common-contracts",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\index.ts ===
+
+export * from './errors';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\errors\BaseError.ts ===
+
+export abstract class BaseError extends Error {
+  public readonly statusCode: number;
+  public readonly timestamp: string;
+  public readonly errorCode: string;
+  public readonly context?: any;
+
+  constructor(
+    message: string,
+    statusCode: number,
+    errorCode: string,
+    context?: any
+  ) {
+    super(message);
+    this.statusCode = statusCode;
+    this.errorCode = errorCode;
+    this.timestamp = new Date().toISOString(); // Marca de tiempo en formato ISO
+    this.context = context; // InformaciÃ³n adicional si es necesario
+
+    // Asegurarse de que el nombre del error estÃ© configurado correctamente
+    this.name = this.constructor.name;
+
+    // Este mÃ©todo permite la correcta herencia del stack trace
+    if (Error.captureStackTrace) {
+      Error.captureStackTrace(this, this.constructor);
+    }
+  }
+
+  // MÃ©todo para serializar el error en formato JSON
+  public toJSON() {
+    return {
+      message: this.message,
+      code: this.errorCode,
+      statusCode: this.statusCode,
+      timestamp: this.timestamp,
+      context: this.context,
+    };
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\errors\ConflictError.ts ===
+
+import { BaseError } from './BaseError';
+
+export class ConflictError extends BaseError {
+  constructor(message: string = 'An internal server error occurred', context?: any) {
+    super(message, 409, 'CONFLICT', context); // Llamamos al constructor de BaseError
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\errors\index.ts ===
+
+export * from './BaseError';
+export * from './InternalError';
+export * from './ValidationError';
+export * from './NotFoundError';
+export * from './ConflictError';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\errors\InternalError.ts ===
+
+import { BaseError } from './BaseError';
+
+export class InternalError extends BaseError {
+  constructor(message: string = 'An internal server error occurred', context?: any) {
+    super(message, 500, 'INTERNAL_ERROR', context); // Llamamos al constructor de BaseError
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\errors\NotFoundError.ts ===
+
+import { BaseError } from './BaseError';
+
+export class NotFoundError extends BaseError {
+  constructor(message: string = 'The resource was not found.', context?: any) {
+    super(message, 404, 'NOT FOUND', context); // Llamamos al constructor de BaseError
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\contracts\src\errors\ValidationError.ts ===
+
+import { BaseError } from './BaseError';
+
+export class ValidationError extends BaseError {
+  public readonly validationErrors: Record<string, string[]>;
+
+  constructor(validationErrors: Record<string, string[]>, context?: any) {
+    // Usamos el constructor de BaseError, agregamos un mensaje y el cÃ³digo de estado 400 para errores de validaciÃ³n
+    super('One or more validation errors occurred.', 400, 'VALIDATION_ERROR', context);
+    this.validationErrors = validationErrors;
+  }
+
+  /**
+   * Converts the ValidationError into a JSON-serializable format.
+   */
+  toJSON() {
+    return {
+      message: this.message,
+      code: this.errorCode,  // Usamos errorCode en lugar de un valor estÃ¡tico
+      statusCode: this.statusCode,
+      timestamp: this.timestamp,  // Agregamos el timestamp de la clase base
+      validationErrors: this.validationErrors,
+      context: this.context,  // Contexto adicional si se pasÃ³
+    };
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\package.json ===
+
+{
+  "name": "@kikerepo/common-domain",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/utils-uuid6": "workspace:*"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../../utils/uuid6" } // Explicit dependency on @kikerepo/utils-uuid6
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\AggregateRoot.ts ===
+
+// packages/shared/src/domain/aggregateRoots/AggregateRoot.ts
+
+import { Entity } from './Entity';
+import { ValueObject } from './ValueObject';
+import { DomainEvent } from './DomainEvent';
+
+export abstract class AggregateRoot<TId extends ValueObject<string>> extends Entity<TId> {
+  private readonly _domainEvents: DomainEvent[] = [];
+
+  /**
+   * Adds a new domain event to the aggregate.
+   * @param event The domain event to add.
+   */
+  protected addDomainEvent(event: DomainEvent): void {
+    this._domainEvents.push(event);
+  }
+
+  /**
+   * Returns all domain events emitted by this aggregate.
+   * @returns A copy of the list of domain events.
+   */
+  public get domainEvents(): DomainEvent[] {
+    return [...this._domainEvents];
+  }
+
+  /**
+   * Clears all domain events from the aggregate.
+   */
+  public clearDomainEvents(): void {
+    this._domainEvents.length = 0;
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\AggregateRootId.ts ===
+
+// packages/shared/src/domain/valueObjects/AggregateRootId.ts
+import { ValueObject } from './ValueObject';
+// Replace with your actual UUID v6 generator
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+
+export class AggregateRootId extends ValueObject<string> {
+  constructor(value?: string) {
+    super(value ? value : generateUUIDv6());
+  }
+  toString(): string {
+    throw new Error('Method not implemented.');
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\DomainError.ts ===
+
+export class DomainError extends Error {
+  constructor(message: string) {
+    super(message);
+    this.name += '[DomainError]';
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\DomainEvent.ts ===
+
+export abstract class DomainEvent {
+  public readonly occurredAt: Date;
+  public readonly eventId: string;
+
+  constructor() {
+    this.occurredAt = new Date();
+    this.eventId = DomainEvent.generateId();
+  }
+
+  private static generateId(): string {
+    // Generate a unique identifier for the event (can be UUID or similar)
+    return Math.random().toString(36).substring(2) + Date.now().toString(36);
+  }
+
+  abstract eventName(): string; // Each event should define its own name
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\Entity.ts ===
+
+// packages/shared/src/domain/entities/Entity.ts
+
+import { CreationDate, DeletionDate } from './value-objects';
+import { ValueObject } from './ValueObject';
+
+export abstract class Entity<TId extends ValueObject<string>> {
+  protected readonly _id: TId;
+  protected readonly _creationDate: CreationDate;
+  private _deletionDate?: DeletionDate;
+
+  constructor(id: TId, creationDate?: CreationDate, deletionDate?: DeletionDate) {
+    this._id = id;
+    this._creationDate = creationDate?? new CreationDate();
+    this._deletionDate = deletionDate?? undefined;
+  }
+
+  public get creationDate(): CreationDate {
+    return this._creationDate;
+  }
+
+  public get id(): TId {
+    return this._id;
+  }
+
+  public get deletionDate(): DeletionDate | undefined {
+    return this._deletionDate;
+  }
+
+  public isDeleted(): boolean {
+    return !!this._deletionDate;
+  }
+
+  
+  public delete(deletionDate: DeletionDate): void {
+    if (this._deletionDate) {
+      throw new Error('Entity is already deleted.');
+    }
+    this._deletionDate = deletionDate;
+  }
+
+  public equals(entity?: Entity<TId>): boolean {
+    if (entity === null || entity === undefined) {
+      return false;
+    }
+
+    if (entity === this) {
+      return true;
+    }
+
+    if (entity.constructor !== this.constructor) {
+      return false;
+    }
+
+    return this.id.equals(entity.id);
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\index.ts ===
+
+export * from './ValueObject';
+export * from './Entity';
+export * from './AggregateRoot';
+export * from './DomainEvent';
+export * from './DomainError';
+export * from './value-objects';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\ValueObject.ts ===
+
+export abstract class ValueObject<T> {
+  private readonly _value: T;
+
+  constructor(value: T) {
+    if (value === null || value === undefined) {
+      throw new Error('ValueObject cannot be null or undefined');
+    }
+    this._value = Object.freeze(value); // Make the value immutable
+  }
+
+  /**
+   * Gets the encapsulated value.
+   */
+  get value(): T {
+    return this._value;
+  }
+
+  /**
+   * Checks equality between two value objects.
+   * @param other - The other value object to compare.
+   * @returns True if the values are equal, false otherwise.
+   */
+  public equals(other: ValueObject<T>): boolean {
+    if (other === null || other === undefined) {
+      return false;
+    }
+
+    return JSON.stringify(this._value) === JSON.stringify(other.value);
+  }
+
+  /**
+   * Converts the value to a string.
+   * @returns The string representation of the encapsulated value.
+   */
+  public toString(): string {
+    return String(this._value);
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\interfaces\IEntityId.ts ===
+
+export interface IEntityId {
+  /**
+   * Returns the string representation of the ID.
+   * Useful for serialization and logging.
+   */
+  toString(): string;
+
+  /**
+   * Compares this ID with another for equality.
+   * @param id - The ID to compare with.
+   * @returns `true` if both IDs are equal, `false` otherwise.
+   */
+  equals(id: IEntityId): boolean;
+}
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\interfaces\IErrorResponse.ts ===
+
+// packages/shared/src/errors/interfaces/IErrorResponse.ts
+
+export interface IErrorResponse {
+  status: number;
+  message: string;
+  errors?: string[];
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\interfaces\index.ts ===
+
+// shared/src/domain/interfaces/index.ts
+export * from './IEntityId';
+export * from './IErrorResponse';
+// Export other interfaces as needed
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\AccessToken.ts ===
+
+// packages/_common/domain/src/value-objects/AccessToken.ts
+
+import { ValueObject } from '../ValueObject';
+
+export class AccessToken extends ValueObject<string> {
+  constructor(token: string) {
+    super(token);
+    // âœ… Solo verifica reglas bÃ¡sicas del dominio
+    if (!token || typeof token !== 'string') {
+      throw new Error('Invalid token format');
+    }
+  }
+}
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\CreationDate.ts ===
+
+export class CreationDate {
+    private readonly _value: Date;
+  
+    constructor(date?: Date) {
+      this._value = date ? new Date(date) : new Date();
+      this.validate();
+    }
+  
+    private validate() {
+      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
+        throw new Error('Invalid creation date.');
+      }
+  
+      const now = new Date();
+      if (this._value > now) {
+        throw new Error('Creation date cannot be in the future.');
+      }
+    }
+  
+    get value(): Date {
+      return new Date(this._value);
+    }
+  
+    equals(other: CreationDate): boolean {
+      return this._value.getTime() === other._value.getTime();
+    }
+  
+    toString(): string {
+      return this._value.toISOString();
+    }
+  }
+  
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\DeletionDate.ts ===
+
+export class DeletionDate {
+    private readonly _value: Date;
+  
+    constructor(date?: Date) {
+      this._value = date ? new Date(date) : new Date();
+      this.validate();
+    }
+  
+    private validate() {
+      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
+        throw new Error('Invalid deletion date.');
+      }
+  
+      const now = new Date();
+      if (this._value > now) {
+        throw new Error('Creation date cannot be in the future.');
+      }
+    }
+  
+    get value(): Date {
+      return new Date(this._value);
+    }
+  
+    equals(other: DeletionDate): boolean {
+      return this._value.getTime() === other._value.getTime();
+    }
+  
+    toString(): string {
+      return this._value.toISOString();
+    }
+  }
+  
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\ExpirationDate.ts ===
+
+export class ExpirationDate {
+    private readonly _value: Date;
+  
+    constructor(date?: Date) {
+      this._value = date ? new Date(date) : new Date();
+      this.validate();
+    }
+  
+    private validate() {
+      if (!(this._value instanceof Date) || isNaN(this._value.getTime())) {
+        throw new Error('Invalid expiration Date.');
+      }
+  
+      const now = new Date();
+      if (this._value <now) {
+        throw new Error('Expiration date cannot be in the past.');
+      }
+    }
+  
+    get value(): Date {
+      return new Date(this._value);
+    }
+  
+    equals(other: ExpirationDate): boolean {
+      return this._value.getTime() === other._value.getTime();
+    }
+  
+    toString(): string {
+      return this._value.toISOString();
+    }
+  }
+  
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\index.ts ===
+
+export * from './CreationDate';
+export * from './DeletionDate';
+export * from './ExpirationDate';
+export * from './AccessToken';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\package.json ===
+
+{
+  "name": "@kikerepo/common-infrastructure",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/common-contracts": "workspace:*",
+    "jsonwebtoken": "^9.0.2",
+    "winston": "^3.17.0"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src", "types"]  ,
+  "exclude": ["node_modules", "dist"],
+  "references": [
+    { "path": "../contracts" } // Uses compiled @kikerepo/common-contracts
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\index.ts ===
+
+export * from './middleware';
+export * from './logging';
+export * from './persistance';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\logging\index.ts ===
+
+export {logger} from './logger';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\logging\logger.ts ===
+
+// packages/infrastructure/_common/src/logging/logger.ts
+import { createLogger, format, transports } from 'winston';
+import chalk from 'chalk';
+import dayjs from 'dayjs';
+
+const { combine, timestamp, printf } = format;
+
+// Formato personalizado
+const consoleFormat = printf((info) => {
+  // Aseguramos que el timestamp es una cadena
+  const rawTimestamp = typeof info.timestamp === 'string' ? info.timestamp : new Date().toISOString();
+  
+  // Formateamos la fecha usando dayjs
+  const formattedDate = dayjs(rawTimestamp).format('YYYY-MM-DD HH:mm:ss');
+  const greyDate = chalk.gray(formattedDate);
+
+  // Asignamos colores al nivel
+  let coloredLevel: string;
+  switch (info.level) {
+    case 'error':
+      coloredLevel = chalk.red(info.level);
+      break;
+    case 'warn':
+      coloredLevel = chalk.yellow(info.level);
+      break;
+    case 'info':
+      coloredLevel = chalk.green(info.level);
+      break;
+    case 'debug':
+      coloredLevel = chalk.blue(info.level);
+      break;
+    default:
+      coloredLevel = info.level; // Sin color para niveles personalizados
+  }
+
+  // Extraemos los datos adicionales
+  const { level, message, timestamp, ...rest } = info;
+  const extraData = Object.keys(rest).length ? JSON.stringify(rest) : '';
+
+  return `${greyDate} [${coloredLevel}]: ${message} ${extraData}`;
+});
+
+export const logger = createLogger({
+  level: 'debug',
+  format: combine(
+    timestamp(),
+    consoleFormat
+  ),
+  transports: [
+    new transports.Console(),
+  ],
+});
+/*
+// packages/infrastructure/_common/src/logging/logger.ts
+import { createLogger, format, transports } from 'winston';
+import chalk from 'chalk';
+import dayjs from 'dayjs';
+
+const { combine, timestamp, printf } = format;
+
+// Formato personalizado
+const consoleFormat = printf((info) => {
+  // Aseguramos que el timestamp es una cadena
+  const rawTimestamp = typeof info.timestamp === 'string' ? info.timestamp : new Date().toISOString();
+  
+  // Formateamos la fecha usando dayjs
+  const formattedDate = dayjs(rawTimestamp).format('YYYY-MM-DD HH:mm:ss');
+  const greyDate = chalk.gray(formattedDate);
+
+  // Asignamos colores al nivel
+  let coloredLevel: string;
+  switch (info.level) {
+    case 'error':
+      coloredLevel = chalk.red(info.level);
+      break;
+    case 'warn':
+      coloredLevel = chalk.yellow(info.level);
+      break;
+    case 'info':
+      coloredLevel = chalk.green(info.level);
+      break;
+    case 'debug':
+      coloredLevel = chalk.blue(info.level);
+      break;
+    default:
+      coloredLevel = info.level; // Sin color para niveles personalizados
+  }
+
+  // Extraemos los datos adicionales
+  const { level, message, timestamp, ...rest } = info;
+  const extraData = Object.keys(rest).length ? JSON.stringify(rest) : '';
+
+  return `${greyDate} [${coloredLevel}]: ${message} ${extraData}`;
+});
+
+export const logger = createLogger({
+  level: 'debug',
+  format: combine(
+    timestamp(),
+    consoleFormat
+  ),
+  transports: [
+    new transports.Console(),
+  ],
+});
+*/
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\middleware\AuthenticationMiddleware.ts ===
+
+import { Request, Response, NextFunction } from 'express';
+
+/**
+ * Middleware de autenticaciÃ³n que comprueba "Authorization: Bearer <token>".
+ * Retorna un "Response" si hay error, o "void" si llama a next() sin devolver nada.
+ */
+export function AuthenticationMiddleware(
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void | Response {
+  // 1) Leer el header Authorization
+  const authHeader = req.headers.authorization;
+  if (!authHeader) {
+    return res.status(401).json({ message: 'No token provided' });
+  }
+
+  // 2) Verificar formato: "Bearer <token>"
+  const parts = authHeader.split(' ');
+  if (parts.length !== 2 || parts[0] !== 'Bearer') {
+    return res.status(401).json({ message: 'Invalid token format' });
+  }
+
+  const token = parts[1];
+
+  // 3) Comprobar el token (tokenFake en este ejemplo)
+  if (token !== 'tokenFake') {
+    return res.status(401).json({ message: 'Invalid token' });
+  }
+
+  // 4) Si es vÃ¡lido, continuar con la ejecuciÃ³n
+  next();
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\middleware\index.ts ===
+
+export { RequestLoggerMiddleware } from './RequestLoggerMiddleware';
+export { AuthenticationMiddleware } from './AuthenticationMiddleware';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\middleware\RequestLoggerMiddleware.ts ===
+
+import { Request, Response, NextFunction } from 'express';
+import { logger } from '../logging/logger';
+
+export const RequestLoggerMiddleware = (
+  req: Request,
+  res: Response,
+  next: NextFunction
+): void => {
+  logger.info(`[${req.method}] ${req.url}`, { ip: req.ip });
+  next();
+};
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\persistance\index.ts ===
+
+export * from './PrismaClient';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\persistance\PrismaClient.ts ===
+
+// services/service-authentication/src/bootstrap/prismaClient.ts
+
+import { PrismaClient } from '@prisma/client';
+
+const prisma = new PrismaClient();
+
+export async function connectPrisma(): Promise<void> {
+  try {
+    await prisma.$connect();
+    console.log('[PrismaClient] Connected to PostgreSQL');
+  } catch (error) {
+    console.error('[PrismaClient] Connection error:', error);
+    process.exit(1);
+  }
+}
+
+export async function disconnectPrisma(): Promise<void> {
+  try {
+    await prisma.$disconnect();
+    console.log('[PrismaClient] Disconnected from PostgreSQL');
+  } catch (error) {
+    console.error('[PrismaClient] Disconnection error:', error);
+  }
+}
+
+export { prisma };
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\.env ===
+
+#express settings
+APP_HOST=*****
+APP_PORT=*****
+#redis settings
+REDIS_HOST=*****
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+#database settings
+#use ipv4 if possible
+#DATABASE_URL="postgresql://postgres:K9z1OIGr6FERGO9i@db.xxwztdkwreeeqibqxbym.supabase.co:5432/postgres" 
+#alternative connection string for ipv6
+DATABASE_URL=*****
+#jwt settings
+JWT_ACCESS_SECRET=*****
+JWT_REFRESH_SECRET=*****
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\.env.development ===
 
 #express settings
@@ -3607,7 +4129,7 @@ CMD ["yarn", "dev"]
   "main": "dist/index.js",
   "scripts": {
     "prisma:generate": "prisma generate",
-    "dev": "yarn prisma:generate && ts-node-dev --respawn -- src/index.ts --transpileOnly",
+    "dev": "yarn prisma:generate && ts-node-dev --respawn --transpile-only ./src/index.ts",
     "build": "tsc -p tsconfig.json",
     "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
     "uninstall": "rimraf node_modules",
@@ -3715,10 +4237,13 @@ import {
 import {
    UserRepository,
    Argon2HashingService, 
-   connectPrisma, 
    AuthenticationService, 
    AuthenticationServiceToken
 } from '@kikerepo/authentication-infrastructure';
+
+import{
+  connectPrisma
+} from '@kikerepo/common-infrastructure';
 
 import { 
   RegisterCommandHandler, 
@@ -4146,350 +4671,786 @@ FROM redis:7.0-alpine
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\.env ===
+
+#express settings
+APP_HOST=*****
+APP_PORT=*****
+#redis settings
+REDIS_HOST=*****
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+#database settings
+#use ipv4 if possible
+#DATABASE_URL="postgresql://postgres:K9z1OIGr6FERGO9i@db.xxwztdkwreeeqibqxbym.supabase.co:5432/postgres" 
+#alternative connection string for ipv6
+DATABASE_URL=*****
+#jwt settings
+JWT_ACCESS_SECRET=*****
+JWT_REFRESH_SECRET=*****
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\.env.development ===
+
+#express settings
+APP_HOST=*****
+APP_PORT=*****
+#redis settings
+REDIS_HOST=*****
+REDIS_PORT=*****
+REDIS_PASSWORD=*****
+#database settings
+DATABASE_URL=*****
+#jwt settings
+JWT_ACCESS_SECRET=*****
+JWT_REFRESH_SECRET=*****
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\Dockerfile.development ===
+
+# Usa una imagen base de Node (versiÃ³n LTS recomendada)
+FROM node:18-alpine
+
+# Directorio de trabajo en el contenedor
+WORKDIR /app
+
+# --- CAPA DE DEPENDENCIAS ---
+# Copia archivos de configuraciÃ³n del monorepo necesarios para instalar dependencias
+# Estos archivos se encuentran en la raÃ­z del monorepo
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+# Si usas Yarn v4 con la carpeta .yarn, cÃ³piala tambiÃ©n:
+COPY .yarn .yarn
+
+# Instala todas las dependencias (usando workspaces)
+RUN yarn install
+
+# --- CAPA DE CÃ“DIGO ---
+# Copia todo el cÃ³digo del monorepo al contenedor
+COPY . .
+
+# Establece el directorio de trabajo al servicio de autenticaciÃ³n
+WORKDIR /app/services/service-session
+
+# Expone el puerto en el que el servicio escucha (ajÃºstalo segÃºn corresponda)
+EXPOSE 5002
+
+# Define la variable de entorno para desarrollo
+ENV NODE_ENV=development
+
+# Ejecuta el comando de desarrollo definido en el package.json del servicio.
+# Por ejemplo, se asume que en services/service-authentication/package.json existe:
+# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
+CMD ["yarn", "dev"]
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\package.json ===
+
+{
+  "name": "@kikerepo/service-session",
+  "version": "1.0.0",
+  "main": "dist/index.js",
+  "scripts": {
+    "prisma:generate": "prisma generate",
+    "dev": "yarn prisma:generate && ts-node-dev --respawn --transpile-only ./src/index.ts",
+    "build": "tsc -p tsconfig.json",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "lint": "eslint 'src/**/*.ts'"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.0",
+    "@types/jsonwebtoken": "^9.0.7",
+    "eslint": "^8.0.0",
+    "prisma": "^6.2.1",
+    "ts-node-dev": "^2.0.0",
+    "tsconfig-paths": "^4.2.0",
+    "typescript": "^5.7.3"
+  },
+  "dependencies": {
+    "@kikerepo/common-infrastructure": "workspace:*",
+    "@kikerepo/session-application": "workspace:*",
+    "@kikerepo/session-contracts": "workspace:*",
+    "@kikerepo/session-domain": "workspace:*",
+    "@kikerepo/session-infrastructure": "workspace:*",
+    "@kikerepo/utils-env": "workspace:*",
+    "dotenv": "^16.4.7",
+    "express": "^4.21.2",
+    "tsyringe": "^4.8.0"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\tsconfig.json ===
+
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
+    "rootDir": "src",
+    "outDir": "dist",
+    "baseUrl": ".",
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"],
+  "references": [
+
+  ]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\index.ts ===
+
+// services/service-authentication/src/index.ts
+
+import 'reflect-metadata';
+import dotenv from 'dotenv';
+import express from 'express';
+import { buildContainer, container } from './bootstrap/container';
+import { CreateUserRoutes } from './routes'; // Importamos la funciÃ³n, no el controlador directamente
+import { UserControllerToken } from './controllers';
+
+dotenv.config();
+
+async function startServer() {
+  // Aseguramos la inicializaciÃ³n completa (por ejemplo, conexiÃ³n a la base de datos)
+  await buildContainer();
+
+  // Obtenemos el controlador del contenedor (ya inicializado)
+  const userController = container.get<any>(UserControllerToken); // o con el tipo correcto
+
+  // Creamos las rutas pasando el controlador
+  const userRoutes = CreateUserRoutes(userController);
+
+  const app = express();
+  app.use(express.json());
+  app.use('/users', userRoutes);
+
+  const port = process.env.APP_PORT || 3000;
+  app.listen(port, () => console.log(`[Auth] Listening on port ${port}`));
+}
+
+startServer().catch((err) => {
+  console.error('[Auth] Startup error:', err);
+  process.exit(1);
+});
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\bootstrap\container.ts ===
+
+// services/service-authentication/src/bootstrap/container.ts
+
+import 'reflect-metadata';
+import {
+  Container 
+} from 'inversify';
+
+import {
+  IUserRepository, IUserRepositoryToken,
+  IHashingService, IHashingServiceToken
+} from '@kikerepo/authentication-domain';
+
+import {
+   UserRepository,
+   Argon2HashingService, 
+   AuthenticationService, 
+   AuthenticationServiceToken
+} from '@kikerepo/authentication-infrastructure';
+
+import{
+  connectPrisma
+} from '@kikerepo/common-infrastructure';
+
+import {
+   UserController, 
+   UserControllerToken 
+} from '../controllers';
+
+const container = new Container();
+
+export async function buildContainer(): Promise<void> {
+  await connectPrisma();
+}
+
+export { container };
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\bootstrap\index.ts ===
+
+export * from './container';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\controllers\index.ts ===
+
+export * from './UserController';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\controllers\UserController.ts ===
+
+// services/service-authentication/src/controllers/UserController.ts
+
+import { Request, Response, NextFunction } from 'express';
+import { injectable, inject } from 'inversify';
+import { logger } from '@kikerepo/common-infrastructure';
+import { AuthenticationService,AuthenticationServiceToken  } from '@kikerepo/authentication-infrastructure';
+
+export const UserControllerToken = Symbol('UserControllerToken');
+
+@injectable()
+export class UserController {
+  constructor(
+    @inject(AuthenticationServiceToken)
+    private readonly authenticationService: AuthenticationService,
+  ) {}
+
+  public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
+    logger.info('Login endpoint called');
+    try {
+      // Se pasa el req.body directamente; el AuthenticationService se encarga de mapear internamente.
+      const response = await this.authenticationService.login(req.body);
+      res.status(200).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+
+  public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
+    logger.info('Register endpoint called');
+    try {
+      // Se delega en el servicio la transformaciÃ³n y el procesamiento.
+      const response = await this.authenticationService.register(req.body);
+      res.status(201).json(response);
+    } catch (error) {
+      next(error);
+    }
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\routes\index.ts ===
+
+export *from './UserRoutes';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\routes\UserRoutes.ts ===
+
+// services/service-authentication/src/routes/UserRoutes.ts
+
+import { Router, Request, Response, NextFunction } from 'express';
+import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/common-application';
+import { NotFoundError } from '@kikerepo/common-contracts';
+
+import { LoginQuery, RegisterCommand } from '@kikerepo/authentication-application';
+// AquÃ­ no importamos container ni resolvemos el controlador.
+// Simplemente exportamos una funciÃ³n que recibe el controlador ya instanciado.
+export function CreateUserRoutes(userController: { 
+  login: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+  register: (req: Request, res: Response, next: NextFunction) => Promise<void>;
+}): Router {
+  const router = Router();
+
+  // Ruta de registro
+  router.post(
+    '/register',
+    ValidationMiddleware(RegisterCommand),
+    userController.register.bind(userController)
+  );
+
+  // Ruta de login
+  router.post(
+    '/login',
+    ValidationMiddleware(LoginQuery),
+    userController.login.bind(userController)
+  );
+
+  // 404 Handler para rutas no definidas
+  router.use((req: Request, res: Response, next: NextFunction) => {
+    res.status(404).json(new NotFoundError());
+  });
+
+  // Middleware de manejo de errores
+  router.use(ErrorHandlerMiddleware);
+
+  return router;
+}
+
+
+
+
 
 
 === DIRECTORY TREE ===
 Listado de rutas de carpetas
-El nï¿½mero de serie del volumen es 00000048 EA56:DBC0
+El número de serie del volumen es 0000009F EA56:DBC0
 C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
-ï¿½   .gitignore
-ï¿½   .yarnrc.yml
-ï¿½   combined.txt
-ï¿½   jest.config.ts
-ï¿½   MergeAll 2.ps1
-ï¿½   MergeAll.ps1
-ï¿½   package.json
-ï¿½   tsconfig.json
-ï¿½   turbo.json
-ï¿½   yarn.lock
-ï¿½   
+¦   .gitignore
+¦   .yarnrc.yml
+¦   combined.txt
+¦   jest.config.ts
+¦   MergeAll 2.ps1
+¦   MergeAll.ps1
+¦   package.json
+¦   tsconfig.json
+¦   turbo.json
+¦   yarn.lock
+¦   
 +---.yarn
-ï¿½   ï¿½   install-state.gz
-ï¿½   ï¿½   
-ï¿½   +---releases
-ï¿½           yarn-berry.js
-ï¿½           
+¦   ¦   install-state.gz
+¦   ¦   
+¦   +---releases
+¦           yarn-berry.js
+¦           
 +---docker
-ï¿½   +---development
-ï¿½   ï¿½       docker-compose.yml
-ï¿½   ï¿½       
-ï¿½   +---production
-ï¿½           docker-compose.yml
-ï¿½           
+¦   +---development
+¦   ¦       docker-compose.yml
+¦   ¦       
+¦   +---production
+¦           docker-compose.yml
+¦           
 +---packages
-ï¿½   +---application
-ï¿½   ï¿½   +---authentication
-ï¿½   ï¿½   ï¿½   ï¿½   package.json
-ï¿½   ï¿½   ï¿½   ï¿½   tsconfig.json
-ï¿½   ï¿½   ï¿½   ï¿½   
-ï¿½   ï¿½   ï¿½   +---src
-ï¿½   ï¿½   ï¿½       ï¿½   index.ts
-ï¿½   ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½   ï¿½       +---commands
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       RegisterCommand.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---errors
-ï¿½   ï¿½   ï¿½       ï¿½       EmailAlreadyInUseError.ts
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginCredentialsError.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---events
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       UserLoggedInEvent.ts
-ï¿½   ï¿½   ï¿½       ï¿½       UserRegisteredEvent.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---handlers
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginQueryHandler.ts
-ï¿½   ï¿½   ï¿½       ï¿½       RegisterCommandHandler.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---mappers
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginRequestToLoginQueryMapper.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginResultToLoginResponseMapper.ts
-ï¿½   ï¿½   ï¿½       ï¿½       RegisterRequestToRegisterCommandMapper.ts
-ï¿½   ï¿½   ï¿½       ï¿½       RegisterResultToRegisterResponseMapper.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---queries
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginQuery.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---results
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginResult.ts
-ï¿½   ï¿½   ï¿½       ï¿½       RegisterResult.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---validators
-ï¿½   ï¿½   ï¿½               index.ts
-ï¿½   ï¿½   ï¿½               IsPhoneNumber.ts
-ï¿½   ï¿½   ï¿½               IsStrongPassword.ts
-ï¿½   ï¿½   ï¿½               
-ï¿½   ï¿½   +---_common
-ï¿½   ï¿½       ï¿½   package.json
-ï¿½   ï¿½       ï¿½   tsconfig.json
-ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½       +---src
-ï¿½   ï¿½           ï¿½   index.ts
-ï¿½   ï¿½           ï¿½   Result.ts
-ï¿½   ï¿½           ï¿½   
-ï¿½   ï¿½           +---behaviours
-ï¿½   ï¿½           ï¿½       AuthorizationBehaviour.ts
-ï¿½   ï¿½           ï¿½       index.ts
-ï¿½   ï¿½           ï¿½       ValidationBehaviour.ts
-ï¿½   ï¿½           ï¿½       
-ï¿½   ï¿½           +---middleware
-ï¿½   ï¿½                   ErrorHandlerMiddleware.ts
-ï¿½   ï¿½                   index.ts
-ï¿½   ï¿½                   ValidationMiddleware.ts
-ï¿½   ï¿½                   
-ï¿½   +---contracts
-ï¿½   ï¿½   +---authentication
-ï¿½   ï¿½   ï¿½   ï¿½   package.json
-ï¿½   ï¿½   ï¿½   ï¿½   tsconfig.json
-ï¿½   ï¿½   ï¿½   ï¿½   
-ï¿½   ï¿½   ï¿½   +---src
-ï¿½   ï¿½   ï¿½       ï¿½   index.ts
-ï¿½   ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½   ï¿½       +---requests
-ï¿½   ï¿½   ï¿½       ï¿½       ChangePasswordRequest.ts
-ï¿½   ï¿½   ï¿½       ï¿½       ForgotPasswordRequest.ts
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       LoginRequest.ts
-ï¿½   ï¿½   ï¿½       ï¿½       RegisterRequest.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---responses
-ï¿½   ï¿½   ï¿½               ChangePasswordResponse.ts
-ï¿½   ï¿½   ï¿½               ForgotPaswordResponse.ts
-ï¿½   ï¿½   ï¿½               index.ts
-ï¿½   ï¿½   ï¿½               LoginResponse.ts
-ï¿½   ï¿½   ï¿½               RegisterResponse.ts
-ï¿½   ï¿½   ï¿½               
-ï¿½   ï¿½   +---_common
-ï¿½   ï¿½       ï¿½   package.json
-ï¿½   ï¿½       ï¿½   tsconfig.json
-ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½       +---src
-ï¿½   ï¿½           ï¿½   index.ts
-ï¿½   ï¿½           ï¿½   
-ï¿½   ï¿½           +---errors
-ï¿½   ï¿½                   BaseError.ts
-ï¿½   ï¿½                   ConflictError.ts
-ï¿½   ï¿½                   index.ts
-ï¿½   ï¿½                   InternalError.ts
-ï¿½   ï¿½                   NotFoundError.ts
-ï¿½   ï¿½                   ValidationError.ts
-ï¿½   ï¿½                   
-ï¿½   +---domain
-ï¿½   ï¿½   +---authentication
-ï¿½   ï¿½   ï¿½   ï¿½   package.json
-ï¿½   ï¿½   ï¿½   ï¿½   tsconfig.json
-ï¿½   ï¿½   ï¿½   ï¿½   
-ï¿½   ï¿½   ï¿½   +---src
-ï¿½   ï¿½   ï¿½       ï¿½   index.ts
-ï¿½   ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½   ï¿½       +---entities
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       User.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---events
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       UserCreatedEvent.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---interfaces
-ï¿½   ï¿½   ï¿½       ï¿½       IHashingService.ts
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       IUserRepository.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---value-objects
-ï¿½   ï¿½   ï¿½               AccessToken.ts
-ï¿½   ï¿½   ï¿½               Email.ts
-ï¿½   ï¿½   ï¿½               HashedPassword.ts
-ï¿½   ï¿½   ï¿½               index.ts
-ï¿½   ï¿½   ï¿½               InputPassword.ts
-ï¿½   ï¿½   ï¿½               Phone.ts
-ï¿½   ï¿½   ï¿½               RefreshToken.ts
-ï¿½   ï¿½   ï¿½               UserId.ts
-ï¿½   ï¿½   ï¿½               
-ï¿½   ï¿½   +---_common
-ï¿½   ï¿½       ï¿½   package.json
-ï¿½   ï¿½       ï¿½   tsconfig.json
-ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½       +---src
-ï¿½   ï¿½           ï¿½   AggregateRoot.ts
-ï¿½   ï¿½           ï¿½   AggregateRootId.ts
-ï¿½   ï¿½           ï¿½   DomainError.ts
-ï¿½   ï¿½           ï¿½   DomainEvent.ts
-ï¿½   ï¿½           ï¿½   Entity.ts
-ï¿½   ï¿½           ï¿½   index.ts
-ï¿½   ï¿½           ï¿½   ValueObject.ts
-ï¿½   ï¿½           ï¿½   
-ï¿½   ï¿½           +---interfaces
-ï¿½   ï¿½           ï¿½       IEntityId.ts
-ï¿½   ï¿½           ï¿½       IErrorResponse.ts
-ï¿½   ï¿½           ï¿½       index.ts
-ï¿½   ï¿½           ï¿½       
-ï¿½   ï¿½           +---value-objects
-ï¿½   ï¿½                   CreationDate.ts
-ï¿½   ï¿½                   DeletionDate.ts
-ï¿½   ï¿½                   index.ts
-ï¿½   ï¿½                   
-ï¿½   +---infrastructure
-ï¿½   ï¿½   +---authentication
-ï¿½   ï¿½   ï¿½   ï¿½   package.json
-ï¿½   ï¿½   ï¿½   ï¿½   tsconfig.json
-ï¿½   ï¿½   ï¿½   ï¿½   
-ï¿½   ï¿½   ï¿½   +---src
-ï¿½   ï¿½   ï¿½       ï¿½   index.ts
-ï¿½   ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½   ï¿½       +---authentication
-ï¿½   ï¿½   ï¿½       ï¿½   ï¿½   AuthenticationService.ts
-ï¿½   ï¿½   ï¿½       ï¿½   ï¿½   index.ts
-ï¿½   ï¿½   ï¿½       ï¿½   ï¿½   Token.ts
-ï¿½   ï¿½   ï¿½       ï¿½   ï¿½   
-ï¿½   ï¿½   ï¿½       ï¿½   +---errors
-ï¿½   ï¿½   ï¿½       ï¿½           index.ts
-ï¿½   ï¿½   ï¿½       ï¿½           TokenGenerationError.ts
-ï¿½   ï¿½   ï¿½       ï¿½           TokenVerificationError.ts
-ï¿½   ï¿½   ï¿½       ï¿½           
-ï¿½   ï¿½   ï¿½       +---persistance
-ï¿½   ï¿½   ï¿½       ï¿½       index.ts
-ï¿½   ï¿½   ï¿½       ï¿½       UserDatabase.ts
-ï¿½   ï¿½   ï¿½       ï¿½       UserRepository.ts
-ï¿½   ï¿½   ï¿½       ï¿½       
-ï¿½   ï¿½   ï¿½       +---services
-ï¿½   ï¿½   ï¿½               Argon2HashingService.ts
-ï¿½   ï¿½   ï¿½               index.ts
-ï¿½   ï¿½   ï¿½               
-ï¿½   ï¿½   +---_common
-ï¿½   ï¿½       ï¿½   package.json
-ï¿½   ï¿½       ï¿½   tsconfig.json
-ï¿½   ï¿½       ï¿½   
-ï¿½   ï¿½       +---src
-ï¿½   ï¿½           ï¿½   index.ts
-ï¿½   ï¿½           ï¿½   
-ï¿½   ï¿½           +---logging
-ï¿½   ï¿½           ï¿½       index.ts
-ï¿½   ï¿½           ï¿½       logger.ts
-ï¿½   ï¿½           ï¿½       
-ï¿½   ï¿½           +---middleware
-ï¿½   ï¿½                   AuthenticationMiddleware.ts
-ï¿½   ï¿½                   index.ts
-ï¿½   ï¿½                   RequestLoggerMiddleware.ts
-ï¿½   ï¿½                   
-ï¿½   +---utils
-ï¿½       +---env
-ï¿½       ï¿½   ï¿½   index.ts
-ï¿½       ï¿½   ï¿½   package.json
-ï¿½       ï¿½   ï¿½   tsconfig.json
-ï¿½       ï¿½   ï¿½   
-ï¿½       ï¿½   +---src
-ï¿½       ï¿½   ï¿½   ï¿½   index.ts
-ï¿½       ï¿½   ï¿½   ï¿½   requireEnv.ts
-ï¿½       ï¿½   ï¿½   ï¿½   
-ï¿½       ï¿½   ï¿½   +---errors
-ï¿½       ï¿½   ï¿½           index.ts
-ï¿½       ï¿½   ï¿½           MissingEnvVarError.ts
-ï¿½       ï¿½   ï¿½           
-ï¿½       ï¿½   +---__tests__
-ï¿½       ï¿½           basic.spec.ts
-ï¿½       ï¿½           
-ï¿½       +---kafka-client
-ï¿½       ï¿½   ï¿½   package.json
-ï¿½       ï¿½   ï¿½   tsconfig.json
-ï¿½       ï¿½   ï¿½   
-ï¿½       ï¿½   +---src
-ï¿½       ï¿½   ï¿½       index.ts
-ï¿½       ï¿½   ï¿½       KafkaClient.ts
-ï¿½       ï¿½   ï¿½       
-ï¿½       ï¿½   +---__tests__
-ï¿½       ï¿½           kafkaclient.spec.ts
-ï¿½       ï¿½           
-ï¿½       +---redis-client
-ï¿½       ï¿½   ï¿½   package.json
-ï¿½       ï¿½   ï¿½   tsconfig.json
-ï¿½       ï¿½   ï¿½   
-ï¿½       ï¿½   +---src
-ï¿½       ï¿½   ï¿½       index.ts
-ï¿½       ï¿½   ï¿½       RedisClient.ts
-ï¿½       ï¿½   ï¿½       
-ï¿½       ï¿½   +---__tests__
-ï¿½       ï¿½           redisclient.spec.ts
-ï¿½       ï¿½           
-ï¿½       +---uuid6
-ï¿½           ï¿½   index.ts
-ï¿½           ï¿½   package.json
-ï¿½           ï¿½   tsconfig.json
-ï¿½           ï¿½   
-ï¿½           +---src
-ï¿½           ï¿½       index.ts
-ï¿½           ï¿½       uuid6.ts
-ï¿½           ï¿½       
-ï¿½           +---__tests__
-ï¿½                   basic.spec.ts
-ï¿½                   
+¦   +---authentication
+¦   ¦   +---application
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦       ¦   index.ts
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---commands
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       RegisterCommand.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---errors
+¦   ¦   ¦       ¦       EmailAlreadyInUseError.ts
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       LoginCredentialsError.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---events
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       UserLoggedInEvent.ts
+¦   ¦   ¦       ¦       UserRegisteredEvent.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---handlers
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       LoginQueryHandler.ts
+¦   ¦   ¦       ¦       RegisterCommandHandler.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---mappers
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       LoginRequestToLoginQueryMapper.ts
+¦   ¦   ¦       ¦       LoginResultToLoginResponseMapper.ts
+¦   ¦   ¦       ¦       RegisterRequestToRegisterCommandMapper.ts
+¦   ¦   ¦       ¦       RegisterResultToRegisterResponseMapper.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---queries
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       LoginQuery.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---results
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       LoginResult.ts
+¦   ¦   ¦       ¦       RegisterResult.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---validators
+¦   ¦   ¦               index.ts
+¦   ¦   ¦               IsPhoneNumber.ts
+¦   ¦   ¦               IsStrongPassword.ts
+¦   ¦   ¦               
+¦   ¦   +---contracts
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦       ¦   index.ts
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---requests
+¦   ¦   ¦       ¦       ChangePasswordRequest.ts
+¦   ¦   ¦       ¦       ForgotPasswordRequest.ts
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       LoginRequest.ts
+¦   ¦   ¦       ¦       RegisterRequest.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---responses
+¦   ¦   ¦               ChangePasswordResponse.ts
+¦   ¦   ¦               ForgotPaswordResponse.ts
+¦   ¦   ¦               index.ts
+¦   ¦   ¦               LoginResponse.ts
+¦   ¦   ¦               RegisterResponse.ts
+¦   ¦   ¦               
+¦   ¦   +---domain
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦       ¦   index.ts
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---entities
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       User.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---events
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       UserCreatedEvent.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---interfaces
+¦   ¦   ¦       ¦       IHashingService.ts
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       IUserRepository.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---value-objects
+¦   ¦   ¦               Email.ts
+¦   ¦   ¦               HashedPassword.ts
+¦   ¦   ¦               index.ts
+¦   ¦   ¦               InputPassword.ts
+¦   ¦   ¦               Phone.ts
+¦   ¦   ¦               RefreshToken.ts
+¦   ¦   ¦               UserId.ts
+¦   ¦   ¦               
+¦   ¦   +---infrastructure
+¦   ¦       ¦   package.json
+¦   ¦       ¦   tsconfig.json
+¦   ¦       ¦   
+¦   ¦       +---src
+¦   ¦           ¦   index.ts
+¦   ¦           ¦   
+¦   ¦           +---authentication
+¦   ¦           ¦   ¦   AuthenticationService.ts
+¦   ¦           ¦   ¦   index.ts
+¦   ¦           ¦   ¦   Token.ts
+¦   ¦           ¦   ¦   
+¦   ¦           ¦   +---errors
+¦   ¦           ¦           index.ts
+¦   ¦           ¦           TokenGenerationError.ts
+¦   ¦           ¦           TokenVerificationError.ts
+¦   ¦           ¦           
+¦   ¦           +---persistance
+¦   ¦           ¦       index.ts
+¦   ¦           ¦       UserRepository.ts
+¦   ¦           ¦       
+¦   ¦           +---services
+¦   ¦                   Argon2HashingService.ts
+¦   ¦                   index.ts
+¦   ¦                   
+¦   +---session
+¦   ¦   +---application
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦       ¦   index.ts
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---commands
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---errors
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---events
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---handlers
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---mappers
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---queries
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---results
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---validators
+¦   ¦   ¦               index.ts
+¦   ¦   ¦               
+¦   ¦   +---contracts
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦       ¦   index.ts
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---requests
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---responses
+¦   ¦   ¦               index.ts
+¦   ¦   ¦               
+¦   ¦   +---domain
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦       ¦   index.ts
+¦   ¦   ¦       ¦   
+¦   ¦   ¦       +---entities
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       Session.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---events
+¦   ¦   ¦       ¦       index.ts
+¦   ¦   ¦       ¦       SessionCreatedEvent.ts
+¦   ¦   ¦       ¦       SessionUpdatedEvent.ts
+¦   ¦   ¦       ¦       
+¦   ¦   ¦       +---interfaces
+¦   ¦   ¦       +---value-objects
+¦   ¦   ¦               FingerPrint.ts
+¦   ¦   ¦               index.ts
+¦   ¦   ¦               SessionId.ts
+¦   ¦   ¦               
+¦   ¦   +---infrastructure
+¦   ¦       ¦   package.json
+¦   ¦       ¦   tsconfig.json
+¦   ¦       ¦   
+¦   ¦       +---src
+¦   ¦               index.ts
+¦   ¦               
+¦   +---utils
+¦   ¦   +---env
+¦   ¦   ¦   ¦   index.ts
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦   ¦   ¦   index.ts
+¦   ¦   ¦   ¦   ¦   requireEnv.ts
+¦   ¦   ¦   ¦   ¦   
+¦   ¦   ¦   ¦   +---errors
+¦   ¦   ¦   ¦           index.ts
+¦   ¦   ¦   ¦           MissingEnvVarError.ts
+¦   ¦   ¦   ¦           
+¦   ¦   ¦   +---__tests__
+¦   ¦   ¦           basic.spec.ts
+¦   ¦   ¦           
+¦   ¦   +---kafka-client
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦   ¦       index.ts
+¦   ¦   ¦   ¦       KafkaClient.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---__tests__
+¦   ¦   ¦           kafkaclient.spec.ts
+¦   ¦   ¦           
+¦   ¦   +---redis-client
+¦   ¦   ¦   ¦   package.json
+¦   ¦   ¦   ¦   tsconfig.json
+¦   ¦   ¦   ¦   
+¦   ¦   ¦   +---src
+¦   ¦   ¦   ¦       index.ts
+¦   ¦   ¦   ¦       RedisClient.ts
+¦   ¦   ¦   ¦       
+¦   ¦   ¦   +---__tests__
+¦   ¦   ¦           redisclient.spec.ts
+¦   ¦   ¦           
+¦   ¦   +---uuid6
+¦   ¦       ¦   index.ts
+¦   ¦       ¦   package.json
+¦   ¦       ¦   tsconfig.json
+¦   ¦       ¦   
+¦   ¦       +---src
+¦   ¦       ¦       index.ts
+¦   ¦       ¦       uuid6.ts
+¦   ¦       ¦       
+¦   ¦       +---__tests__
+¦   ¦               basic.spec.ts
+¦   ¦               
+¦   +---_common
+¦       +---application
+¦       ¦   ¦   package.json
+¦       ¦   ¦   tsconfig.json
+¦       ¦   ¦   
+¦       ¦   +---src
+¦       ¦       ¦   index.ts
+¦       ¦       ¦   Result.ts
+¦       ¦       ¦   
+¦       ¦       +---behaviours
+¦       ¦       ¦       AuthorizationBehaviour.ts
+¦       ¦       ¦       index.ts
+¦       ¦       ¦       ValidationBehaviour.ts
+¦       ¦       ¦       
+¦       ¦       +---middleware
+¦       ¦               ErrorHandlerMiddleware.ts
+¦       ¦               index.ts
+¦       ¦               ValidationMiddleware.ts
+¦       ¦               
+¦       +---contracts
+¦       ¦   ¦   package.json
+¦       ¦   ¦   tsconfig.json
+¦       ¦   ¦   
+¦       ¦   +---src
+¦       ¦       ¦   index.ts
+¦       ¦       ¦   
+¦       ¦       +---errors
+¦       ¦               BaseError.ts
+¦       ¦               ConflictError.ts
+¦       ¦               index.ts
+¦       ¦               InternalError.ts
+¦       ¦               NotFoundError.ts
+¦       ¦               ValidationError.ts
+¦       ¦               
+¦       +---domain
+¦       ¦   ¦   package.json
+¦       ¦   ¦   tsconfig.json
+¦       ¦   ¦   
+¦       ¦   +---src
+¦       ¦       ¦   AggregateRoot.ts
+¦       ¦       ¦   AggregateRootId.ts
+¦       ¦       ¦   DomainError.ts
+¦       ¦       ¦   DomainEvent.ts
+¦       ¦       ¦   Entity.ts
+¦       ¦       ¦   index.ts
+¦       ¦       ¦   ValueObject.ts
+¦       ¦       ¦   
+¦       ¦       +---interfaces
+¦       ¦       ¦       IEntityId.ts
+¦       ¦       ¦       IErrorResponse.ts
+¦       ¦       ¦       index.ts
+¦       ¦       ¦       
+¦       ¦       +---value-objects
+¦       ¦               AccessToken.ts
+¦       ¦               CreationDate.ts
+¦       ¦               DeletionDate.ts
+¦       ¦               ExpirationDate.ts
+¦       ¦               index.ts
+¦       ¦               
+¦       +---infrastructure
+¦           ¦   package.json
+¦           ¦   tsconfig.json
+¦           ¦   
+¦           +---src
+¦               ¦   index.ts
+¦               ¦   
+¦               +---logging
+¦               ¦       index.ts
+¦               ¦       logger.ts
+¦               ¦       
+¦               +---middleware
+¦               ¦       AuthenticationMiddleware.ts
+¦               ¦       index.ts
+¦               ¦       RequestLoggerMiddleware.ts
+¦               ¦       
+¦               +---persistance
+¦                       index.ts
+¦                       PrismaClient.ts
+¦                       
 +---services
     +---service-authentication
-    ï¿½   ï¿½   .env.development
-    ï¿½   ï¿½   Dockerfile.development
-    ï¿½   ï¿½   package.json
-    ï¿½   ï¿½   tsconfig.json
-    ï¿½   ï¿½   
-    ï¿½   +---prisma
-    ï¿½   ï¿½   ï¿½   schema.prisma
-    ï¿½   ï¿½   ï¿½   
-    ï¿½   ï¿½   +---migrations
-    ï¿½   ï¿½       ï¿½   migration_lock.toml
-    ï¿½   ï¿½       ï¿½   
-    ï¿½   ï¿½       +---20250120232605_init
-    ï¿½   ï¿½       ï¿½       migration.sql
-    ï¿½   ï¿½       ï¿½       
-    ï¿½   ï¿½       +---20250122200614_add_deleted
-    ï¿½   ï¿½               migration.sql
-    ï¿½   ï¿½               
-    ï¿½   +---src
-    ï¿½   ï¿½   ï¿½   index.ts
-    ï¿½   ï¿½   ï¿½   
-    ï¿½   ï¿½   +---bootstrap
-    ï¿½   ï¿½   ï¿½       container.ts
-    ï¿½   ï¿½   ï¿½       index.ts
-    ï¿½   ï¿½   ï¿½       
-    ï¿½   ï¿½   +---controllers
-    ï¿½   ï¿½   ï¿½       index.ts
-    ï¿½   ï¿½   ï¿½       UserController.ts
-    ï¿½   ï¿½   ï¿½       
-    ï¿½   ï¿½   +---routes
-    ï¿½   ï¿½           index.ts
-    ï¿½   ï¿½           UserRoutes.ts
-    ï¿½   ï¿½           
-    ï¿½   +---__http__
-    ï¿½   ï¿½       login.http
-    ï¿½   ï¿½       register.http
-    ï¿½   ï¿½       
-    ï¿½   +---__tests__
-    ï¿½           basic.spec.ts
-    ï¿½           
+    ¦   ¦   .env
+    ¦   ¦   .env.development
+    ¦   ¦   Dockerfile.development
+    ¦   ¦   package.json
+    ¦   ¦   tsconfig.json
+    ¦   ¦   
+    ¦   +---prisma
+    ¦   ¦   ¦   schema.prisma
+    ¦   ¦   ¦   
+    ¦   ¦   +---migrations
+    ¦   ¦       ¦   migration_lock.toml
+    ¦   ¦       ¦   
+    ¦   ¦       +---20250120232605_init
+    ¦   ¦       ¦       migration.sql
+    ¦   ¦       ¦       
+    ¦   ¦       +---20250122200614_add_deleted
+    ¦   ¦               migration.sql
+    ¦   ¦               
+    ¦   +---src
+    ¦   ¦   ¦   index.ts
+    ¦   ¦   ¦   
+    ¦   ¦   +---bootstrap
+    ¦   ¦   ¦       container.ts
+    ¦   ¦   ¦       index.ts
+    ¦   ¦   ¦       
+    ¦   ¦   +---controllers
+    ¦   ¦   ¦       index.ts
+    ¦   ¦   ¦       UserController.ts
+    ¦   ¦   ¦       
+    ¦   ¦   +---routes
+    ¦   ¦           index.ts
+    ¦   ¦           UserRoutes.ts
+    ¦   ¦           
+    ¦   +---__http__
+    ¦   ¦       login.http
+    ¦   ¦       register.http
+    ¦   ¦       
+    ¦   +---__tests__
+    ¦           basic.spec.ts
+    ¦           
     +---service-kafka
-    ï¿½       .env.development
-    ï¿½       docker-compose.yml
-    ï¿½       Dockerfile.development
-    ï¿½       package.json
-    ï¿½       
+    ¦       .env.development
+    ¦       docker-compose.yml
+    ¦       Dockerfile.development
+    ¦       package.json
+    ¦       
     +---service-mailing
-    ï¿½   ï¿½   .env.development
-    ï¿½   ï¿½   Dockerfile.development
-    ï¿½   ï¿½   package.json
-    ï¿½   ï¿½   tsconfig.json
-    ï¿½   ï¿½   
-    ï¿½   +---src
-    ï¿½   ï¿½       index.ts
-    ï¿½   ï¿½       
-    ï¿½   +---__tests__
-    ï¿½           basic.spec.ts
-    ï¿½           
+    ¦   ¦   .env.development
+    ¦   ¦   Dockerfile.development
+    ¦   ¦   package.json
+    ¦   ¦   tsconfig.json
+    ¦   ¦   
+    ¦   +---src
+    ¦   ¦       index.ts
+    ¦   ¦       
+    ¦   +---__tests__
+    ¦           basic.spec.ts
+    ¦           
     +---service-redis-server
-            .env.development
-            docker-compose.yml
-            Dockerfile.development
-            package.json
-            
+    ¦       .env.development
+    ¦       docker-compose.yml
+    ¦       Dockerfile.development
+    ¦       package.json
+    ¦       
+    +---service-session
+        ¦   .env
+        ¦   .env.development
+        ¦   Dockerfile.development
+        ¦   package.json
+        ¦   tsconfig.json
+        ¦   
+        +---prisma
+        ¦   ¦   schema.prisma
+        ¦   ¦   
+        ¦   +---migrations
+        ¦       ¦   migration_lock.toml
+        ¦       ¦   
+        ¦       +---20250120232605_init
+        ¦       ¦       migration.sql
+        ¦       ¦       
+        ¦       +---20250122200614_add_deleted
+        ¦               migration.sql
+        ¦               
+        +---src
+        ¦   ¦   index.ts
+        ¦   ¦   
+        ¦   +---bootstrap
+        ¦   ¦       container.ts
+        ¦   ¦       index.ts
+        ¦   ¦       
+        ¦   +---controllers
+        ¦   ¦       index.ts
+        ¦   ¦       UserController.ts
+        ¦   ¦       
+        ¦   +---routes
+        ¦           index.ts
+        ¦           UserRoutes.ts
+        ¦           
+        +---__http__
+        +---__tests__

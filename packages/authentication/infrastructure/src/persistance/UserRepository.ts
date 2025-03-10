@@ -1,8 +1,7 @@
 import { IUserRepository} from '@kikerepo/authentication-domain';
 import { User } from '@kikerepo/authentication-domain';
-import { prisma } from './UserDatabase';
 import { injectable } from 'inversify';
-import { logger } from '@kikerepo/common-infrastructure'; // <--- Logger
+import { logger ,prisma} from '@kikerepo/common-infrastructure'; // <--- Logger
 
 @injectable()
 export class UserRepository implements IUserRepository {

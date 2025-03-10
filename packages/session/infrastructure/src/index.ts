@@ -1,0 +1,1 @@
+export const SessionInfrastructureToken = Symbol('SessionInfrastructureToken');

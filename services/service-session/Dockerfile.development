@@ -1,0 +1,33 @@
+# Usa una imagen base de Node (versión LTS recomendada)
+FROM node:18-alpine
+
+# Directorio de trabajo en el contenedor
+WORKDIR /app
+
+# --- CAPA DE DEPENDENCIAS ---
+# Copia archivos de configuración del monorepo necesarios para instalar dependencias
+# Estos archivos se encuentran en la raíz del monorepo
+COPY package.json yarn.lock turbo.json .yarnrc.yml ./
+# Si usas Yarn v4 con la carpeta .yarn, cópiala también:
+COPY .yarn .yarn
+
+# Instala todas las dependencias (usando workspaces)
+RUN yarn install
+
+# --- CAPA DE CÓDIGO ---
+# Copia todo el código del monorepo al contenedor
+COPY . .
+
+# Establece el directorio de trabajo al servicio de autenticación
+WORKDIR /app/services/service-session
+
+# Expone el puerto en el que el servicio escucha (ajústalo según corresponda)
+EXPOSE 5002
+
+# Define la variable de entorno para desarrollo
+ENV NODE_ENV=development
+
+# Ejecuta el comando de desarrollo definido en el package.json del servicio.
+# Por ejemplo, se asume que en services/service-authentication/package.json existe:
+# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
+CMD ["yarn", "dev"]

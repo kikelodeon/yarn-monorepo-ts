@@ -1,0 +1,15 @@
+{
+  "name": "@kikerepo/session-domain",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "@kikerepo/common-domain": "workspace:*"
+  }
+}

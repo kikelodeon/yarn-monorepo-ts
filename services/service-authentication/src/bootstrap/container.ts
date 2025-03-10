@@ -13,10 +13,13 @@ import {
 import {
    UserRepository,
    Argon2HashingService, 
-   connectPrisma, 
    AuthenticationService, 
    AuthenticationServiceToken
 } from '@kikerepo/authentication-infrastructure';
+
+import{
+  connectPrisma
+} from '@kikerepo/common-infrastructure';
 
 import { 
   RegisterCommandHandler, 
