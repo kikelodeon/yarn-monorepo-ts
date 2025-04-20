@@ -7,7 +7,7 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src", "../../authentication/domain/src/value-objects/AccessToken.ts"],
+  "include": ["src"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../utils/uuid6" } // Explicit dependency on @kikerepo/utils-uuid6

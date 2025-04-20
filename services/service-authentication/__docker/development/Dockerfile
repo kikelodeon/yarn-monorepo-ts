@@ -18,7 +18,7 @@ RUN yarn install
 RUN yarn build
 
 # Establece el directorio de trabajo al servicio de autenticación
-WORKDIR /app/services/service-session
+WORKDIR /app/services/service-authentication
 
 # Expone el puerto en el que el servicio escucha (ajústalo según corresponda)
 EXPOSE 5001

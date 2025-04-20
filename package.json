@@ -9,6 +9,20 @@
   "scripts": {
     "build": "turbo run build",
     "buildasync": "turbo run build --parallel",
+
+    "clear:postgres": "env-cmd -f services/service-postgreSQL/.env docker-compose -f services/service-postgreSQL/docker-compose.yml down --volumes --rmi all",
+    "up:postgres": "env-cmd -f services/service-postgreSQL/.env docker-compose -f services/service-postgreSQL/docker-compose.yml up -d",
+    "down:postgres": "env-cmd -f services/service-postgreSQL/.env docker-compose -f services/service-postgreSQL/docker-compose.yml down ",
+    "reset:postgres": "yarn down:postgres && yarn up:postgres",
+    "hardreset:postgres": "yarn clear:postgres && yarn up:postgres",
+
+    "docker:redis": "env-cmd -f .env/development/.env docker-compose -f services/service-redis/docker-compose.yml up -d",
+    "docker:kafka": "env-cmd -f .env/development/.env docker-compose -f services/service-kafka/docker-compose.yml up -d",
+    "docker:session": "env-cmd -f .env/development/.env docker-compose -f services/service-session/__docker/development/docker-compose.yml up -d",
+    "docker:mailing": "env-cmd -f .env/development/.env docker-compose -f services/service-mailing/__docker/development/docker-compose.yml up -d",
+    "build:authentication": "turbo run build --filter=@kikerepo/service-authentication",
+    "dev:authentication": "yarn workspace @kikerepo/service-authentication dev",
+    "docker:authentication": "env-cmd -f .env/development/.env docker-compose -f services/service-authentication/__docker/development/docker-compose.yml up -d",
     "dev": "turbo run dev",
     "test": "turbo run test",
     "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
@@ -22,12 +36,14 @@
     "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "turbo": "^2.4.0",
     "typescript": "^5.7.3"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
     "argon2": "^0.41.1",
+    "env-cmd": "^10.1.0",
     "inversify": "^6.2.1",
     "prisma": "^6.2.1",
     "reflect-metadata": "^0.2.2"

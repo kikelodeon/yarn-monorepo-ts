@@ -1,10 +1,9 @@
 // packages/session/application/src/handlers/UserLoggedInEventHandler.ts
 import { injectable, inject } from 'inversify';
-import { UserLoggedInEvent } from '@kikerepo/authentication-application/src/events/UserLoggedInEvent';
+import { UserLoggedInEvent } from '@kikerepo/authentication-application';
 import { Session, ISessionRepository, ISessionRepositoryToken } from '@kikerepo/session-domain';
 import { FingerPrintFactory } from '../factories/FingerPrintFactory';
 import { Location } from '@kikerepo/session-domain/src/value-objects/Location';
-import { AccessToken } from '@kikerepo/authentication-domain';
 
 @injectable()
 export class UserLoggedInEventHandler {

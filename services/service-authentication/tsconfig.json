@@ -7,7 +7,7 @@
     "outDir": "dist",
     "baseUrl": ".",
   },
-  "include": ["src"],
+  "include": ["src","../../dependencies/development/.env"],
   "exclude": ["node_modules", "dist"],
   "references": [
 

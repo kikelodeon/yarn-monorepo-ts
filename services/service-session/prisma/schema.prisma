@@ -27,6 +27,7 @@ model Location {
   city      String?
   latitude  Float?
   longitude Float?
+  scannedAt   DateTime  @default(now())
   session   Session  @relation(fields: [sessionId], references: [id])
   sessionId String
 }

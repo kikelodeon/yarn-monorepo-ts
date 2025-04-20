@@ -10,6 +10,7 @@
     "test": "jest"
   },
   "dependencies": {
+    "@kikerepo/authentication-domain": "workspace:*",
     "@kikerepo/common-domain": "workspace:*"
   }
 }

@@ -1,1 +1,1 @@
-export const SessionInfrastructureToken = Symbol('SessionInfrastructureToken');
+export * from './persistance';

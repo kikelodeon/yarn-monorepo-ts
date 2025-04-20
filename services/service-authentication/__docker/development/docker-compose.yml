@@ -1,0 +1,21 @@
+version: '3.8'
+services:
+  auth-service:
+    container_name: auth-service
+    build:
+      context: ../../../..
+      dockerfile: services/service-authentication/__docker/development/Dockerfile
+    env_file:
+      - ../../../../.env/development/.env
+    volumes:
+      - ../../../..:/app
+    ports:
+      - "${SERVICE_AUTHENTICATION_PORT}:5001"
+      - "9229:9229"
+    working_dir: /app/services/service-authentication
+    command: yarn workspace @kikerepo/service-authentication dev
+
+
+volumes:
+  authentication_node_modules:
+

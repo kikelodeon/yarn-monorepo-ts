@@ -1,7 +1,10 @@
+// services/service-session/src/bootstrap/container.ts
+import 'reflect-metadata';
 import { Container } from 'inversify';
 import { ISessionRepository, ISessionRepositoryToken } from '@kikerepo/session-domain';
 import { SessionRepository } from '@kikerepo/session-infrastructure';
 import { UserLoggedInEventHandler } from '@kikerepo/session-application';
+import { connectPrisma } from '@kikerepo/common-infrastructure';
 
 const container = new Container();
 
@@ -11,5 +14,13 @@ container.bind<ISessionRepository>(ISessionRepositoryToken).to(SessionRepository
 // Bindear el handler del evento de login
 container.bind<UserLoggedInEventHandler>(UserLoggedInEventHandler).toSelf();
 
-// Exporta el contenedor para ser utilizado en la inicialización
+
+/**
+ * Función de inicialización del contenedor.
+ * Se conecta a la base de datos y ejecuta las migraciones de sesión.
+ */
+export async function buildContainer(): Promise<void> {
+  await connectPrisma();
+}
+
 export { container };

@@ -38,15 +38,23 @@ export default config;
     "packages/*/**",
     "services/*"
   ],
-  "scripts": {
-    "build": "turbo run build",
-    "buildasync": "turbo run build --parallel",
-    "dev": "turbo run dev",
-    "test": "turbo run test",
-    "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
-    "uninstall": "turbo run uninstall && rimraf node_modules",
-    "lint": "turbo run lint"
-  },
+"scripts": {
+  "build": "turbo run build",
+  "buildasync": "turbo run build --parallel",
+  
+  "dev:postgres": "env-cmd -f .env/development/.env docker-compose -f services/service-postgreSQL/docker-compose.yml up -d",
+  "dev:redis": "env-cmd -f .env/development/.env docker-compose -f services/service-redis/docker-compose.yml up -d",
+  "dev:kafka": "env-cmd -f .env/development/.env docker-compose -f services/service-kafka/docker-compose.yml up -d",
+
+  "dev:session": "env-cmd -f .env/development/.env docker-compose -f services/service-session/__docker/development/docker-compose.yml up -d",
+  "dev:mailing": "env-cmd -f .env/development/.env docker-compose -f services/service-mailing/__docker/development/docker-compose.yml up -d",
+  "dev:authentication": "env-cmd -f .env/development/.env docker-compose -f services/service-authentication/__docker/development/docker-compose.yml up -d",
+  "dev": "turbo run dev",
+  "test": "turbo run test",
+  "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
+  "uninstall": "turbo run uninstall && rimraf node_modules",
+  "lint": "turbo run lint"
+},
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^20.4.5",
@@ -54,12 +62,14 @@ export default config;
     "rimraf": "^6.0.1",
     "ts-jest": "^29.2.5",
     "ts-node": "^10.9.2",
+    "ts-node-dev": "^2.0.0",
     "turbo": "^2.4.0",
     "typescript": "^5.7.3"
   },
   "dependencies": {
     "@prisma/client": "^6.2.1",
     "argon2": "^0.41.1",
+    "env-cmd": "^10.1.0",
     "inversify": "^6.2.1",
     "prisma": "^6.2.1",
     "reflect-metadata": "^0.2.2"
@@ -138,105 +148,55 @@ export default config;
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\docker\development\docker-compose.yml ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\.env ===
 
-services:
-  authentication-service:
-    build:
-      context: ../../
-      dockerfile: services/service-authentication/Dockerfile.development
-    ports:
-      - "${SERVICE_AUTHENTICATION_PORT}:5001"
-    volumes:
-      - ../../services/service-authentication/src:/app/src
-      - authentication_node_modules:/app/node_modules
-    env_file:
-      - ../../services/service-authentication/.env.development
-    command: yarn dev
-    depends_on:
-      - redis
+# Redis settings
+REDIS_PASSWORD=*****
+REDIS_PORT=*****
+REDIS_VOLUME=*****
 
-  mailing-service:
-    build:
-      context: ../../
-      dockerfile: services/service-mailing/Dockerfile.development
-    ports:
-      - "${SERVICE_MAILING_PORT}:5002"
-    volumes:
-      - ../../services/service-mailing/src:/app/src
-      - mailing_node_modules:/app/node_modules
-    env_file:
-      - ../../services/service-mailing/.env.development
-    command: yarn dev
-    depends_on:
-      - redis
+# PostgreSQL settings
+POSTGRES_PORT=*****
+POSTGRES_USER=*****
+POSTGRES_PASSWORD=*****
+POSTGRES_DB=*****
 
-  redis:
-    image: redis:7.0-alpine
-    ports:
-      - "${SERVICE_REDIS_PORT}:6379"
-    volumes:
-      - redis-data:/data
-    environment:
-      - REDIS_PASSWORD=${SERVICE_REDIS_PASSWORD}
-    command: redis-server --requirepass ${SERVICE_REDIS_PASSWORD}
-    healthcheck:
-      test: ["CMD", "redis-cli", "PING"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
+POSTGRES_VOLUME=*****
 
-volumes:
-  authentication_node_modules:
-  mailing_node_modules:
-  redis-data:
+# ZooKeeper
+ZOOKEEPER_CLIENT_PORT=*****
+
+# Kafka Broker
+KAFKA_BROKER_ID=*****
+KAFKA_ZOOKEEPER_CONNECT=*****
+
+# Listeners
+KAFKA_LISTENERS=*****
+KAFKA_ADVERTISED_LISTENERS=*****
+
+# Replicaci√≥n del topic __consumer_offsets
+KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=*****
+
+# Authentication settings
+SERVICE_AUTHENTICATION_PORT=*****
+
+# Session settings
+SERVICE_SESSION_PORT=*****
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\production\.env ===
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\docker\production\docker-compose.yml ===
+SERVICE_REDIS_PASSWORD=*****
+SERVICE_REDIS_PORT=*****
 
-version: '3.8'
+SERVICE_AUTHENTICATION_PORT=*****
+SERVICE_SESSION_PORT=*****
 
-services:
-  authentication-service:
-    image: your-dockerhub-username/service-authentication:latest
-    ports:
-      - '3000:3000'
-    env_file:
-      - ../../services/service-authentication/.env.production
-    depends_on:
-      - redis
-    restart: unless-stopped
-
-  mailing-service:
-    image: your-dockerhub-username/service-mailing:latest
-    ports:
-      - '4000:4000'
-    env_file:
-      - ../../services/service-mailing/.env.production
-    depends_on:
-      - redis
-    restart: unless-stopped
-
-  redis:
-    image: redis:7.0-alpine
-    ports:
-      - '6379:6379'
-    volumes:
-      - redis-prod-data:/data
-    environment:
-      - REDIS_PASSWORD=${REDIS_PASSWORD}
-    command: redis-server --requirepass ${REDIS_PASSWORD}
-    restart: unless-stopped
-    healthcheck:
-      test: ["CMD", "redis-cli", "ping"]
-      interval: 30s
-      timeout: 10s
-      retries: 3
-
-volumes:
-  redis-prod-data:
+POSTGRES_USER=*****
+POSTGRES_PASSWORD=*****
+POSTGRES_DATABASE=*****
+POSTGRES_PORT=*****
 
 
 
@@ -390,21 +350,74 @@ export class LoginCredentialsError extends ConflictError {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\events\HttpRequestData.ts ===
+
+// packages/authentication/application/src/events/HttpRequestData.ts
+
+/**
+ * Datos del request necesarios para generar un fingerprint robusto.
+ * Se incluye el deviceId y otros headers relevantes, pero no la IP.
+ */
+export interface HttpRequestData {
+    deviceId?: string;
+    userAgent: string;
+    acceptLanguage?: string;
+    acceptEncoding?: string;
+    secChUa?: string;
+    secChUaPlatform?: string;
+    secChUaMobile?: string;
+    referer?: string;
+  }
+  
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\events\index.ts ===
 
 
 export * from './UserLoggedInEvent';
 export * from './UserRegisteredEvent';
+export * from './HttpRequestData';
 
 
 
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\application\src\events\UserLoggedInEvent.ts ===
 
+// packages/authentication/application/src/events/UserLoggedInEvent.ts
+
+import { HttpRequestData } from './HttpRequestData';
+import { UserId, AccessToken } from '@kikerepo/authentication-domain';
+
+/**
+ * Evento que se dispara cuando un usuario inicia sesi√≥n exitosamente.
+ * Contiene el UserId, el AccessToken generado y los datos del request necesarios para construir el fingerprint.
+ */
 export class UserLoggedInEvent {
-    constructor(public readonly userId: string, public readonly timestamp: Date) {}
+  public readonly userId: UserId;
+  public readonly accessToken: AccessToken;
+  public readonly httpRequestData: HttpRequestData;
+  public readonly timestamp: Date;
+
+  /**
+   * @param userId Identificador del usuario.
+   * @param accessToken Token de acceso generado.
+   * @param httpRequestData Datos del request (deviceId, user-agent, etc.) para construir el fingerprint.
+   * @param timestamp Marca temporal del evento (opcional, por defecto se asigna la fecha actual).
+   */
+  constructor(
+    userId: UserId,
+    accessToken: AccessToken,
+    httpRequestData: HttpRequestData,
+    timestamp?: Date
+  ) {
+    this.userId = userId;
+    this.accessToken = accessToken;
+    this.httpRequestData = httpRequestData;
+    this.timestamp = timestamp || new Date();
   }
-  
+}
+
 
 
 
@@ -655,9 +668,7 @@ export * from './RegisterResult';
 
 // packages/application/user/src/results/LoginResult.ts
 
-import { UserId } from '@kikerepo/authentication-domain';
-import {  RefreshToken } from '@kikerepo/authentication-domain';
-import { AccessToken } from '@kikerepo/common-domain';
+import { UserId ,AccessToken ,RefreshToken } from '@kikerepo/authentication-domain';
 
 export class LoginResult {
   constructor(
@@ -1205,6 +1216,22 @@ export interface IUserRepository {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\AccessToken.ts ===
+
+import { ValueObject } from '@kikerepo/common-domain';
+
+export class AccessToken extends ValueObject<string> {
+  constructor(token: string) {
+    super(token);
+    // ‚úÖ Solo verifica reglas b√°sicas del dominio
+    if (!token || typeof token !== 'string') {
+      throw new Error('Invalid token format');
+    }
+  }
+}
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\value-objects\Email.ts ===
 
 import { ValueObject } from '@kikerepo/common-domain';
@@ -1247,6 +1274,7 @@ export { Phone } from './Phone';
 export { UserId } from './UserId';
 export { InputPassword } from './InputPassword';
 export { RefreshToken } from './RefreshToken';
+export {AccessToken} from './AccessToken';
 
 
 
@@ -1479,8 +1507,7 @@ export * from './errors';
 import jwt, { JwtPayload } from 'jsonwebtoken';
 import { requireEnv } from '@kikerepo/utils-env';
 import { TokenGenerationError, TokenVerificationError } from './errors';
-import {  RefreshToken} from '@kikerepo/authentication-domain';
-import { AccessToken } from '@kikerepo/common-domain';
+import { AccessToken,RefreshToken} from '@kikerepo/authentication-domain';
 /**
  * Interfaz extendida para el payload, asegurando la existencia de userId.
  */
@@ -1751,6 +1778,8 @@ export {Argon2HashingService} from './Argon2HashingService';
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\index.ts ===
 
+export * from './handlers';
+export * from './factories';
 
 
 
@@ -1769,7 +1798,87 @@ export {Argon2HashingService} from './Argon2HashingService';
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\factories\FingerPrintFactory.ts ===
+
+// packages/session/application/src/factories/FingerPrintFactory.ts
+
+import crypto from 'crypto';
+import { HttpRequestData } from '@kikerepo/authentication-application';
+import { FingerPrint } from '@kikerepo/session-domain';
+
+export class FingerPrintFactory {
+  public static build(httpData: HttpRequestData): FingerPrint {
+    const {
+      deviceId = '',
+      userAgent,
+      acceptLanguage = '',
+      acceptEncoding = '',
+      secChUa = '',
+      secChUaPlatform = '',
+      secChUaMobile = '',
+      referer = '',
+    } = httpData;
+
+    // Concatenamos los datos para formar un string √∫nico
+    const dataString = `${deviceId}|${userAgent}|${acceptLanguage}|${acceptEncoding}|${secChUa}|${secChUaPlatform}|${secChUaMobile}|${referer}`;
+
+    // Generamos un hash SHA-256
+    const hash = crypto.createHash('sha256').update(dataString).digest('hex');
+    return new FingerPrint(hash);
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\factories\index.ts ===
+
+export * from './FingerPrintFactory';	
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\handlers\index.ts ===
+
+export * from './UserLoggedInEventHandler'
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\application\src\handlers\UserLoggedInEventHandler.ts ===
+
+// packages/session/application/src/handlers/UserLoggedInEventHandler.ts
+import { injectable, inject } from 'inversify';
+import { UserLoggedInEvent } from '@kikerepo/authentication-application';
+import { Session, ISessionRepository, ISessionRepositoryToken } from '@kikerepo/session-domain';
+import { FingerPrintFactory } from '../factories/FingerPrintFactory';
+import { Location } from '@kikerepo/session-domain/src/value-objects/Location';
+
+@injectable()
+export class UserLoggedInEventHandler {
+  constructor(
+    @inject(ISessionRepositoryToken) private readonly sessionRepo: ISessionRepository
+  ) {}
+
+  public async handle(event: UserLoggedInEvent, ip: string, geoData?: { country?: string; region?: string; city?: string; latitude?: number; longitude?: number }): Promise<void> {
+    // Generar el fingerprint a partir de los datos del request
+    const fingerprint = FingerPrintFactory.build(event.httpRequestData);
+
+    // Crear un objeto Location a partir de la IP y, opcionalmente, datos de geolocalizaci√≥n.
+    const location = new Location(ip, geoData);
+
+    // Crear la sesi√≥n. Si es un login nuevo, se crea con la ubicaci√≥n inicial;
+    // TODO: Si es un login existente, se actualiza con la ubicaci√≥n actual.
+    //TODO: Si es un login nuevo, se crea con la ubicaci√≥n inicial;
+    const session = Session.createUnique(
+      event.userId.value, // Suponiendo que userId es un Value Object
+      event.accessToken,  // Ya es AccessToken
+      fingerprint,
+      location
+    );
+
+    // Persistir la sesi√≥n usando el repositorio.
+    await this.sessionRepo.save(session);
+  }
+}
 
 
 
@@ -1865,6 +1974,7 @@ export {Argon2HashingService} from './Argon2HashingService';
     "test": "jest"
   },
   "dependencies": {
+    "@kikerepo/authentication-domain": "workspace:*",
     "@kikerepo/common-domain": "workspace:*"
   }
 }
@@ -1886,7 +1996,8 @@ export {Argon2HashingService} from './Argon2HashingService';
   "include": ["src", "../../../services/service-authentication/src/bootstrap/tokens.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
-    { "path": "../../_common/domain" } // Uses compiled @kikerepo/common-domain
+    { "path": "../../_common/domain" }, // Uses compiled @kikerepo/common-domain
+    { "path": "../../authentication/domain" } // Uses compiled @kikerepo/common-domain
   ]
 }
 
@@ -1898,6 +2009,7 @@ export {Argon2HashingService} from './Argon2HashingService';
 export * from './value-objects';
 export * from './events';
 export * from './entities';
+export * from './interfaces';
 
 
 
@@ -1912,95 +2024,66 @@ export { Session } from './Session'
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\entities\Session.ts ===
 
-// domain-user/src/entities/User.ts
-import { AggregateRoot, CreationDate, DeletionDate,AccessToken } from '@kikerepo/common-domain';
-import { FingerPrint, SessionId} from '../value-objects';
-import { SessionCreatedEvent } from '../events/';
+// packages/session/domain/src/entities/Session.ts
+
+import { AggregateRoot } from '@kikerepo/common-domain';
+import { SessionId,Location,FingerPrint } from '../value-objects';
+import { AccessToken } from '@kikerepo/authentication-domain';
 export class Session extends AggregateRoot<SessionId> {
+  private _userId: string;
   private _accessToken: AccessToken;
   private _fingerPrint: FingerPrint;
+  private _locations: Location[];
 
-  /**
-   * El constructor recibe VO ya construidos (y no dispara eventos).
-   * Lo hacemos p√∫blico, pero OJO: 
-   * - Normalmente lo dejar√≠amos `private` o `protected` 
-   *   si quieres forzar a que siempre usen la factor√≠a `createUnique`.
-   */
   private constructor(
     id: SessionId,
+    userId: string,
     accessToken: AccessToken,
     fingerPrint: FingerPrint,
-    creationDate?: CreationDate,
-    deletionDate?: DeletionDate,
+    locations: Location[]
   ) {
-    super(id,creationDate,deletionDate);
+    super(id);
+    this._userId = userId;
     this._accessToken = accessToken;
     this._fingerPrint = fingerPrint;
+    this._locations = locations;
     this.validate();
   }
 
-  /**
-   * M√©todo est√°tico/factor√≠a para crear un "Session" *nuevo*.
-   * Recibe valores primitivos, construye VO, llama al constructor
-   * y emite un evento.
-   */
   public static createUnique(
+    userId: string,
     accessToken: AccessToken,
-    fingerPrint: FingerPrint
+    fingerPrint: FingerPrint,
+    initialLocation?: Location
   ): Session {
-    // 1) Generar ID y crear Value Objects
-    const sessionId = new SessionId(); // genera un UUIDv6 (por ejemplo)
-
-    // 2) Llamar al constructor con VO
-    const session = new Session(sessionId, accessToken, fingerPrint);
-
-    // 3) Emitir evento de dominio para un user nuevo
-    session.addDomainEvent(
-      new SessionCreatedEvent(sessionId.value, accessToken.value, fingerPrint.value),
-    );
-
-    return session;
+    const sessionId = new SessionId();
+    const locations = initialLocation ? [initialLocation] : [];
+    return new Session(sessionId, userId, accessToken, fingerPrint, locations);
   }
-  
-  public static map(
-    id: string,
-    fingerprint: string,
-    accessToken: string,
-    creationDate: Date,
-    deletionDate: Date|null
-  ): Session {
-    // 1) Generar ID y crear Value Objects
-    const sessionId = new SessionId(id); // genera un UUIDv6 (por ejemplo)
-    const fingerPrintVO = new FingerPrint(fingerprint); 
-    const accessTokenVO = new AccessToken(accessToken);
-    const creationDateVO = new CreationDate(creationDate) ;
-    const deletionDateVO = deletionDate ? new DeletionDate(deletionDate) : undefined;
-    // 2) Llamar al constructor con VO
-    const session = new Session(sessionId, fingerPrintVO, accessTokenVO,creationDateVO,deletionDateVO);
-    return session;
-  }
-  
+
   private validate(): void {
-    // Aqu√≠ podr√≠as poner chequeos complementarios (si fuese necesario)
-    if (!this._fingerPrint) {
-      throw new Error('fingerprint requerido');
-    }
-    if (!this._accessToken) {
-      throw new Error('_accessToken requerido');
-    }
+    if (!this._userId) throw new Error('El userId es requerido');
+    if (!this._accessToken) throw new Error('El accessToken es requerido');
+    if (!this._fingerPrint) throw new Error('El fingerprint es requerido');
   }
 
-  // Getters
-  get id(): SessionId {
-    return this._id;
+  
+  get userId(): string {
+    return this._userId;
   }
-
+  get accessToken(): AccessToken {
+    return this._accessToken;
+  }
   get fingerPrint(): FingerPrint {
     return this._fingerPrint;
   }
+  get locations(): Location[] {
+    return this._locations;
+  }
 
-  get accessToken(): AccessToken {
-    return this._accessToken;
+  // Permite agregar una nueva ubicaci√≥n si se detecta un cambio de IP
+  public addLocation(location: Location): void {
+    this._locations.push(location);
   }
 }
 
@@ -2060,6 +2143,26 @@ export class SessionUpdatedEvent extends DomainEvent {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\interfaces\index.ts ===
+
+export * from './ISessionRepository';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\interfaces\ISessionRepository.ts ===
+
+import { Session } from '../entities/Session';
+
+export const ISessionRepositoryToken = Symbol('ISessionRepository');
+
+export interface ISessionRepository {
+  save(session: Session): Promise<void>;
+  // Puedes agregar otros m√©todos (find, update, delete, etc.)
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\value-objects\FingerPrint.ts ===
 
 // packages/domain/user/src/value-objects/AccessToken.ts
@@ -2081,7 +2184,41 @@ export class FingerPrint extends ValueObject<string> {
 
 export * from './FingerPrint';
 export * from './SessionId';
+export * from './Location';
 
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\domain\src\value-objects\Location.ts ===
+
+// packages/session/domain/src/value-objects/Location.ts
+
+import { ValueObject } from '@kikerepo/common-domain';
+
+export interface GeoData {
+  country?: string;
+  region?: string;
+  city?: string;
+  latitude?: number;
+  longitude?: number;
+}
+
+/**
+ * Value Object que representa la ubicaci√≥n basada en la IP y datos de geolocalizaci√≥n.
+ */
+export class Location extends ValueObject<{ ip: string; geoData?: GeoData }> {
+  constructor(ip: string, geoData?: GeoData) {
+    super({ ip, geoData });
+  }
+
+  get ip(): string {
+    return this.value.ip;
+  }
+
+  get geoData(): GeoData | undefined {
+    return this.value.geoData;
+  }
+}
 
 
 
@@ -2156,7 +2293,45 @@ export class SessionId extends ValueObject<string> {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\src\index.ts ===
 
-export const SessionInfrastructureToken = Symbol('SessionInfrastructureToken');
+export * from './persistance';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\src\persistance\index.ts ===
+
+export * from './SessionRepository';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\src\persistance\SessionRepository.ts ===
+
+// packages/session/infrastructure/src/persistance/SessionRepository.ts
+import { prisma } from '@kikerepo/common-infrastructure';
+import { Session } from '@kikerepo/session-domain';
+
+export interface ISessionRepository {
+  save(session: Session): Promise<void>;
+  // Otros m√©todos: findByUserId, update, etc.
+}
+
+export class SessionRepository implements ISessionRepository {
+  async save(session: Session): Promise<void> {
+    await prisma.session.upsert({
+      where: { id: session.id.value },
+      update: {
+        accessToken: session.accessToken.value,
+        fingerprint: session.fingerPrint.value,
+      },
+      create: {
+        id: session.id.value,
+        userId: session.id.value,  // O el userId obtenido del evento
+        accessToken: session.accessToken.value,
+        fingerprint: session.fingerPrint.value,
+      },
+    });
+  }
+}
+
 
 
 
@@ -3632,24 +3807,6 @@ export * from './IErrorResponse';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\AccessToken.ts ===
-
-// packages/_common/domain/src/value-objects/AccessToken.ts
-
-import { ValueObject } from '../ValueObject';
-
-export class AccessToken extends ValueObject<string> {
-  constructor(token: string) {
-    super(token);
-    // ‚úÖ Solo verifica reglas b√°sicas del dominio
-    if (!token || typeof token !== 'string') {
-      throw new Error('Invalid token format');
-    }
-  }
-}
-
-
-
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\CreationDate.ts ===
 
 export class CreationDate {
@@ -3766,7 +3923,6 @@ export class ExpirationDate {
 export * from './CreationDate';
 export * from './DeletionDate';
 export * from './ExpirationDate';
-export * from './AccessToken';
 
 
 
@@ -4087,22 +4243,21 @@ JWT_REFRESH_SECRET=*****
 # Usa una imagen base de Node (versi√≥n LTS recomendada)
 FROM node:18-alpine
 
-# Directorio de trabajo en el contenedor
+# Establece la variable de entorno para desarrollo antes de instalar dependencias
+ENV NODE_ENV=development
+
+# Directorio de trabajo en el contenedor: usamos la ra√≠z del monorepo
 WORKDIR /app
 
-# --- CAPA DE DEPENDENCIAS ---
-# Copia archivos de configuraci√≥n del monorepo necesarios para instalar dependencias
-# Estos archivos se encuentran en la ra√≠z del monorepo
-COPY package.json yarn.lock turbo.json .yarnrc.yml ./
-# Si usas Yarn v4 con la carpeta .yarn, c√≥piala tambi√©n:
-COPY .yarn .yarn
-
-# Instala todas las dependencias (usando workspaces)
-RUN yarn install
-
-# --- CAPA DE C√ìDIGO ---
+# --- CAPA DE C√ìDIGO Y DEPENDENCIAS ---
 # Copia todo el c√≥digo del monorepo al contenedor
 COPY . .
+
+# Instala todas las dependencias (Yarn Berry instala devDependencies en modo desarrollo por defecto)
+RUN yarn install
+
+# Compila (build) todo el monorepo (esto se encargar√° de construir todos los paquetes, incluidos los internos)
+RUN yarn build
 
 # Establece el directorio de trabajo al servicio de autenticaci√≥n
 WORKDIR /app/services/service-authentication
@@ -4110,12 +4265,7 @@ WORKDIR /app/services/service-authentication
 # Expone el puerto en el que el servicio escucha (aj√∫stalo seg√∫n corresponda)
 EXPOSE 5001
 
-# Define la variable de entorno para desarrollo
-ENV NODE_ENV=development
-
-# Ejecuta el comando de desarrollo definido en el package.json del servicio.
-# Por ejemplo, se asume que en services/service-authentication/package.json existe:
-# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
+# Ejecuta el comando de desarrollo definido en el package.json del servicio
 CMD ["yarn", "dev"]
 
 
@@ -4151,6 +4301,7 @@ CMD ["yarn", "dev"]
     "@kikerepo/authentication-infrastructure": "workspace:*",
     "@kikerepo/common-infrastructure": "workspace:*",
     "@kikerepo/utils-env": "workspace:*",
+    "chalk": "4",
     "dotenv": "^16.4.7",
     "express": "^4.21.2",
     "tsyringe": "^4.8.0"
@@ -4171,7 +4322,7 @@ CMD ["yarn", "dev"]
     "outDir": "dist",
     "baseUrl": ".",
   },
-  "include": ["src"],
+  "include": ["src","../../dependencies/development/.env"],
   "exclude": ["node_modules", "dist"],
   "references": [
 
@@ -4395,6 +4546,35 @@ export function CreateUserRoutes(userController: {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\__docker\development\docker-compose.yml ===
+
+version: '3.8'
+services:
+  authentication-service:
+    build:
+      context: ../../../../
+      dockerfile: services/service-authentication/Dockerfile.development
+    ports:
+      - "${SERVICE_AUTHENTICATION_PORT}:5001"
+    volumes:
+      - ../../src:/app/src
+      - authentication_node_modules:/app/node_modules
+    env_file:
+      - ../../.env.development
+    command: yarn dev
+    depends_on:
+      - redis
+      - kafka
+      - postgres
+
+
+volumes:
+  authentication_node_modules:
+
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\__tests__\basic.spec.ts ===
 
 describe('Mailing Service test', () => {
@@ -4406,105 +4586,34 @@ describe('Mailing Service test', () => {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\.env.development ===
-
-# Kafka settings for development
-# The advertised listeners are set so that other containers (on the same network) can resolve the Kafka broker
-KAFKA_BROKER_ID=*****
-KAFKA_ZOOKEEPER_CONNECT=*****
-KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=*****
-KAFKA_ADVERTISED_LISTENERS=*****
-KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=*****
-
-
-
-
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\docker-compose.yml ===
 
 version: '3.8'
+
 services:
+  zookeeper:
+    image: wurstmeister/zookeeper:latest
+    container_name: zk
+    env_file:
+      - ../../.env/development/.env
+    ports:
+      - "${ZOOKEEPER_CLIENT_PORT}:2181"
+
   kafka:
-    image: bitnami/kafka:latest
-    environment:
-      # Identificador √∫nico para el broker
-      KAFKA_BROKER_ID: 1
-      # Indicamos a Kafka que ejecute ambos roles: broker y controller (modo KRaft)
-      KAFKA_PROCESS_ROLES: "broker,controller"
-      # Definimos el quorum para el controlador (en este caso, un √∫nico nodo)
-      KAFKA_CONTROLLER_QUORUM_VOTERS: "1@kafka:9093"
-      # Configuramos los listeners:
-      # - PLAINTEXT para comunicaci√≥n entre clientes y brokers
-      # - CONTROLLER para la comunicaci√≥n interna del cl√∫ster KRaft
-      KAFKA_LISTENERS: "PLAINTEXT://0.0.0.0:9092,CONTROLLER://0.0.0.0:9093"
-      # Configuramos el listener que se anunciar√° a los clientes (normalmente, el PLAINTEXT)
-      KAFKA_ADVERTISED_LISTENERS: "PLAINTEXT://kafka:9092"
-      # Listener para la comunicaci√≥n interna entre brokers
-      KAFKA_INTER_BROKER_LISTENER_NAME: "PLAINTEXT"
-      # Variables adicionales que pueden ser necesarias (ajusta seg√∫n tu necesidad)
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      KAFKA_TRANSACTION_STATE_LOG_MIN_ISR: 1
-      KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR: 1
+    image: wurstmeister/kafka:latest
+    container_name: kafka
+    env_file:
+      - ../../.env/development/.env
+    depends_on:
+      - zookeeper
     ports:
       - "9092:9092"
-      - "9093:9093"
-    networks:
-      - kafka-net
-
-networks:
-  kafka-net:
-    driver: bridge
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\Dockerfile.development ===
-
-# Use Node LTS image
-FROM node:18-alpine
-
-# Set the working directory
-WORKDIR /app
-
-# Copy root-level files (so Yarn workspaces work correctly)
-COPY package.json yarn.lock turbo.json .yarnrc.yml ./
-
-# (Optional) If you have a .yarn folder, copy it too
-COPY .yarn .yarn
-
-# Install dependencies from the root (Yarn will hoist workspaces if needed)
-RUN yarn install --immutable
-
-# Copy all files
-COPY . .
-
-# Change directory to the service folder
-WORKDIR /app/services/service-kafka
-
-# Expose the port
-EXPOSE 3100
-
-# Set environment (development)
-ENV NODE_ENV=development
-
-# Start the service
-CMD ["yarn", "dev"]
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\package.json ===
-
-{
-  "name": "service-kafka",
-  "version": "1.0.0",
-  "description": "Kafka server for the monorepo",
-  "scripts": {
-    "dev": "docker-compose up -d",
-    "start": "docker-compose up -d",
-    "stop": "docker-compose down",
-    "logs": "docker-compose logs -f"
-  }
-}
+    environment:
+      # Wurstmeister usa estas vars en lugar de KAFKA_CFG_*
+      KAFKA_BROKER_ID:     ${KAFKA_BROKER_ID}
+      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
+      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
 
 
 
@@ -4612,61 +4721,48 @@ describe('Simple test in Authentication Service', () => {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\.env.development ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-postgreSQL\docker-compose.yml ===
 
-REDIS_PORT=*****
-REDIS_PASSWORD=*****
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\docker-compose.yml ===
-
+# docker-compose.yml
 version: '3.8'
+
 services:
-  redis:
-    image: redis:latest
-    command: ["redis-server", "--requirepass", $(REDIS_PASSWORD)]
+  postgres:
+    image: postgres:15-alpine
+    container_name: service-postgreSQL
+    env_file:
+      - ../../.env/development/.env
     ports:
-      - "6379:6379"
+      - "${POSTGRES_PORT}:5432"
     volumes:
-      - redis-data:/data
-    networks:
-      - redis-network
+      # Aqu√≠ usa la clave literal `postgres_data`
+      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  redis-data:
-
-networks:
-  redis-network:
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\Dockerfile.development ===
-
-FROM redis:7.0-alpine
-
-# Optional: Add custom Redis configuration
-# COPY redis.conf /usr/local/etc/redis/redis.conf
-
-# CMD ["redis-server", "/usr/local/etc/redis/redis.conf"]
+  # La clave debe ser fija; usamos `name:` para interpolar tu var
+  postgres_data:
+    name: ${POSTGRES_VOLUME}
 
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis-server\package.json ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis\docker-compose.yml ===
 
-{
-  "name": "redis-server",
-  "version": "1.0.0",
-  "description": "Redis server for the monorepo",
-  "scripts": {
-    "dev": "docker-compose up -d",
-    "start": "docker-compose up -d",
-    "stop": "docker-compose down",
-    "logs": "docker-compose logs -f"
-  }
-}
+version: '3.8'
+
+services:
+  redis:
+    image: redis:7.0-alpine
+    container_name: service-redis
+    ports:
+      - "${REDIS_PORT}:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  redis_data:
+    name: ${REDIS_VOLUME}
+    driver: local
 
 
 
@@ -4691,57 +4787,34 @@ JWT_REFRESH_SECRET=*****
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\.env.development ===
-
-#express settings
-APP_HOST=*****
-APP_PORT=*****
-#redis settings
-REDIS_HOST=*****
-REDIS_PORT=*****
-REDIS_PASSWORD=*****
-#database settings
-DATABASE_URL=*****
-#jwt settings
-JWT_ACCESS_SECRET=*****
-JWT_REFRESH_SECRET=*****
-
-
-
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\Dockerfile.development ===
 
 # Usa una imagen base de Node (versi√≥n LTS recomendada)
 FROM node:18-alpine
 
-# Directorio de trabajo en el contenedor
+# Establece la variable de entorno para desarrollo antes de instalar dependencias
+ENV NODE_ENV=development
+
+# Directorio de trabajo en el contenedor: usamos la ra√≠z del monorepo
 WORKDIR /app
 
-# --- CAPA DE DEPENDENCIAS ---
-# Copia archivos de configuraci√≥n del monorepo necesarios para instalar dependencias
-# Estos archivos se encuentran en la ra√≠z del monorepo
-COPY package.json yarn.lock turbo.json .yarnrc.yml ./
-# Si usas Yarn v4 con la carpeta .yarn, c√≥piala tambi√©n:
-COPY .yarn .yarn
-
-# Instala todas las dependencias (usando workspaces)
-RUN yarn install
-
-# --- CAPA DE C√ìDIGO ---
+# --- CAPA DE C√ìDIGO Y DEPENDENCIAS ---
 # Copia todo el c√≥digo del monorepo al contenedor
 COPY . .
+
+# Instala todas las dependencias (Yarn Berry instala devDependencies en modo desarrollo por defecto)
+RUN yarn install
+
+# Compila (build) todo el monorepo (esto se encargar√° de construir todos los paquetes, incluidos los internos)
+RUN yarn build
 
 # Establece el directorio de trabajo al servicio de autenticaci√≥n
 WORKDIR /app/services/service-session
 
 # Expone el puerto en el que el servicio escucha (aj√∫stalo seg√∫n corresponda)
-EXPOSE 5002
+EXPOSE 5001
 
-# Define la variable de entorno para desarrollo
-ENV NODE_ENV=development
-
-# Ejecuta el comando de desarrollo definido en el package.json del servicio.
-# Por ejemplo, se asume que en services/service-authentication/package.json existe:
-# "scripts": { "dev": "ts-node-dev --respawn --transpileOnly src/index.ts" }
+# Ejecuta el comando de desarrollo definido en el package.json del servicio
 CMD ["yarn", "dev"]
 
 
@@ -4848,36 +4921,27 @@ startServer().catch((err) => {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\src\bootstrap\container.ts ===
 
-// services/service-authentication/src/bootstrap/container.ts
-
+// services/service-session/src/bootstrap/container.ts
 import 'reflect-metadata';
-import {
-  Container 
-} from 'inversify';
-
-import {
-  IUserRepository, IUserRepositoryToken,
-  IHashingService, IHashingServiceToken
-} from '@kikerepo/authentication-domain';
-
-import {
-   UserRepository,
-   Argon2HashingService, 
-   AuthenticationService, 
-   AuthenticationServiceToken
-} from '@kikerepo/authentication-infrastructure';
-
-import{
-  connectPrisma
-} from '@kikerepo/common-infrastructure';
-
-import {
-   UserController, 
-   UserControllerToken 
-} from '../controllers';
+import { Container } from 'inversify';
+import { ISessionRepository, ISessionRepositoryToken } from '@kikerepo/session-domain';
+import { SessionRepository } from '@kikerepo/session-infrastructure';
+import { UserLoggedInEventHandler } from '@kikerepo/session-application';
+import { connectPrisma } from '@kikerepo/common-infrastructure';
 
 const container = new Container();
 
+// Bindear la implementaci√≥n del repositorio de sesi√≥n en singleton
+container.bind<ISessionRepository>(ISessionRepositoryToken).to(SessionRepository).inSingletonScope();
+
+// Bindear el handler del evento de login
+container.bind<UserLoggedInEventHandler>(UserLoggedInEventHandler).toSelf();
+
+
+/**
+ * Funci√≥n de inicializaci√≥n del contenedor.
+ * Se conecta a la base de datos y ejecuta las migraciones de sesi√≥n.
+ */
 export async function buildContainer(): Promise<void> {
   await connectPrisma();
 }
@@ -4994,11 +5058,40 @@ export function CreateUserRoutes(userController: {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-session\__docker\development\docker-compose.yml ===
+
+version: '3.8'
+services:
+  session-service:
+    build:
+      context: ../../../../
+      dockerfile: services/service-session/Dockerfile.development
+    ports:
+      - "${SERVICE_SESSION_PORT}:5001"
+    volumes:
+      - ../../src:/app/src
+      - session_node_modules:/app/node_modules
+    env_file:
+      - ../../.env.development
+    command: yarn dev
+    depends_on:
+      - redis
+      - kafka
+      - postgres
+
+
+volumes:
+  session_node_modules:
+
+
+
+
+
 
 
 === DIRECTORY TREE ===
 Listado de rutas de carpetas
-El n˙mero de serie del volumen es 0000009F EA56:DBC0
+El n˙mero de serie del volumen es 000000C9 EA56:DBC0
 C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   .gitignore
 ¶   .yarnrc.yml
@@ -5011,18 +5104,18 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   turbo.json
 ¶   yarn.lock
 ¶   
++---.env
+¶   +---development
+¶   ¶       .env
+¶   ¶       
+¶   +---production
+¶           .env
+¶           
 +---.yarn
 ¶   ¶   install-state.gz
 ¶   ¶   
 ¶   +---releases
 ¶           yarn-berry.js
-¶           
-+---docker
-¶   +---development
-¶   ¶       docker-compose.yml
-¶   ¶       
-¶   +---production
-¶           docker-compose.yml
 ¶           
 +---packages
 ¶   +---authentication
@@ -5043,6 +5136,7 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶   ¶       ¶       LoginCredentialsError.ts
 ¶   ¶   ¶       ¶       
 ¶   ¶   ¶       +---events
+¶   ¶   ¶       ¶       HttpRequestData.ts
 ¶   ¶   ¶       ¶       index.ts
 ¶   ¶   ¶       ¶       UserLoggedInEvent.ts
 ¶   ¶   ¶       ¶       UserRegisteredEvent.ts
@@ -5115,6 +5209,7 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶   ¶       ¶       IUserRepository.ts
 ¶   ¶   ¶       ¶       
 ¶   ¶   ¶       +---value-objects
+¶   ¶   ¶               AccessToken.ts
 ¶   ¶   ¶               Email.ts
 ¶   ¶   ¶               HashedPassword.ts
 ¶   ¶   ¶               index.ts
@@ -5165,8 +5260,13 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶   ¶       +---events
 ¶   ¶   ¶       ¶       index.ts
 ¶   ¶   ¶       ¶       
+¶   ¶   ¶       +---factories
+¶   ¶   ¶       ¶       FingerPrintFactory.ts
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       
 ¶   ¶   ¶       +---handlers
 ¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       UserLoggedInEventHandler.ts
 ¶   ¶   ¶       ¶       
 ¶   ¶   ¶       +---mappers
 ¶   ¶   ¶       ¶       index.ts
@@ -5210,9 +5310,13 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶   ¶       ¶       SessionUpdatedEvent.ts
 ¶   ¶   ¶       ¶       
 ¶   ¶   ¶       +---interfaces
+¶   ¶   ¶       ¶       index.ts
+¶   ¶   ¶       ¶       ISessionRepository.ts
+¶   ¶   ¶       ¶       
 ¶   ¶   ¶       +---value-objects
 ¶   ¶   ¶               FingerPrint.ts
 ¶   ¶   ¶               index.ts
+¶   ¶   ¶               Location.ts
 ¶   ¶   ¶               SessionId.ts
 ¶   ¶   ¶               
 ¶   ¶   +---infrastructure
@@ -5220,8 +5324,12 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶       ¶   tsconfig.json
 ¶   ¶       ¶   
 ¶   ¶       +---src
-¶   ¶               index.ts
-¶   ¶               
+¶   ¶           ¶   index.ts
+¶   ¶           ¶   
+¶   ¶           +---persistance
+¶   ¶                   index.ts
+¶   ¶                   SessionRepository.ts
+¶   ¶                   
 ¶   +---utils
 ¶   ¶   +---env
 ¶   ¶   ¶   ¶   index.ts
@@ -5326,7 +5434,6 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶       ¶       ¶       index.ts
 ¶       ¶       ¶       
 ¶       ¶       +---value-objects
-¶       ¶               AccessToken.ts
 ¶       ¶               CreationDate.ts
 ¶       ¶               DeletionDate.ts
 ¶       ¶               ExpirationDate.ts
@@ -5387,6 +5494,11 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶   ¶           index.ts
     ¶   ¶           UserRoutes.ts
     ¶   ¶           
+    ¶   +---__docker
+    ¶   ¶   +---development
+    ¶   ¶   ¶       docker-compose.yml
+    ¶   ¶   ¶       
+    ¶   ¶   +---production
     ¶   +---__http__
     ¶   ¶       login.http
     ¶   ¶       register.http
@@ -5395,10 +5507,7 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶           basic.spec.ts
     ¶           
     +---service-kafka
-    ¶       .env.development
     ¶       docker-compose.yml
-    ¶       Dockerfile.development
-    ¶       package.json
     ¶       
     +---service-mailing
     ¶   ¶   .env.development
@@ -5412,31 +5521,21 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶   +---__tests__
     ¶           basic.spec.ts
     ¶           
-    +---service-redis-server
-    ¶       .env.development
+    +---service-postgreSQL
     ¶       docker-compose.yml
-    ¶       Dockerfile.development
-    ¶       package.json
+    ¶       
+    +---service-redis
+    ¶       docker-compose.yml
     ¶       
     +---service-session
         ¶   .env
-        ¶   .env.development
         ¶   Dockerfile.development
         ¶   package.json
         ¶   tsconfig.json
         ¶   
         +---prisma
-        ¶   ¶   schema.prisma
-        ¶   ¶   
-        ¶   +---migrations
-        ¶       ¶   migration_lock.toml
-        ¶       ¶   
-        ¶       +---20250120232605_init
-        ¶       ¶       migration.sql
-        ¶       ¶       
-        ¶       +---20250122200614_add_deleted
-        ¶               migration.sql
-        ¶               
+        ¶       schema.prisma
+        ¶       
         +---src
         ¶   ¶   index.ts
         ¶   ¶   
@@ -5452,5 +5551,10 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
         ¶           index.ts
         ¶           UserRoutes.ts
         ¶           
+        +---__docker
+        ¶   +---development
+        ¶   ¶       docker-compose.yml
+        ¶   ¶       
+        ¶   +---production
         +---__http__
         +---__tests__

@@ -1397,6 +1397,7 @@ __metadata:
   resolution: "@kikerepo/common-infrastructure@workspace:packages/_common/infrastructure"
   dependencies:
     "@kikerepo/common-contracts": "workspace:*"
+    dayjs: "npm:^1.11.13"
     jsonwebtoken: "npm:^9.0.2"
     winston: "npm:^3.17.0"
   languageName: unknown
@@ -1414,6 +1415,7 @@ __metadata:
     "@kikerepo/utils-env": "workspace:*"
     "@types/express": "npm:^5.0.0"
     "@types/jsonwebtoken": "npm:^9.0.7"
+    chalk: "npm:4"
     dotenv: "npm:^16.4.7"
     eslint: "npm:^8.0.0"
     express: "npm:^4.21.2"
@@ -1483,6 +1485,7 @@ __metadata:
   version: 0.0.0-use.local
   resolution: "@kikerepo/session-domain@workspace:packages/session/domain"
   dependencies:
+    "@kikerepo/authentication-domain": "workspace:*"
     "@kikerepo/common-domain": "workspace:*"
   languageName: unknown
   linkType: soft
@@ -3016,7 +3019,7 @@ __metadata:
   languageName: node
   linkType: hard
 
-"chalk@npm:^4.0.0, chalk@npm:^4.0.2":
+"chalk@npm:4, chalk@npm:^4.0.0, chalk@npm:^4.0.2":
   version: 4.1.2
   resolution: "chalk@npm:4.1.2"
   dependencies:
@@ -3185,6 +3188,13 @@ __metadata:
   languageName: node
   linkType: hard
 
+"commander@npm:^4.0.0":
+  version: 4.1.1
+  resolution: "commander@npm:4.1.1"
+  checksum: 10c0/84a76c08fe6cc08c9c93f62ac573d2907d8e79138999312c92d4155bc2325d487d64d13f669b2000c9f8caf70493c1be2dac74fec3c51d5a04f8bc3ae1830bab
+  languageName: node
+  linkType: hard
+
 "concat-map@npm:0.0.1":
   version: 0.0.1
   resolution: "concat-map@npm:0.0.1"
@@ -3261,6 +3271,13 @@ __metadata:
     shebang-command: "npm:^2.0.0"
     which: "npm:^2.0.1"
   checksum: 10c0/053ea8b2135caff68a9e81470e845613e374e7309a47731e81639de3eaeb90c3d01af0e0b44d2ab9d50b43467223b88567dfeb3262db942dc063b9976718ffc1
+  languageName: node
+  linkType: hard
+
+"dayjs@npm:^1.11.13":
+  version: 1.11.13
+  resolution: "dayjs@npm:1.11.13"
+  checksum: 10c0/a3caf6ac8363c7dade9d1ee797848ddcf25c1ace68d9fe8678ecf8ba0675825430de5d793672ec87b24a69bf04a1544b176547b2539982275d5542a7955f35b7
   languageName: node
   linkType: hard
 
@@ -3471,6 +3488,18 @@ __metadata:
   dependencies:
     iconv-lite: "npm:^0.6.2"
   checksum: 10c0/36d938712ff00fe1f4bac88b43bcffb5930c1efa57bbcdca9d67e1d9d6c57cfb1200fb01efe0f3109b2ce99b231f90779532814a81370a1bd3274a0f58585039
+  languageName: node
+  linkType: hard
+
+"env-cmd@npm:^10.1.0":
+  version: 10.1.0
+  resolution: "env-cmd@npm:10.1.0"
+  dependencies:
+    commander: "npm:^4.0.0"
+    cross-spawn: "npm:^7.0.0"
+  bin:
+    env-cmd: bin/env-cmd.js
+  checksum: 10c0/8ea5f4205bed83f39ea0ef0eb94d52a47bc815302c55779fb6c38346ca9284df1855f0847c8f5c702554f7f01e3575d171f12cffd13a1bada01961815842abe3
   languageName: node
   linkType: hard
 
@@ -5111,6 +5140,7 @@ __metadata:
     "@types/jest": "npm:^29.5.14"
     "@types/node": "npm:^20.4.5"
     argon2: "npm:^0.41.1"
+    env-cmd: "npm:^10.1.0"
     inversify: "npm:^6.2.1"
     jest: "npm:^29.7.0"
     prisma: "npm:^6.2.1"
@@ -5118,6 +5148,7 @@ __metadata:
     rimraf: "npm:^6.0.1"
     ts-jest: "npm:^29.2.5"
     ts-node: "npm:^10.9.2"
+    ts-node-dev: "npm:^2.0.0"
     turbo: "npm:^2.4.0"
     typescript: "npm:^5.7.3"
   languageName: unknown
@@ -6112,12 +6143,6 @@ __metadata:
   languageName: node
   linkType: hard
 
-"redis-server@workspace:services/service-redis-server":
-  version: 0.0.0-use.local
-  resolution: "redis-server@workspace:services/service-redis-server"
-  languageName: unknown
-  linkType: soft
-
 "redis@npm:^4.6.7":
   version: 4.7.0
   resolution: "redis@npm:4.7.0"
@@ -6341,12 +6366,6 @@ __metadata:
   checksum: 10c0/528fff6f5e12d0c5a391229ad893910709bc51b5705962b09404a1d813857578149b8815f35d3ee5752f44cd378d0f31669d4b1d7e2d11f41e08283d5134bd1f
   languageName: node
   linkType: hard
-
-"service-kafka@workspace:services/service-kafka":
-  version: 0.0.0-use.local
-  resolution: "service-kafka@workspace:services/service-kafka"
-  languageName: unknown
-  linkType: soft
 
 "setprototypeof@npm:1.2.0":
   version: 1.2.0
