@@ -8,6 +8,11 @@ services:
       - "${REDIS_PORT}:6379"
     volumes:
       - redis_data:/data
+    # ← this is the key bit:
+    command:
+      - redis-server
+      - --requirepass
+      - "${REDIS_PASSWORD}"
 
 volumes:
   redis_data:

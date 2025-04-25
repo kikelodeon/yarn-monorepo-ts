@@ -17,10 +17,6 @@ import {
    AuthenticationServiceToken
 } from '@kikerepo/authentication-infrastructure';
 
-import{
-  connectPrisma
-} from '@kikerepo/common-infrastructure';
-
 import { 
   RegisterCommandHandler, 
   RegisterCommandHandlerToken, 
@@ -33,6 +29,7 @@ import {
    UserControllerToken 
 } from '../controllers';
 
+import {initializeInfrastructureClients  } from './initClients'
 const container = new Container();
 
 // Bindear el repositorio (singleton)
@@ -56,7 +53,10 @@ container.bind<AuthenticationService>(AuthenticationServiceToken).toDynamicValue
 container.bind<UserController>(UserControllerToken).to(UserController);
 
 export async function buildContainer(): Promise<void> {
-  await connectPrisma();
+  console.log('[Container] Initializing infrastructure clients...');
+  await initializeInfrastructureClients(); // calls Prisma, Redis, Kafka
+  console.log('[Container] Infrastructure initialized ✅');
 }
+
 
 export { container };

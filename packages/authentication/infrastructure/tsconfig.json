@@ -7,7 +7,7 @@
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src", "../../_common/infrastructure/src/persistance/PrismaClient.ts"],
+  "include": ["src", "../../_common/infrastructure/src/prisma/PrismaClient.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../_common/infrastructure" } // Uses compiled @kikerepo/common-infrastructure

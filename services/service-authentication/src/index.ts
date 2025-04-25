@@ -1,54 +1,33 @@
-import { createClient } from 'redis';
-import { PrismaClient } from '@prisma/client';
-import { Kafka } from 'kafkajs';
+// services/service-authentication/src/index.ts
 
-async function testConnections() {
-  console.log('🔄 Iniciando prueba de conexiones...\n');
+import 'reflect-metadata';
+import dotenv from 'dotenv';
+import express from 'express';
+import { buildContainer, container } from './bootstrap/container';
+import { CreateUserRoutes } from './routes'; // Importamos la función, no el controlador directamente
+import { UserControllerToken } from './controllers';
 
-  // PostgreSQL
-  try {
-    const prisma = new PrismaClient();
-    await prisma.$connect();
-    console.log('✅ PostgreSQL conectado correctamente\n');
-    await prisma.$disconnect();
-  } catch (error) {
-    console.error('❌ Error conectando a PostgreSQL:', error);
-  }
+dotenv.config();
 
-  // Redis
-  try {
-    const redis = createClient({
-      password: process.env.REDIS_PASSWORD,
-      socket: {
-        host: 'redis',
-        port: parseInt(process.env.REDIS_PORT || '6379'),
-      },
-    });
+async function startServer() {
+  // Aseguramos la inicialización completa (por ejemplo, conexión a la base de datos)
+  await buildContainer();
 
-    redis.on('error', err => console.error('❌ Redis error:', err));
-    await redis.connect();
-    console.log('✅ Redis conectado correctamente\n');
-    await redis.disconnect();
-  } catch (error) {
-    console.error('❌ Error conectando a Redis:', error);
-  }
+  // Obtenemos el controlador del contenedor (ya inicializado)
+  const userController = container.get<any>(UserControllerToken); // o con el tipo correcto
 
-  // Kafka
-  try {
-    const kafka = new Kafka({
-      clientId: 'auth-service',
-      brokers: ['kafka:9092'], // Ojo: esto asume que el contenedor Kafka se llama 'kafka'
-    });
+  // Creamos las rutas pasando el controlador
+  const userRoutes = CreateUserRoutes(userController);
 
-    const admin = kafka.admin();
-    await admin.connect();
-    console.log('✅ Kafka conectado correctamente\n');
-    await admin.disconnect();
-  } catch (error) {
-    console.error('❌ Error conectando a Kafka:', error);
-  }
+  const app = express();
+  app.use(express.json());
+  app.use('/users', userRoutes);
 
-  console.log('🔚 Prueba de conexiones terminada.');
+  const port = process.env.APP_PORT || 3000;
+  app.listen(port, () => console.log(`[Auth] Listening on port ${port}`));
 }
 
-testConnections();
+startServer().catch((err) => {
+  console.error('[Auth] Startup error:', err);
+  process.exit(1);
+});

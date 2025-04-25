@@ -5,6 +5,9 @@ import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/common-a
 import { NotFoundError } from '@kikerepo/common-contracts';
 
 import { LoginQuery, RegisterCommand } from '@kikerepo/authentication-application';
+
+import { healthCheck } from './healthCheck';
+
 // Aquí no importamos container ni resolvemos el controlador.
 // Simplemente exportamos una función que recibe el controlador ya instanciado.
 export function CreateUserRoutes(userController: { 
@@ -26,12 +29,18 @@ export function CreateUserRoutes(userController: {
     ValidationMiddleware(LoginQuery),
     userController.login.bind(userController)
   );
-
+  
+    // Ruta de health
+  router.get('/health', async (_req, res) => {
+    healthCheck(_req, res);
+  });
+  
   // 404 Handler para rutas no definidas
   router.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).json(new NotFoundError());
   });
 
+  
   // Middleware de manejo de errores
   router.use(ErrorHandlerMiddleware);
 

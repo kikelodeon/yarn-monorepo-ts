@@ -1,5 +1,5 @@
 // packages/session/infrastructure/src/persistance/SessionRepository.ts
-import { prisma } from '@kikerepo/common-infrastructure';
+import { PrismaClient } from '@kikerepo/common-infrastructure'; // Importa la instancia de prismaClient
 import { Session } from '@kikerepo/session-domain';
 
 export interface ISessionRepository {
@@ -9,7 +9,7 @@ export interface ISessionRepository {
 
 export class SessionRepository implements ISessionRepository {
   async save(session: Session): Promise<void> {
-    await prisma.session.upsert({
+    await PrismaClient.ins.prisma.session.upsert({
       where: { id: session.id.value },
       update: {
         accessToken: session.accessToken.value,
@@ -17,7 +17,7 @@ export class SessionRepository implements ISessionRepository {
       },
       create: {
         id: session.id.value,
-        userId: session.id.value,  // O el userId obtenido del evento
+        userId: session.id.value,  // Ajusta si el userId debe venir de otro lugar
         accessToken: session.accessToken.value,
         fingerprint: session.fingerPrint.value,
       },

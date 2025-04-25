@@ -1,13 +1,13 @@
 import { IUserRepository} from '@kikerepo/authentication-domain';
 import { User } from '@kikerepo/authentication-domain';
 import { injectable } from 'inversify';
-import { logger ,prisma} from '@kikerepo/common-infrastructure'; // <--- Logger
+import { logger ,PrismaClient} from '@kikerepo/common-infrastructure'; // <--- Logger
 
 @injectable()
 export class UserRepository implements IUserRepository {
   async save(user: User): Promise<void> {
     logger.debug('[UserRepository] Saving user', { userId: user.id.value });
-    await prisma.user.upsert({
+    await PrismaClient.ins.prisma.user.upsert({
       where: { id: user.id.value },
       update: {
         email: user.email.value,
@@ -25,7 +25,7 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     logger.debug('[UserRepository] Finding user by ID', { id });
-    const userRecord = await prisma.user.findUnique({ where: { id } });
+    const userRecord = await PrismaClient.ins.prisma.user.findUnique({ where: { id } });
     if (!userRecord) {
       logger.debug('[UserRepository] No user found', { id });
       return null;
@@ -42,7 +42,7 @@ export class UserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     logger.debug('[UserRepository] Finding user by email', { email });
-    const userRecord = await prisma.user.findUnique({ where: { email } });
+    const userRecord = await PrismaClient.ins.prisma.user.findUnique({ where: { email } });
     if (!userRecord) {
       logger.debug('[UserRepository] No user found', { email });
       return null;

@@ -4,7 +4,7 @@ import { Container } from 'inversify';
 import { ISessionRepository, ISessionRepositoryToken } from '@kikerepo/session-domain';
 import { SessionRepository } from '@kikerepo/session-infrastructure';
 import { UserLoggedInEventHandler } from '@kikerepo/session-application';
-import { connectPrisma } from '@kikerepo/common-infrastructure';
+import { PrismaClient} from '@kikerepo/common-infrastructure';
 
 const container = new Container();
 
@@ -20,7 +20,7 @@ container.bind<UserLoggedInEventHandler>(UserLoggedInEventHandler).toSelf();
  * Se conecta a la base de datos y ejecuta las migraciones de sesión.
  */
 export async function buildContainer(): Promise<void> {
-  await connectPrisma();
+  await PrismaClient.ins.connect();
 }
 
 export { container };
