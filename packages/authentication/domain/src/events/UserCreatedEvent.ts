@@ -9,7 +9,9 @@ export class UserCreatedEvent extends DomainEvent {
   ) {
     super();
   }
-
+  toJson  (): string {
+    return  JSON.stringify(this);
+  }
   eventName(): string {
     return 'UserCreatedEvent';
   }

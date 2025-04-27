@@ -1,6 +1,5 @@
-// packages/common/infrastructure/kafkaClient.ts
-
-import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions, ProducerRecord } from 'kafkajs';
+// packages/common/infrastructure/KafkaClient.ts
+import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions, ProducerRecord, Admin } from 'kafkajs';
 import CircuitBreaker from 'opossum';
 import { FallbackEventRepository } from './FallbackEventRepository';
 import {
@@ -9,6 +8,20 @@ import {
   FallbackEventPayload,
 } from '@kikerepo/common-domain';
 import { logger } from '../logging';
+
+// Configuración para creación de topics
+export interface TopicConfig {
+  topic: string;
+  numPartitions: number;
+  replicationFactor: number;
+  configEntries?: { name: string; value: string }[];
+}
+
+// Configuración para suscripción de consumer
+export interface SubscriptionConfig {
+  topic: string;
+  fromBeginning?: boolean;
+}
 
 export interface KafkaClientConfig {
   brokers: string[];
@@ -21,12 +34,12 @@ export interface KafkaClientConfig {
   sasl?: SASLOptions;
 }
 
-class KafkaClientSingleton {
+export class KafkaClientSingleton {
   private static _instance: KafkaClientSingleton;
   private kafka: Kafka;
   public producer?: Producer;
   public consumer?: Consumer;
-
+  private admin: Admin;
   private repository = new FallbackEventRepository();
   private publishBreaker: CircuitBreaker<[ProducerRecord], any>;
   private buffering = false;
@@ -34,6 +47,8 @@ class KafkaClientSingleton {
 
   private constructor(config: KafkaClientConfig) {
     this.serviceName = config.clientId;
+    logger.debug(`[KafkaClient] Initializing client for '${this.serviceName}' with brokers ${config.brokers}`);
+
     this.kafka = new Kafka({
       clientId: config.clientId,
       brokers: config.brokers,
@@ -44,62 +59,54 @@ class KafkaClientSingleton {
 
     if (!config.useConsumerOnly) {
       this.producer = this.kafka.producer({
-        allowAutoTopicCreation: true,
+        allowAutoTopicCreation: false,
         idempotent: true,
-        maxInFlightRequests: 1,
-        retry: {
-          retries: Number.MAX_SAFE_INTEGER,
-          initialRetryTime: 300,
-          factor: 2,
-        },
+        retry: { retries: 1, initialRetryTime: 300, factor: 2 },
       });
+      logger.debug('[KafkaClient] Producer initialized');
     }
 
+    const groupId = config.consumerGroupId ?? `${config.clientId}-group`;
     if (!config.useProducerOnly) {
-      this.consumer = this.kafka.consumer({
-        groupId: config.consumerGroupId ?? `${config.clientId}-group`,
-      });
+      this.consumer = this.kafka.consumer({ groupId });
+      logger.debug(`[KafkaClient] Consumer initialized with group '${groupId}'`);
     }
+
+    this.admin = this.kafka.admin();
+    logger.debug('[KafkaClient] Admin client initialized');
 
     const sendAction = (record: ProducerRecord) => {
       if (!this.producer) {
         return Promise.reject(new Error('Producer not initialized'));
       }
+      logger.debug(`[KafkaClient] Sending record to topic '${record.topic}'...`);
       return this.producer.send(record);
     };
 
     this.publishBreaker = new CircuitBreaker(sendAction, {
       timeout: 5000,
-      errorThresholdPercentage: 1,
+      errorThresholdPercentage: 50,
       resetTimeout: 30000,
-      rollingCountTimeout: 300000,
-      rollingCountBuckets: 1,
     });
 
     this.publishBreaker.on('open', () => {
       this.buffering = true;
-      logger.warn('[KafkaCB] Circuit OPEN — all publishes buffered');
+      logger.warn('[KafkaClient] Circuit OPEN — buffering publishes');
     });
     this.publishBreaker.on('halfOpen', async () => {
-      logger.info('[KafkaCB] HALF-OPEN — draining buffer before Kafka test');
-      try {
-        await this.flushBuffer();
-        this.publishBreaker.close();
-        logger.info('[KafkaCB] Buffer drained & Kafka healthy — circuit CLOSED');
-      } catch (err) {
-        this.publishBreaker.open();
-        logger.warn('[KafkaCB] Drain failed — circuit remains OPEN');
-      }
+      logger.info('[KafkaClient] Circuit HALF-OPEN — flushing buffer');
+      await this.flushBuffer();
     });
     this.publishBreaker.on('close', () => {
       this.buffering = false;
-      logger.info('[KafkaCB] Circuit CLOSED — direct publishes resumed');
+      logger.info('[KafkaClient] Circuit CLOSED — resuming publishes');
     });
   }
 
   public static init(config: KafkaClientConfig): void {
     if (!this._instance) {
       this._instance = new KafkaClientSingleton(config);
+      logger.info('[KafkaClient] Singleton instance created');
     }
   }
 
@@ -110,61 +117,129 @@ class KafkaClientSingleton {
     return this._instance;
   }
 
-  public async connect(): Promise<void> {
+  /**
+   * Conecta producer, consumer, crea topics y suscribe.
+   */
+  public async connect(
+    topicsToCreate: TopicConfig[] = [],
+    subscriptions: SubscriptionConfig[] = []
+  ): Promise<void> {
+    logger.info('[KafkaClient] Starting connect sequence');
+
+    // 1) Crear topics con AdminClient (idempotente)
+    if (topicsToCreate.length) {
+      logger.info('[KafkaClient] Checking existing topics for creation');
+      await this.admin.connect();
+      const metadata = await this.admin.fetchTopicMetadata();
+      const existing = metadata.topics.map(t => t.name);
+      const toCreate = topicsToCreate.filter(t => !existing.includes(t.topic));
+
+      if (toCreate.length) {
+        logger.info('[KafkaClient] Creating new topics:', JSON.stringify(toCreate));
+        try {
+          const created = await this.admin.createTopics({
+            topics: toCreate.map(t => ({
+              topic: t.topic,
+              numPartitions: t.numPartitions,
+              replicationFactor: t.replicationFactor,
+              configEntries: t.configEntries,
+            })),
+            waitForLeaders: true,
+          });
+          if (created) {
+            logger.info('[KafkaClient] Topics created successfully');
+          } else {
+            logger.warn('[KafkaClient] No topics were created');
+          }
+        } catch (err: any) {
+          logger.warn('[KafkaClient] Error creating topics (ignored):', { error: err.message });
+        }
+      } else {
+        logger.info('[KafkaClient] All topics already exist, skipping creation');
+      }
+      await this.admin.disconnect();
+    }
+
+    // 2) Conectar producer y consumer
     const tasks: Promise<any>[] = [];
-    if (this.producer) tasks.push(this.producer.connect());
-    if (this.consumer) tasks.push(this.consumer.connect());
+    if (this.producer) {
+      tasks.push(
+        this.producer.connect().then(() => logger.info('[KafkaClient] Producer connected'))
+      );
+    }
+    if (this.consumer) {
+      tasks.push(
+        this.consumer.connect().then(() => logger.info('[KafkaClient] Consumer connected'))
+      );
+    }
     await Promise.all(tasks);
     logger.info('[KafkaClient] Connected');
 
+    // 3) Suscribir consumer a topics
+    if (this.consumer) {
+
+      for (const s of subscriptions) {
+        logger.info(
+          `[KafkaClient] Subscribing to topic '${s.topic}', fromBeginning=${s.fromBeginning}`
+        );
+        await this.consumer.subscribe({ topic: s.topic, fromBeginning: !!s.fromBeginning });
+      }
+      logger.info('[KafkaClient] Subscriptions completed');
+    }
+
+    // 4) Flushear buffer y cerrar circuito
     try {
+      logger.info('[KafkaClient] Draining buffer');
       await this.flushBuffer();
       this.publishBreaker.close();
       logger.info('[KafkaClient] Buffer drained on connect — circuit CLOSED');
-    } catch (err: unknown) {
+    } catch (err: any) {
       this.publishBreaker.open();
-      logger.warn('[KafkaClient] Buffer drain on connect failed — circuit OPEN');
+      logger.warn('[KafkaClient] Buffer drain failed — circuit OPEN', { error: err.message });
     }
-  }
-
-  public async disconnect(): Promise<void> {
-    const tasks: Promise<any>[] = [];
-    if (this.producer) tasks.push(this.producer.disconnect());
-    if (this.consumer) tasks.push(this.consumer.disconnect());
-    await Promise.all(tasks);
-    logger.info('[KafkaClient] Disconnected');
   }
 
   public async publish(record: ProducerRecord): Promise<void> {
     if (this.buffering) {
-      logger.warn('[KafkaClient] Buffering mode active — saving to fallback');
-      return this.bufferRecord(record);
+      logger.warn('[KafkaClient] Buffering mode active — saving to fallback', { topic: record.topic });
+      await this.bufferRecord(record);
+      return;
     }
 
     try {
       await this.publishBreaker.fire(record);
+      logger.debug('[KafkaClient] Record published successfully', { topic: record.topic });
     } catch (error: unknown) {
       const msg = error instanceof Error ? error.message : String(error);
-      logger.error(`[KafkaClient] Publish failed, buffering: ${msg}`);
+      logger.error(`[KafkaClient] publish failed, buffering: ${msg}`, { topic: record.topic });
       await this.bufferRecord(record);
     }
   }
 
   private async bufferRecord(record: ProducerRecord): Promise<void> {
-    const msg = record.messages[0];
-    const data = JSON.parse(msg.value?.toString() ?? '{}');
+    const message = record.messages[0];
+    const raw = message.value?.toString() ?? '{}';
+    const payload = JSON.parse(raw);
     const fallback = FallbackEvent.createUnique(
       new FallbackEventName(record.topic),
-      new FallbackEventPayload(data)
+      new FallbackEventPayload(payload)
     );
     await this.repository.save(fallback);
+    logger.info('[KafkaClient] Record buffered to fallback repository', {
+      topic: record.topic,
+      eventId: fallback.id.value,
+    });
   }
 
   private async flushBuffer(): Promise<void> {
     if (!this.producer) return;
+    logger.info('[KafkaClient] start flushBuffer loop');
+
     while (true) {
       const pending = await this.repository.findPending(100);
+      logger.debug('[KafkaClient] Found pending events', { count: pending.length });
       if (!pending.length) break;
+
       for (const evt of pending) {
         try {
           await this.producer.send({
@@ -172,35 +247,46 @@ class KafkaClientSingleton {
             messages: [{ key: evt.id.value, value: JSON.stringify(evt.payload.value) }],
           });
           await this.repository.markProcessed(evt.id.value);
-        } catch {
+          logger.info('[KafkaClient] Flushed fallback event', { eventId: evt.id.value });
+        } catch (err: any) {
           await this.repository.incrementRetries(evt.id.value);
-          throw new Error('Buffered event send failed');
+          logger.warn('[KafkaClient] flushBuffer halted on failure', {
+            eventId: evt.id.value,
+            error: err.message,
+          });
+          return;
         }
       }
     }
+
+    logger.info('[KafkaClient] flushBuffer completed, no more pending events');
   }
 
-  public async healthCheck(): Promise<{ status: 'UP'|'DOWN'; message?: string; latencyMs?: number }> {
+  public async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; message?: string; latencyMs?: number }> {
+    const admin = this.kafka.admin();
     const timeoutMs = 5000;
     const start = Date.now();
-    const admin = this.kafka.admin();
+    logger.debug('[KafkaClient] Running healthCheck');
+
     const withTimeout = <T>(action: Promise<T>, name: string) =>
       Promise.race([
         action,
-        new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${name} timed out after ${timeoutMs}ms`)), timeoutMs)),
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error(`${name} timed out`)), timeoutMs)
+        ),
       ]);
 
     try {
-      await withTimeout(admin.connect(), 'Kafka admin.connect');
-      if (process.env.KAFKA_HEALTH_CHECK_FULL === 'true') {
-        await withTimeout(admin.fetchTopicMetadata(), 'Kafka admin.fetchTopicMetadata');
-      }
-      await withTimeout(admin.disconnect(), 'Kafka admin.disconnect');
-      return { status: 'UP', latencyMs: Date.now() - start };
-    } catch (err: unknown) {
-      const msg = err instanceof Error ? err.message : String(err);
+      await withTimeout(admin.connect(), 'admin.connect');
+      await withTimeout(admin.disconnect(), 'admin.disconnect');
+      const latency = Date.now() - start;
+      logger.info('[KafkaClient] Health check UP', { latencyMs: latency });
+      return { status: 'UP', latencyMs: latency };
+    } catch (err: any) {
       try { await admin.disconnect(); } catch {}
-      return { status: 'DOWN', message: msg, latencyMs: Date.now() - start };
+      const latency = Date.now() - start;
+      logger.error('[KafkaClient] Health check DOWN', { error: err.message, latencyMs: latency });
+      return { status: 'DOWN', message: err.message, latencyMs: latency };
     }
   }
 }

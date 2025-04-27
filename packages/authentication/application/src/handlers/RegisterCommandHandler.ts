@@ -4,7 +4,7 @@ import { User } from '@kikerepo/authentication-domain';
 import { EmailAlreadyInUseError } from '../errors';
 import { RegisterCommand } from '../commands/RegisterCommand';
 import { RegisterResult } from '../results/RegisterResult';
-import { logger } from '@kikerepo/common-infrastructure'; // <--- Importa tu logger
+import { EventDispatcher, logger } from '@kikerepo/common-infrastructure'; // <--- Importa tu logger
 export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
 
 @injectable()
@@ -26,7 +26,7 @@ export class RegisterCommandHandler {
     const hashedpassword = await this.hashingService.hash(command.password);
     const user = User.createUnique(command.email, hashedpassword, command.phone);
     await this.userRepository.save(user);
-
+    EventDispatcher.dispatchAndClear(user);
     logger.info('[RegisterCommandHandler] User registered successfully', { userId: user.id.value });
     return new RegisterResult(user.id, user.email);
   }

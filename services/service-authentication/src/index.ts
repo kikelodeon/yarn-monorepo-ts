@@ -6,7 +6,7 @@ import express from 'express';
 import { buildContainer, container } from './bootstrap/container';
 import { CreateUserRoutes } from './routes'; // Importamos la función, no el controlador directamente
 import { UserControllerToken } from './controllers';
-
+import { logger } from '@kikerepo/common-infrastructure';
 dotenv.config();
 
 async function startServer() {
@@ -24,10 +24,10 @@ async function startServer() {
   app.use('/users', userRoutes);
 
   const port = process.env.APP_PORT || 3000;
-  app.listen(port, () => console.log(`[Auth] Listening on port ${port}`));
+  app.listen(port, () => logger.info(`[Index] Listening on port ${port}`));
 }
 
 startServer().catch((err) => {
-  console.error('[Auth] Startup error:', err);
+  logger.error('[Index] Startup error:', err);
   process.exit(1);
 });

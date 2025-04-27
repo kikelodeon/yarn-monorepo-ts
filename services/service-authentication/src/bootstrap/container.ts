@@ -1,64 +1,82 @@
 // services/service-authentication/src/bootstrap/container.ts
 
 import 'reflect-metadata';
-import {
-  Container 
-} from 'inversify';
+import { Container } from 'inversify';
 
 import {
-  IUserRepository, IUserRepositoryToken,
-  IHashingService, IHashingServiceToken
+  IUserRepository,
+  IUserRepositoryToken,
+  IHashingService,
+  IHashingServiceToken,
 } from '@kikerepo/authentication-domain';
 
 import {
-  
-   UserRepository,
-   Argon2HashingService, 
-   AuthenticationService, 
-   AuthenticationServiceToken
+  UserRepository,
+  Argon2HashingService,
+  AuthenticationService,
+  AuthenticationServiceToken,
 } from '@kikerepo/authentication-infrastructure';
 
-import { 
-  RegisterCommandHandler, 
-  RegisterCommandHandlerToken, 
-  LoginQueryHandler, 
-  LoginQueryHandlerToken 
-}from '@kikerepo/authentication-application';
-
 import {
-   UserController, 
-   UserControllerToken 
-} from '../controllers';
+  RegisterCommandHandler,
+  RegisterCommandHandlerToken,
+  LoginQueryHandler,
+  LoginQueryHandlerToken,
+} from '@kikerepo/authentication-application';
+
+import { UserController, UserControllerToken } from '../controllers';
 
 import { logger } from '@kikerepo/common-infrastructure';
-import {initializeInfrastructureClients  } from './initClients'
+import { initializeInfrastructureClients } from './initClients';
+
 const container = new Container();
 
-// Bindear el repositorio (singleton)
-container.bind<IUserRepository>(IUserRepositoryToken).to(UserRepository).inSingletonScope();
+// 1) (request–scoped)
 
-// Bindear el servicio de hashing (singleton)
-container.bind<IHashingService>(IHashingServiceToken).to(Argon2HashingService).inSingletonScope();
+container
+  .bind<IUserRepository>(IUserRepositoryToken)
+  .to(UserRepository)
+  .inRequestScope(); //inSingletonScope ??
 
-// Bindear los handlers (por defecto, transient)
-container.bind<RegisterCommandHandler>(RegisterCommandHandlerToken).to(RegisterCommandHandler);
-container.bind<LoginQueryHandler>(LoginQueryHandlerToken).to(LoginQueryHandler);
+// 2) (singletons)
 
-// Bindear el AuthenticationService (inyectando los handlers necesarios)
-container.bind<AuthenticationService>(AuthenticationServiceToken).toDynamicValue((context) => {
-  const loginHandler = context.container.get<LoginQueryHandler>(LoginQueryHandlerToken);
-  const registerHandler = context.container.get<RegisterCommandHandler>(RegisterCommandHandlerToken);
-  return new AuthenticationService(loginHandler, registerHandler);
-});
 
-// Bindear el UserController (asegúrate de usar el mismo símbolo)
-container.bind<UserController>(UserControllerToken).to(UserController);
+container
+  .bind<IHashingService>(IHashingServiceToken)
+  .to(Argon2HashingService)
+  .inSingletonScope();
+
+// 3) Handlers (transient by default)
+container
+  .bind<RegisterCommandHandler>(RegisterCommandHandlerToken)
+  .to(RegisterCommandHandler);
+
+container
+  .bind<LoginQueryHandler>(LoginQueryHandlerToken)
+  .to(LoginQueryHandler);
+
+// 4) AuthenticationService – now with 3 injected dependencies
+container
+  .bind<AuthenticationService>(AuthenticationServiceToken)
+  .toDynamicValue((ctx) => {
+
+    const registerHandler = ctx.container.get<RegisterCommandHandler>(RegisterCommandHandlerToken);
+    const loginHandler = ctx.container.get<LoginQueryHandler>(LoginQueryHandlerToken);
+    return new AuthenticationService(  loginHandler,registerHandler);
+  })
+  // Scope it as you see fit; request-scoped ensures a fresh UoW per request
+  .inRequestScope();
+
+// 5) Controller
+container
+  .bind<UserController>(UserControllerToken)
+  .to(UserController)
+  .inSingletonScope();
 
 export async function buildContainer(): Promise<void> {
   logger.debug('[Container] Initializing infrastructure clients...');
-  await initializeInfrastructureClients(); // calls Prisma, Redis, Kafka
+  await initializeInfrastructureClients();
   logger.info('[Container] Infrastructure initialized ✅');
 }
-
 
 export { container };
