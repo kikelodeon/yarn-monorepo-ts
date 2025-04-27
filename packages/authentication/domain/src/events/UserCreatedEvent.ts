@@ -4,7 +4,8 @@ export class UserCreatedEvent extends DomainEvent {
   constructor(
     public readonly userId: string,
     public readonly email: string,
-    public readonly phone?: string // Optional phone
+    public readonly phone?: string ,// Optional phone
+    public readonly creationDate?: Date // Optional phone
   ) {
     super();
   }

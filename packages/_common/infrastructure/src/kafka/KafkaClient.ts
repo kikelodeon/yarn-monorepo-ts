@@ -1,5 +1,14 @@
 // packages/common/infrastructure/kafkaClient.ts
-import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions } from 'kafkajs';
+
+import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions, ProducerRecord } from 'kafkajs';
+import CircuitBreaker from 'opossum';
+import { FallbackEventRepository } from './FallbackEventRepository';
+import {
+  FallbackEvent,
+  FallbackEventName,
+  FallbackEventPayload,
+} from '@kikerepo/common-domain';
+import { logger } from '../logging';
 
 export interface KafkaClientConfig {
   brokers: string[];
@@ -18,38 +27,77 @@ class KafkaClientSingleton {
   public producer?: Producer;
   public consumer?: Consumer;
 
+  private repository = new FallbackEventRepository();
+  private publishBreaker: CircuitBreaker<[ProducerRecord], any>;
+  private buffering = false;
+  private serviceName: string;
+
   private constructor(config: KafkaClientConfig) {
+    this.serviceName = config.clientId;
     this.kafka = new Kafka({
       clientId: config.clientId,
       brokers: config.brokers,
       ssl: config.ssl ?? false,
       sasl: config.sasl,
-      logLevel:
-        config.logLevel === 'NOTHING' ? LogLevel.NOTHING :
-        config.logLevel === 'DEBUG'   ? LogLevel.DEBUG   :
-        config.logLevel === 'WARN'    ? LogLevel.WARN    :
-        config.logLevel === 'ERROR'   ? LogLevel.ERROR   :
-        LogLevel.INFO,
+      logLevel: config.logLevel ? LogLevel[config.logLevel] : LogLevel.INFO,
     });
 
     if (!config.useConsumerOnly) {
-      this.producer = this.kafka.producer();
+      this.producer = this.kafka.producer({
+        allowAutoTopicCreation: true,
+        idempotent: true,
+        retry: { retries: 5, initialRetryTime: 300, factor: 2 },
+      });
     }
+
     if (!config.useProducerOnly) {
       this.consumer = this.kafka.consumer({
         groupId: config.consumerGroupId ?? `${config.clientId}-group`,
       });
     }
+
+    const sendAction = (record: ProducerRecord) => {
+      if (!this.producer) {
+        return Promise.reject(new Error('Producer not initialized'));
+      }
+      return this.producer.send(record);
+    };
+
+    this.publishBreaker = new CircuitBreaker(sendAction, {
+      timeout: 5000,
+      errorThresholdPercentage: 1,
+      resetTimeout: 30000,
+      rollingCountTimeout: 300000,
+      rollingCountBuckets: 1,
+    });
+
+    this.publishBreaker.on('open', () => {
+      this.buffering = true;
+      logger.warn('[KafkaCB] Circuit OPEN — all publishes buffered');
+    });
+    this.publishBreaker.on('halfOpen', async () => {
+      logger.info('[KafkaCB] HALF-OPEN — draining buffer before Kafka test');
+      try {
+        await this.flushBuffer();
+        this.publishBreaker.close();
+        logger.info('[KafkaCB] Buffer drained & Kafka healthy — circuit CLOSED');
+      } catch (err) {
+        this.publishBreaker.open();
+        logger.warn('[KafkaCB] Drain failed — circuit remains OPEN');
+      }
+    });
+    this.publishBreaker.on('close', () => {
+      this.buffering = false;
+      logger.info('[KafkaCB] Circuit CLOSED — direct publishes resumed');
+    });
   }
 
-  /** Initialize singleton (call once at startup) */
   public static init(config: KafkaClientConfig): void {
     if (!this._instance) {
       this._instance = new KafkaClientSingleton(config);
     }
   }
 
-  /** Retrieve the one instance */
   public static get ins(): KafkaClientSingleton {
     if (!this._instance) {
       throw new Error('[KafkaClient] Must call init(config) first');
@@ -57,66 +105,106 @@ class KafkaClientSingleton {
     return this._instance;
   }
 
-  /** Connect producer & consumer in parallel */
   public async connect(): Promise<void> {
     const tasks: Promise<any>[] = [];
     if (this.producer) tasks.push(this.producer.connect());
     if (this.consumer) tasks.push(this.consumer.connect());
-    await Promise.all(tasks).then(() => {console.log('[KafkaClient] Connected to Kafka')});
+    await Promise.all(tasks);
+    logger.info('[KafkaClient] Connected');
+
+    // After connecting, ensure buffer is drained before normal operation
+    try {
+      await this.flushBuffer();
+      // Reset circuit to closed state
+      this.publishBreaker.close();
+      logger.info('[KafkaClient] Buffer drained on connect — circuit CLOSED');
+    } catch (err: unknown) {
+      // If draining fails, open circuit to buffer subsequent publishes
+      this.publishBreaker.open();
+      logger.warn('[KafkaClient] Buffer drain on connect failed — circuit OPEN');
+    }
   }
 
-  /** Disconnect producer & consumer in parallel */
   public async disconnect(): Promise<void> {
     const tasks: Promise<any>[] = [];
     if (this.producer) tasks.push(this.producer.disconnect());
     if (this.consumer) tasks.push(this.consumer.disconnect());
     await Promise.all(tasks);
+    logger.info('[KafkaClient] Disconnected');
   }
 
   /**
-   * Health check: simply connect() → [optional metadata] → disconnect()
-   * Measures round-trip latency, and returns UP or DOWN.
-   *
-   * If you really want to probe the broker metadata, set
-   * KAFKA_HEALTH_CHECK_FULL=true in your env.
+   * Publish via circuit-breaker; buffer if circuit open or on failure.
    */
-  public async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; message?: string; latencyMs?: number }> {
-    const timeoutMs = 5_000;
-    const start = Date.now();
+  public async publish(record: ProducerRecord): Promise<void> {
+    if (this.buffering) {
+      logger.warn('[KafkaClient] Buffering mode active — saving to fallback');
+      return this.bufferRecord(record);
+    }
 
-    const withTimeout = <T>(action: Promise<T>, name: string): Promise<T> =>
+    try {
+      await this.publishBreaker.fire(record);
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      logger.error(`[KafkaClient] Publish failed, buffering: ${msg}`);
+      await this.bufferRecord(record);
+    }
+  }
+
+  /** Buffer a record to fallback store */
+  private async bufferRecord(record: ProducerRecord): Promise<void> {
+    const msg = record.messages[0];
+    const data = JSON.parse(msg.value?.toString() ?? '{}');
+    const fallback = FallbackEvent.createUnique(
+      new FallbackEventName(record.topic),
+      new FallbackEventPayload(data)
+    );
+    await this.repository.save(fallback);
+  }
+
+  /** Drain and replay all buffered events in strict order */
+  private async flushBuffer(): Promise<void> {
+    if (!this.producer) return;
+    while (true) {
+      const pending = await this.repository.findPending(100);
+      if (!pending.length) break;
+      for (const evt of pending) {
+        try {
+          await this.producer.send({
+            topic: evt.name.value,
+            messages: [{ key: evt.id.value, value: JSON.stringify(evt.payload.value) }],
+          });
+          await this.repository.markProcessed(evt.id.value);
+        } catch {
+          await this.repository.incrementRetries(evt.id.value);
+          throw new Error('Buffered event send failed');
+        }
+      }
+    }
+  }
+
+  /** Admin-based health check */
+  public async healthCheck(): Promise<{ status: 'UP'|'DOWN'; message?: string; latencyMs?: number }> {
+    const timeoutMs = 5000;
+    const start = Date.now();
+    const admin = this.kafka.admin();
+    const withTimeout = <T>(action: Promise<T>, name: string) =>
       Promise.race([
         action,
-        new Promise<T>((_, reject) =>
-          setTimeout(() => reject(new Error(`${name} timed out after ${timeoutMs}ms`)), timeoutMs)
-        ),
+        new Promise<T>((_, reject) => setTimeout(() => reject(new Error(`${name} timed out after ${timeoutMs}ms`)), timeoutMs)),
       ]);
-    const admin = this.kafka.admin();
+
     try {
-      // 1) connect producer+consumer
-      await withTimeout(admin.connect(), 'KafkaClient.connect');
-
-      // 2) optional metadata probe
+      await withTimeout(admin.connect(), 'Kafka admin.connect');
       if (process.env.KAFKA_HEALTH_CHECK_FULL === 'true') {
-        const admin = this.kafka.admin();
-        await withTimeout(admin.connect(), 'Kafka admin.connect');
         await withTimeout(admin.fetchTopicMetadata(), 'Kafka admin.fetchTopicMetadata');
-        await admin.disconnect();
       }
-
-      // 3) clean disconnect
-      await withTimeout(admin.disconnect(), 'KafkaClient.disconnect');
-
-      const latency = Date.now() - start;
-      console.log(`[KafkaClient] Health check: UP (${latency}ms)`);
-      return { status: 'UP', latencyMs: latency };
-    } catch (err) {
-      const latency = Date.now() - start;
-      const message = (err as Error).message;
-      console.error(`[KafkaClient] Health check: DOWN - ${message} (${latency}ms)`);
-      // best effort cleanup
+      await withTimeout(admin.disconnect(), 'Kafka admin.disconnect');
+      return { status: 'UP', latencyMs: Date.now() - start };
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : String(err);
       try { await admin.disconnect(); } catch {}
-      return { status: 'DOWN', message, latencyMs: latency };
+      return { status: 'DOWN', message: msg, latencyMs: Date.now() - start };
     }
   }
 }

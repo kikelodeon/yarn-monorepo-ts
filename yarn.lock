@@ -1398,9 +1398,11 @@ __metadata:
   dependencies:
     "@kikerepo/common-contracts": "workspace:*"
     "@prisma/client": "npm:^6.2.1"
+    "@types/opossum": "npm:^8"
     dayjs: "npm:^1.11.13"
     jsonwebtoken: "npm:^9.0.2"
     kafkajs: "npm:^2.2.4"
+    opossum: "npm:^8.4.0"
     redis: "npm:^4.6.7"
     winston: "npm:^3.17.0"
   languageName: unknown
@@ -2415,6 +2417,15 @@ __metadata:
   dependencies:
     undici-types: "npm:~6.19.2"
   checksum: 10c0/50c589dd6a377238bc51b6fb5b8fc60ff6d688df0bde621d4a9fc59f480eb956cdf6d46052e1cb9536f150bc62e9194ddc733aa78b65e812155b4d3a32717de2
+  languageName: node
+  linkType: hard
+
+"@types/opossum@npm:^8":
+  version: 8.1.8
+  resolution: "@types/opossum@npm:8.1.8"
+  dependencies:
+    "@types/node": "npm:*"
+  checksum: 10c0/f500712f7f91f007757aa76764fae50d7b1486d44cb2ffa446db6b7eb861203438d1e4738fee28e7d016844abb2deb06ed07fc59ad58a9ad149b25c2d1e6ae54
   languageName: node
   linkType: hard
 
@@ -5769,6 +5780,13 @@ __metadata:
   dependencies:
     mimic-fn: "npm:^2.1.0"
   checksum: 10c0/ffcef6fbb2692c3c40749f31ea2e22677a876daea92959b8a80b521d95cca7a668c884d8b2045d1d8ee7d56796aa405c405462af112a1477594cc63531baeb8f
+  languageName: node
+  linkType: hard
+
+"opossum@npm:^8.4.0":
+  version: 8.4.0
+  resolution: "opossum@npm:8.4.0"
+  checksum: 10c0/5526f068f768199605275caf8be7a0ea4afa5ead4959a19468257257b903a501ca7308b9862c4ad500137574116bd278ec12791fbac69238df971df335465da6
   languageName: node
   linkType: hard
 

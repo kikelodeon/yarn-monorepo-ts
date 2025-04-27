@@ -15,5 +15,23 @@ model User {
   password  String
   phone     String?
   createdAt DateTime @default(now())
+  updatedAt     DateTime  @updatedAt  
   deletedAt DateTime?
+}
+
+enum EventStatus {
+  PENDING
+  PROCESSED
+  FAILED
+}
+
+// audit log for every important action in this service
+model FallbackEvent {
+  id            String   @id @default(uuid())
+  name          String   // e.g. "USER_REGISTERED"
+  payload       Json     // full event payload
+  status        EventStatus  @default(PENDING)
+  retries       Int         @default(0)
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt  
 }

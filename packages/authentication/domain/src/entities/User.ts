@@ -47,12 +47,12 @@ export class User extends AggregateRoot<UserId> {
 
     // 3) Emitir evento de dominio para un user nuevo
     user.addDomainEvent(
-      new UserCreatedEvent(userId.value, email.value, phone?.value),
+     new UserCreatedEvent(user.id.value, user.email.value, user.phone?.value,user.creationDate.value) 
     );
 
     return user;
   }
-  public static map(
+  public static rehydrate(
     id: string,
     email: string,
     password: string,

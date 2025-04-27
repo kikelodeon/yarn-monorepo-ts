@@ -38,23 +38,36 @@ export default config;
     "packages/*/**",
     "services/*"
   ],
-"scripts": {
-  "build": "turbo run build",
-  "buildasync": "turbo run build --parallel",
-  
-  "dev:postgres": "env-cmd -f .env/development/.env docker-compose -f services/service-postgreSQL/docker-compose.yml up -d",
-  "dev:redis": "env-cmd -f .env/development/.env docker-compose -f services/service-redis/docker-compose.yml up -d",
-  "dev:kafka": "env-cmd -f .env/development/.env docker-compose -f services/service-kafka/docker-compose.yml up -d",
-
-  "dev:session": "env-cmd -f .env/development/.env docker-compose -f services/service-session/__docker/development/docker-compose.yml up -d",
-  "dev:mailing": "env-cmd -f .env/development/.env docker-compose -f services/service-mailing/__docker/development/docker-compose.yml up -d",
-  "dev:authentication": "env-cmd -f .env/development/.env docker-compose -f services/service-authentication/__docker/development/docker-compose.yml up -d",
-  "dev": "turbo run dev",
-  "test": "turbo run test",
-  "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
-  "uninstall": "turbo run uninstall && rimraf node_modules",
-  "lint": "turbo run lint"
-},
+  "scripts": {
+    "up:postgres": "env-cmd -f services/service-postgreSQL/.env docker-compose -f services/service-postgreSQL/docker-compose.yml up -d",
+    "down:postgres": "env-cmd -f services/service-postgreSQL/.env docker-compose -f services/service-postgreSQL/docker-compose.yml down ",
+    "clear:postgres": "env-cmd -f services/service-postgreSQL/.env docker-compose -f services/service-postgreSQL/docker-compose.yml down --volumes --rmi all",
+    "reset:postgres": "yarn down:postgres && yarn up:postgres",
+    "hardreset:postgres": "yarn clear:postgres && yarn up:postgres",
+    "up:redis": "env-cmd -f services/service-redis/.env docker-compose -f services/service-redis/docker-compose.yml up -d",
+    "down:redis": "env-cmd -f services/service-redis/.env docker-compose -f services/service-redis/docker-compose.yml down",
+    "clear:redis": "env-cmd -f services/service-redis/.env docker-compose -f services/service-redis/docker-compose.yml down --volumes --rmi all",
+    "reset:redis": "yarn down:redis && yarn up:redis",
+    "hardreset:redis": "yarn clear:redis && yarn up:redis",
+    "up:kafka": "env-cmd -f services/service-kafka/.env docker-compose -f services/service-kafka/docker-compose.yml up -d",
+    "down:kafka": "env-cmd -f services/service-kafka/.env docker-compose -f services/service-kafka/docker-compose.yml down",
+    "build:kafka": "docker compose -f services/service-kafka/docker-compose.yml build --no-cache",
+    "clear:kafka": "env-cmd -f services/service-kafka/.env docker-compose -f services/service-kafka/docker-compose.yml down --volumes --rmi all && docker image prune -af && docker volume prune -f && docker builder prune -af",
+    "reset:kafka": "yarn down:kafka && yarn up:kafka",
+    "hardreset:kafka": "yarn clear:kafka && yarn up:kafka",
+    "build:authentication": "turbo run build --filter=@kikerepo/service-authentication",
+    "dev:authentication": "yarn workspace @kikerepo/service-authentication dev",
+    "docker:authentication": "env-cmd -f .env/development/.env docker-compose -f services/service-authentication/__docker/development/docker-compose.yml up -d",
+    "docker:session": "env-cmd -f .env/development/.env docker-compose -f services/service-session/__docker/development/docker-compose.yml up -d",
+    "docker:mailing": "env-cmd -f .env/development/.env docker-compose -f services/service-mailing/__docker/development/docker-compose.yml up -d",
+    "build": "turbo run build",
+    "buildasync": "turbo run build --parallel",
+    "dev": "turbo run dev",
+    "test": "turbo run test",
+    "clear": "yarn workspaces foreach --all run clear && rimraf .turbo node_modules",
+    "uninstall": "turbo run uninstall && rimraf node_modules",
+    "lint": "turbo run lint"
+  },
   "devDependencies": {
     "@types/jest": "^29.5.14",
     "@types/node": "^20.4.5",
@@ -67,7 +80,6 @@ export default config;
     "typescript": "^5.7.3"
   },
   "dependencies": {
-    "@prisma/client": "^6.2.1",
     "argon2": "^0.41.1",
     "env-cmd": "^10.1.0",
     "inversify": "^6.2.1",
@@ -148,40 +160,295 @@ export default config;
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\.env ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\kafka-client\package.json ===
 
-# Redis settings
-REDIS_PASSWORD=*****
-REDIS_PORT=*****
-REDIS_VOLUME=*****
+{
+  "name": "@kikerepo/utils-kafka-client",
+  "version": "1.0.0",
+  "main": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "scripts": {
+    "build": "tsc -b",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "uninstall": "rimraf node_modules",
+    "test": "jest"
+  },
+  "dependencies": {
+    "kafkajs": "^2.2.4"
+  },
+  "devDependencies": {
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "typescript": "^5.7.3"
+  }
+}
 
-# PostgreSQL settings
-POSTGRES_PORT=*****
-POSTGRES_USER=*****
-POSTGRES_PASSWORD=*****
-POSTGRES_DB=*****
 
-POSTGRES_VOLUME=*****
 
-# ZooKeeper
-ZOOKEEPER_CLIENT_PORT=*****
 
-# Kafka Broker
-KAFKA_BROKER_ID=*****
-KAFKA_ZOOKEEPER_CONNECT=*****
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\kafka-client\tsconfig.json ===
 
-# Listeners
-KAFKA_LISTENERS=*****
-KAFKA_ADVERTISED_LISTENERS=*****
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
 
-# Replicaci√≥n del topic __consumer_offsets
-KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=*****
 
-# Authentication settings
-SERVICE_AUTHENTICATION_PORT=*****
 
-# Session settings
-SERVICE_SESSION_PORT=*****
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\kafka-client\src\index.ts ===
+
+// packages/utils/kafka-client/src/index.ts
+export * from './KafkaClient';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\kafka-client\src\KafkaClient.ts ===
+
+// packages/utils/kafka-client/src/KafkaClient.ts
+import { Kafka, Producer, Consumer, logLevel } from 'kafkajs';
+
+export interface KafkaClientConfig {
+  brokers: string[];
+  clientId: string;
+  consumerGroupId?: string;
+}
+
+export class KafkaClient {
+  private kafka: Kafka;
+  public producer: Producer;
+  public consumer: Consumer;
+
+  constructor(config: KafkaClientConfig) {
+    this.kafka = new Kafka({
+      clientId: config.clientId,
+      brokers: config.brokers,
+      logLevel: logLevel.INFO
+    });
+
+    this.producer = this.kafka.producer();
+    this.consumer = this.kafka.consumer({
+      groupId: config.consumerGroupId || `${config.clientId}-group`
+    });
+  }
+
+  async connect(): Promise<void> {
+    await Promise.all([
+      this.producer.connect(),
+      this.consumer.connect()
+    ]);
+  }
+
+  async disconnect(): Promise<void> {
+    await Promise.all([
+      this.producer.disconnect(),
+      this.consumer.disconnect()
+    ]);
+  }
+
+  /**
+   * Publishes messages to the given topic.
+   * @param topic The topic to send messages to.
+   * @param messages An array of messages.
+   */
+  async publish(topic: string, messages: { key?: string; value: string }[]): Promise<void> {
+    await this.producer.send({
+      topic,
+      messages
+    });
+  }
+
+  /**
+   * Subscribes to a topic and runs the provided message handler.
+   * @param topic The topic to subscribe to.
+   * @param handler An async function that will process each message.
+   */
+  async subscribe(topic: string, handler: (message: { topic: string; partition: number; key: string | null; value: string | null }) => Promise<void>): Promise<void> {
+    await this.consumer.subscribe({ topic, fromBeginning: true });
+    await this.consumer.run({
+      eachMessage: async ({ topic, partition, message }) => {
+        await handler({
+          topic,
+          partition,
+          key: message.key?.toString() || null,
+          value: message.value?.toString() || null
+        });
+      }
+    });
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\kafka-client\__tests__\kafkaclient.spec.ts ===
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\redis-client\package.json ===
+
+{
+  "name": "@kikerepo/utils-redis-client",
+  "version": "1.0.0",
+  "description": "Enhanced Redis client with retry, fallback, and circuit breaker capabilities",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "scripts": {
+    "build": "tsc",
+    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
+    "test": "jest --passWithNoTests",
+    "lint": "eslint 'src/**/*.ts'",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "opossum": "^8.4.0",
+    "redis": "^4.6.7"
+  },
+  "devDependencies": {
+    "@types/opossum": "^8",
+    "jest": "^29.7.0"
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\redis-client\tsconfig.json ===
+
+{
+  "extends": "../../../tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./dist",
+    "rootDir": "./src",
+    "composite": true,
+    "declaration": true,
+    "declarationMap": true
+  },
+  "include": ["src"],
+  "exclude": ["node_modules", "dist"]
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\redis-client\src\index.ts ===
+
+export { RedisClient } from './RedisClient';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\redis-client\src\RedisClient.ts ===
+
+import { createClient, RedisClientType } from '@redis/client';
+
+export interface RedisClientConfig {
+  host?: string;
+  port?: number;
+  password?: string;
+  url?: string; // Optional for full Redis connection URL
+}
+
+export class RedisClient {
+  private client: RedisClientType;
+
+  constructor(private config: RedisClientConfig = {}) {
+    const { host = '127.0.0.1', port = 6379, password= "1234", url } = config;
+
+    if (url) {
+      this.client = createClient({ url });
+    } else {
+      this.client = createClient({
+        socket: { host, port },
+        password,
+      });
+    }
+  }
+
+  public async connect(): Promise<void> {
+    try {
+      await this.client.connect();
+      console.info('[RedisClient] Connected to Redis.');
+    } catch (error) {
+      console.error('[RedisClient] Failed to connect to Redis:', error);
+    }
+  }
+
+  public async disconnect(): Promise<void> {
+    await this.client.disconnect();
+    console.info('[RedisClient] Disconnected from Redis.');
+  }
+
+  public async set(key: string, value: string): Promise<void> {
+    await this.client.set(key, value);
+  }
+
+  public async get(key: string): Promise<string | null> {
+    return this.client.get(key);
+  }
+  public async healthCheck(): Promise<{ status: string; message?: string }> {
+    try {
+      const response = await this.client.ping();
+      if (response === 'PONG') {
+        return { status: 'UP' };
+      } else {
+        return { status: 'DOWN', message: 'Unexpected response from Redis.' };
+      }
+    } catch (error) {
+      let message = 'An unknown error occurred';
+      if (error instanceof Error) {
+        message = error.message; // Narrow the type to Error
+      }
+      return { status: 'DOWN', message };
+    }
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\.env\development\redis-client\__tests__\redisclient.spec.ts ===
+
+import {RedisClient} from '../src/RedisClient';
+
+describe('RedisClient', () => {
+  let redisClient: RedisClient;
+
+  beforeAll(async () => {
+    redisClient = new RedisClient({
+      host: '127.0.0.1',
+      port: 6379,
+      password: 'mama-redis-1234', // Add password if required
+    });
+    await redisClient.connect();
+  });
+
+  afterAll(async () => {
+    await redisClient.disconnect();
+  });
+
+  it('should connect to Redis successfully', async () => {
+    const health = await redisClient.healthCheck();
+    expect(health.status).toBe('UP');
+  });
+
+  it('should set and get values', async () => {
+    await redisClient.set('testKey', 'testValue');
+    const value = await redisClient.get('testKey');
+    expect(value).toBe('testValue');
+  });
+});
+
 
 
 
@@ -1086,7 +1353,7 @@ export class User extends AggregateRoot<UserId> {
 
     // 3) Emitir evento de dominio para un user nuevo
     user.addDomainEvent(
-      new UserCreatedEvent(userId.value, email.value, phone?.value),
+      UserCreatedEvent.createUnique(user)
     );
 
     return user;
@@ -1159,20 +1426,47 @@ export { UserCreatedEvent } from './UserCreatedEvent';
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\events\UserCreatedEvent.ts ===
 
-import { DomainEvent } from '@kikerepo/common-domain';
+import { CreationDate, DeletionDate, DomainEvent,DomainEventId } from '@kikerepo/common-domain';
+import { User } from '../entities';
 
 export class UserCreatedEvent extends DomainEvent {
+
   constructor(
-    public readonly userId: string,
-    public readonly email: string,
-    public readonly phone?: string // Optional phone
+    id: DomainEventId,
+    private user: User,
+    creationDate?: CreationDate,
+    deletionDate?: DeletionDate,
   ) {
-    super();
+    super(id,creationDate,deletionDate);
   }
 
-  eventName(): string {
-    return 'UserCreatedEvent';
+  public eventName() {
+    return 'UserCreatedEvent'
   }
+  public toPrimitives(): Record<string, any> {
+    // pick only the fields you actually want to ship
+    return {
+      userId:    this.user.id.value,
+      email:     this.user.email.value,
+      phone:     this.user.phone?.value ?? null,
+      createdAt: this.user.creationDate.value.toISOString(),
+    }
+  }
+  /**
+     * M√©todo est√°tico/factor√≠a para crear un "User" *nuevo*.
+     * Recibe valores primitivos, construye VO, llama al constructor
+     * y emite un evento.
+     */
+    public static createUnique(
+      user: User,
+    ): UserCreatedEvent {
+      // 1) Generar ID y crear Value Objects
+      const id = new DomainEventId(); // genera un UUIDv6 (por ejemplo)
+  
+      // 2) Llamar al constructor con VO
+      const userCreatedEvent = new UserCreatedEvent(id,user);
+      return userCreatedEvent;
+    }
 }
 
 
@@ -1394,7 +1688,7 @@ export class UserId extends ValueObject<string> {
     "declaration": true,
     "declarationMap": true
   },
-  "include": ["src", "../../_common/infrastructure/src/persistance/PrismaClient.ts"],
+  "include": ["src", "../../_common/infrastructure/src/prisma/PrismaClient.ts"],
   "exclude": ["node_modules", "dist"],
   "references": [
     { "path": "../../_common/infrastructure" } // Uses compiled @kikerepo/common-infrastructure
@@ -1638,13 +1932,13 @@ export * from './UserRepository';
 import { IUserRepository} from '@kikerepo/authentication-domain';
 import { User } from '@kikerepo/authentication-domain';
 import { injectable } from 'inversify';
-import { logger ,prisma} from '@kikerepo/common-infrastructure'; // <--- Logger
+import { logger ,PrismaClient} from '@kikerepo/common-infrastructure'; // <--- Logger
 
 @injectable()
 export class UserRepository implements IUserRepository {
   async save(user: User): Promise<void> {
     logger.debug('[UserRepository] Saving user', { userId: user.id.value });
-    await prisma.user.upsert({
+    await PrismaClient.ins.prisma.user.upsert({
       where: { id: user.id.value },
       update: {
         email: user.email.value,
@@ -1662,7 +1956,7 @@ export class UserRepository implements IUserRepository {
 
   async findById(id: string): Promise<User | null> {
     logger.debug('[UserRepository] Finding user by ID', { id });
-    const userRecord = await prisma.user.findUnique({ where: { id } });
+    const userRecord = await PrismaClient.ins.prisma.user.findUnique({ where: { id } });
     if (!userRecord) {
       logger.debug('[UserRepository] No user found', { id });
       return null;
@@ -1679,7 +1973,7 @@ export class UserRepository implements IUserRepository {
 
   async findByEmail(email: string): Promise<User | null> {
     logger.debug('[UserRepository] Finding user by email', { email });
-    const userRecord = await prisma.user.findUnique({ where: { email } });
+    const userRecord = await PrismaClient.ins.prisma.user.findUnique({ where: { email } });
     if (!userRecord) {
       logger.debug('[UserRepository] No user found', { email });
       return null;
@@ -2306,7 +2600,7 @@ export * from './SessionRepository';
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\session\infrastructure\src\persistance\SessionRepository.ts ===
 
 // packages/session/infrastructure/src/persistance/SessionRepository.ts
-import { prisma } from '@kikerepo/common-infrastructure';
+import { PrismaClient } from '@kikerepo/common-infrastructure'; // Importa la instancia de prismaClient
 import { Session } from '@kikerepo/session-domain';
 
 export interface ISessionRepository {
@@ -2316,7 +2610,7 @@ export interface ISessionRepository {
 
 export class SessionRepository implements ISessionRepository {
   async save(session: Session): Promise<void> {
-    await prisma.session.upsert({
+    await PrismaClient.ins.prisma.session.upsert({
       where: { id: session.id.value },
       update: {
         accessToken: session.accessToken.value,
@@ -2324,7 +2618,7 @@ export class SessionRepository implements ISessionRepository {
       },
       create: {
         id: session.id.value,
-        userId: session.id.value,  // O el userId obtenido del evento
+        userId: session.id.value,  // Ajusta si el userId debe venir de otro lugar
         accessToken: session.accessToken.value,
         fingerprint: session.fingerPrint.value,
       },
@@ -2530,298 +2824,6 @@ describe('generateUUIDv6', () => {
       expect(uuids.has(uuid)).toBe(false); // Ensure uniqueness
       uuids.add(uuid);
     }
-  });
-});
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\package.json ===
-
-{
-  "name": "@kikerepo/utils-kafka-client",
-  "version": "1.0.0",
-  "main": "./dist/index.js",
-  "types": "./dist/index.d.ts",
-  "scripts": {
-    "build": "tsc -b",
-    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
-    "uninstall": "rimraf node_modules",
-    "test": "jest"
-  },
-  "dependencies": {
-    "kafkajs": "^2.2.4"
-  },
-  "devDependencies": {
-    "@types/jest": "^29.5.14",
-    "jest": "^29.7.0",
-    "typescript": "^5.7.3"
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\tsconfig.json ===
-
-{
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\src\index.ts ===
-
-// packages/utils/kafka-client/src/index.ts
-export * from './KafkaClient';
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\src\KafkaClient.ts ===
-
-// packages/utils/kafka-client/src/KafkaClient.ts
-import { Kafka, Producer, Consumer, logLevel } from 'kafkajs';
-
-export interface KafkaClientConfig {
-  brokers: string[];
-  clientId: string;
-  consumerGroupId?: string;
-}
-
-export class KafkaClient {
-  private kafka: Kafka;
-  public producer: Producer;
-  public consumer: Consumer;
-
-  constructor(config: KafkaClientConfig) {
-    this.kafka = new Kafka({
-      clientId: config.clientId,
-      brokers: config.brokers,
-      logLevel: logLevel.INFO
-    });
-
-    this.producer = this.kafka.producer();
-    this.consumer = this.kafka.consumer({
-      groupId: config.consumerGroupId || `${config.clientId}-group`
-    });
-  }
-
-  async connect(): Promise<void> {
-    await Promise.all([
-      this.producer.connect(),
-      this.consumer.connect()
-    ]);
-  }
-
-  async disconnect(): Promise<void> {
-    await Promise.all([
-      this.producer.disconnect(),
-      this.consumer.disconnect()
-    ]);
-  }
-
-  /**
-   * Publishes messages to the given topic.
-   * @param topic The topic to send messages to.
-   * @param messages An array of messages.
-   */
-  async publish(topic: string, messages: { key?: string; value: string }[]): Promise<void> {
-    await this.producer.send({
-      topic,
-      messages
-    });
-  }
-
-  /**
-   * Subscribes to a topic and runs the provided message handler.
-   * @param topic The topic to subscribe to.
-   * @param handler An async function that will process each message.
-   */
-  async subscribe(topic: string, handler: (message: { topic: string; partition: number; key: string | null; value: string | null }) => Promise<void>): Promise<void> {
-    await this.consumer.subscribe({ topic, fromBeginning: true });
-    await this.consumer.run({
-      eachMessage: async ({ topic, partition, message }) => {
-        await handler({
-          topic,
-          partition,
-          key: message.key?.toString() || null,
-          value: message.value?.toString() || null
-        });
-      }
-    });
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\kafka-client\__tests__\kafkaclient.spec.ts ===
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\package.json ===
-
-{
-  "name": "@kikerepo/utils-redis-client",
-  "version": "1.0.0",
-  "description": "Enhanced Redis client with retry, fallback, and circuit breaker capabilities",
-  "main": "dist/index.js",
-  "types": "dist/index.d.ts",
-  "scripts": {
-    "build": "tsc",
-    "clear": "rimraf .turbo dist tsconfig.tsbuildinfo node_modules",
-    "test": "jest --passWithNoTests",
-    "lint": "eslint 'src/**/*.ts'",
-    "start": "node dist/index.js"
-  },
-  "dependencies": {
-    "opossum": "^8.4.0",
-    "redis": "^4.6.7"
-  },
-  "devDependencies": {
-    "@types/opossum": "^8",
-    "jest": "^29.7.0"
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\tsconfig.json ===
-
-{
-  "extends": "../../../tsconfig.json",
-  "compilerOptions": {
-    "outDir": "./dist",
-    "rootDir": "./src",
-    "composite": true,
-    "declaration": true,
-    "declarationMap": true
-  },
-  "include": ["src"],
-  "exclude": ["node_modules", "dist"]
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\index.ts ===
-
-export { RedisClient } from './RedisClient';
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\src\RedisClient.ts ===
-
-import { createClient, RedisClientType } from '@redis/client';
-
-export interface RedisClientConfig {
-  host?: string;
-  port?: number;
-  password?: string;
-  url?: string; // Optional for full Redis connection URL
-}
-
-export class RedisClient {
-  private client: RedisClientType;
-
-  constructor(private config: RedisClientConfig = {}) {
-    const { host = '127.0.0.1', port = 6379, password= "mama-redis-1234", url } = config;
-
-    if (url) {
-      this.client = createClient({ url });
-    } else {
-      this.client = createClient({
-        socket: { host, port },
-        password,
-      });
-    }
-  }
-
-  public async connect(): Promise<void> {
-    try {
-      await this.client.connect();
-      console.info('[RedisClient] Connected to Redis.');
-    } catch (error) {
-      console.error('[RedisClient] Failed to connect to Redis:', error);
-    }
-  }
-
-  public async disconnect(): Promise<void> {
-    await this.client.disconnect();
-    console.info('[RedisClient] Disconnected from Redis.');
-  }
-
-  public async set(key: string, value: string): Promise<void> {
-    await this.client.set(key, value);
-  }
-
-  public async get(key: string): Promise<string | null> {
-    return this.client.get(key);
-  }
-  public async healthCheck(): Promise<{ status: string; message?: string }> {
-    try {
-      const response = await this.client.ping();
-      if (response === 'PONG') {
-        return { status: 'UP' };
-      } else {
-        return { status: 'DOWN', message: 'Unexpected response from Redis.' };
-      }
-    } catch (error) {
-      let message = 'An unknown error occurred';
-      if (error instanceof Error) {
-        message = error.message; // Narrow the type to Error
-      }
-      return { status: 'DOWN', message };
-    }
-  }
-}
-
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\utils\redis-client\__tests__\redisclient.spec.ts ===
-
-import {RedisClient} from '../src/RedisClient';
-
-describe('RedisClient', () => {
-  let redisClient: RedisClient;
-
-  beforeAll(async () => {
-    redisClient = new RedisClient({
-      host: '127.0.0.1',
-      port: 6379,
-      password: 'mama-redis-1234', // Add password if required
-    });
-    await redisClient.connect();
-  });
-
-  afterAll(async () => {
-    await redisClient.disconnect();
-  });
-
-  it('should connect to Redis successfully', async () => {
-    const health = await redisClient.healthCheck();
-    expect(health.status).toBe('UP');
-  });
-
-  it('should set and get values', async () => {
-    await redisClient.set('testKey', 'testValue');
-    const value = await redisClient.get('testKey');
-    expect(value).toBe('testValue');
   });
 });
 
@@ -3627,21 +3629,33 @@ export class DomainError extends Error {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\DomainEvent.ts ===
 
-export abstract class DomainEvent {
-  public readonly occurredAt: Date;
-  public readonly eventId: string;
+// domain-event.ts
+import { AggregateRoot } from './AggregateRoot'
+import { CreationDate,DeletionDate,DomainEventId } from './value-objects';
 
-  constructor() {
-    this.occurredAt = new Date();
-    this.eventId = DomainEvent.generateId();
+export abstract class DomainEvent extends AggregateRoot<DomainEventId> {
+
+  protected constructor(id: DomainEventId, 
+    creationDate?: CreationDate,
+    deletionDate?: DeletionDate,) {
+    super(id,creationDate,deletionDate);
   }
 
-  private static generateId(): string {
-    // Generate a unique identifier for the event (can be UUID or similar)
-    return Math.random().toString(36).substring(2) + Date.now().toString(36);
-  }
 
-  abstract eventName(): string; // Each event should define its own name
+  /** each subclass must give its own name */
+  public abstract eventName(): string
+
+  /** default payload is ‚Äúeverything else on the instance‚Äù */
+  public abstract toPrimitives(): Record<string, any>
+
+  public toMessage() {
+    return {
+      eventId:    this.id.value,
+      eventName:  this.eventName(),
+      occurredOn: this.creationDate.value.toISOString(),
+      data:       this.toPrimitives(),
+    }
+  }
 }
 
 
@@ -3881,6 +3895,25 @@ export class DeletionDate {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\DomainEventId.ts ===
+
+
+import { ValueObject } from '../ValueObject';
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+
+/**
+ * Value Object representing the ID of a User Entity.
+ */
+export class DomainEventId extends ValueObject<string> {
+  constructor(id?: string) {
+    super(id ? id : generateUUIDv6());
+  }
+
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\ExpirationDate.ts ===
 
 export class ExpirationDate {
@@ -3923,7 +3956,7 @@ export class ExpirationDate {
 export * from './CreationDate';
 export * from './DeletionDate';
 export * from './ExpirationDate';
-
+export * from './DomainEventId';
 
 
 
@@ -3942,7 +3975,11 @@ export * from './ExpirationDate';
   },
   "dependencies": {
     "@kikerepo/common-contracts": "workspace:*",
+    "@prisma/client": "^6.2.1",
+    "dayjs": "^1.11.13",
     "jsonwebtoken": "^9.0.2",
+    "kafkajs": "^2.2.4",
+    "redis": "^4.6.7",
     "winston": "^3.17.0"
   }
 }
@@ -3975,7 +4012,146 @@ export * from './ExpirationDate';
 
 export * from './middleware';
 export * from './logging';
-export * from './persistance';
+export * from './prisma';
+export * from './redis';
+export * from './kafka';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\kafka\index.ts ===
+
+export * from './KafkaClient';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\kafka\KafkaClient.ts ===
+
+// packages/common/infrastructure/kafkaClient.ts
+import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions } from 'kafkajs';
+
+export interface KafkaClientConfig {
+  brokers: string[];
+  clientId: string;
+  consumerGroupId?: string;
+  useProducerOnly?: boolean;
+  useConsumerOnly?: boolean;
+  logLevel?: 'NOTHING' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
+  ssl?: boolean;
+  sasl?: SASLOptions;
+}
+
+class KafkaClientSingleton {
+  private static _instance: KafkaClientSingleton;
+  private kafka: Kafka;
+  public producer?: Producer;
+  public consumer?: Consumer;
+
+  private constructor(config: KafkaClientConfig) {
+    this.kafka = new Kafka({
+      clientId: config.clientId,
+      brokers: config.brokers,
+      ssl: config.ssl ?? false,
+      sasl: config.sasl,
+      logLevel:
+        config.logLevel === 'NOTHING' ? LogLevel.NOTHING :
+        config.logLevel === 'DEBUG'   ? LogLevel.DEBUG   :
+        config.logLevel === 'WARN'    ? LogLevel.WARN    :
+        config.logLevel === 'ERROR'   ? LogLevel.ERROR   :
+        LogLevel.INFO,
+    });
+
+    if (!config.useConsumerOnly) {
+      this.producer = this.kafka.producer();
+    }
+    if (!config.useProducerOnly) {
+      this.consumer = this.kafka.consumer({
+        groupId: config.consumerGroupId ?? `${config.clientId}-group`,
+      });
+    }
+  }
+
+  /** Initialize singleton (call once at startup) */
+  public static init(config: KafkaClientConfig): void {
+    if (!this._instance) {
+      this._instance = new KafkaClientSingleton(config);
+    }
+  }
+
+  /** Retrieve the one instance */
+  public static get ins(): KafkaClientSingleton {
+    if (!this._instance) {
+      throw new Error('[KafkaClient] Must call init(config) first');
+    }
+    return this._instance;
+  }
+
+  /** Connect producer & consumer in parallel */
+  public async connect(): Promise<void> {
+    const tasks: Promise<any>[] = [];
+    if (this.producer) tasks.push(this.producer.connect());
+    if (this.consumer) tasks.push(this.consumer.connect());
+    await Promise.all(tasks).then(() => {console.log('[KafkaClient] Connected to Kafka')});
+  }
+
+  /** Disconnect producer & consumer in parallel */
+  public async disconnect(): Promise<void> {
+    const tasks: Promise<any>[] = [];
+    if (this.producer) tasks.push(this.producer.disconnect());
+    if (this.consumer) tasks.push(this.consumer.disconnect());
+    await Promise.all(tasks);
+  }
+
+  /**
+   * Health check: simply connect() ‚Üí [optional metadata] ‚Üí disconnect()
+   * Measures round-trip latency, and returns UP or DOWN.
+   *
+   * If you really want to probe the broker metadata, set
+   * KAFKA_HEALTH_CHECK_FULL=true in your env.
+   */
+  public async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; message?: string; latencyMs?: number }> {
+    const timeoutMs = 5_000;
+    const start = Date.now();
+
+    const withTimeout = <T>(action: Promise<T>, name: string): Promise<T> =>
+      Promise.race([
+        action,
+        new Promise<T>((_, reject) =>
+          setTimeout(() => reject(new Error(`${name} timed out after ${timeoutMs}ms`)), timeoutMs)
+        ),
+      ]);
+    const admin = this.kafka.admin();
+    try {
+      // 1) connect producer+consumer
+      await withTimeout(admin.connect(), 'KafkaClient.connect');
+
+      // 2) optional metadata probe
+      if (process.env.KAFKA_HEALTH_CHECK_FULL === 'true') {
+        const admin = this.kafka.admin();
+        await withTimeout(admin.connect(), 'Kafka admin.connect');
+        await withTimeout(admin.fetchTopicMetadata(), 'Kafka admin.fetchTopicMetadata');
+        await admin.disconnect();
+      }
+
+      // 3) clean disconnect
+      await withTimeout(admin.disconnect(), 'KafkaClient.disconnect');
+
+      const latency = Date.now() - start;
+      console.log(`[KafkaClient] Health check: UP (${latency}ms)`);
+      return { status: 'UP', latencyMs: latency };
+    } catch (err) {
+      const latency = Date.now() - start;
+      const message = (err as Error).message;
+      console.error(`[KafkaClient] Health check: DOWN - ${message} (${latency}ms)`);
+      // best effort cleanup
+      try { await admin.disconnect(); } catch {}
+      return { status: 'DOWN', message, latencyMs: latency };
+    }
+  }
+}
+
+export { KafkaClientSingleton as KafkaClient };
+
 
 
 
@@ -4160,40 +4336,193 @@ export const RequestLoggerMiddleware = (
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\persistance\index.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\prisma\index.ts ===
 
 export * from './PrismaClient';
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\persistance\PrismaClient.ts ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\prisma\PrismaClient.ts ===
 
-// services/service-authentication/src/bootstrap/prismaClient.ts
+// packages/common/infrastructure/prismaClient.ts
+import { PrismaClient as Pc } from '@prisma/client';
 
-import { PrismaClient } from '@prisma/client';
+class PrismaClient {
+  private static _instance: PrismaClient;
+  private client: Pc;
 
-const prisma = new PrismaClient();
-
-export async function connectPrisma(): Promise<void> {
-  try {
-    await prisma.$connect();
-    console.log('[PrismaClient] Connected to PostgreSQL');
-  } catch (error) {
-    console.error('[PrismaClient] Connection error:', error);
-    process.exit(1);
+  private constructor() {
+    this.client = new Pc();
   }
+
+  public static init(): void {
+    if (!this._instance) {
+      this._instance = new PrismaClient();
+    }
+  }
+
+  public static get ins(): PrismaClient {
+    if (!this._instance) {
+      PrismaClient.init();
+    }
+    return this._instance;
+  }
+
+  get prisma(): Pc {
+    return this.client;
+  }
+
+  async connect(): Promise<void> {
+    try {
+      await this.client.$connect();
+      console.log('[PrismaClient] Connected to PostgreSQL');
+    } catch (error) {
+      console.error('[PrismaClient] Connection error:', error);
+      process.exit(1);
+    }
+  }
+
+  async disconnect(): Promise<void> {
+    try {
+      await this.client.$disconnect();
+      console.log('[PrismaClient] Disconnected from PostgreSQL');
+    } catch (error) {
+      console.error('[PrismaClient] Disconnection error:', error);
+    }
+  }
+
+  async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; message?: string; latencyMs?: number }> {
+    const start = Date.now();
+    try {
+      await this.client.$queryRaw`SELECT 1`;
+      const latency = Date.now() - start;
+      console.log(`[PrismaClient] Health check: UP (${latency}ms)`);
+      return { status: 'UP', latencyMs: latency };
+    } catch (error: any) {
+      const latency = Date.now() - start;
+      const message = error?.message ?? 'Unknown error';
+      console.error(`[PrismaClient] Health check: DOWN - ${message} (${latency}ms)`);
+      return { status: 'DOWN', message, latencyMs: latency };
+    }
+  }
+  
 }
 
-export async function disconnectPrisma(): Promise<void> {
-  try {
-    await prisma.$disconnect();
-    console.log('[PrismaClient] Disconnected from PostgreSQL');
-  } catch (error) {
-    console.error('[PrismaClient] Disconnection error:', error);
-  }
+export { PrismaClient };
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\redis\index.ts ===
+
+export  *  from './RedisClient';
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\redis\RedisClient.ts ===
+
+// packages/common/infrastructure/redisClient.ts
+import { createClient, RedisClientType } from '@redis/client';
+
+export interface RedisClientConfig {
+  host?: string;
+  port?: number;
+  password?: string;
+  url?: string;
 }
 
-export { prisma };
+class RedisClientSingleton {
+  private static _instance: RedisClientSingleton;
+  private client: RedisClientType;
+  private timeoutMs = 2_000;
+  private constructor(config: RedisClientConfig = {}) {
+    const {
+      url,
+      host = '127.0.0.1',
+      port = 6379,
+      password,
+    } = config;
+
+    // pick one style of connection options
+    const options = url
+      ? { url }
+      : { socket: { host, port }, password };
+
+    this.client = createClient(options);
+
+    this.client.on('error', (err) =>
+      console.error('[RedisClient] Error', err)
+    );
+  }
+
+  public static init(config: RedisClientConfig): void {
+    if (!this._instance) {
+      this._instance = new RedisClientSingleton(config);
+    }
+  }
+
+  public static get ins(): RedisClientSingleton {
+    if (!this._instance) {
+      throw new Error('[RedisClient] Must call init(config) first');
+    }
+    return this._instance;
+  }
+
+  async connect(): Promise<void> {
+    try {
+      await this.client.connect();
+      console.info('[RedisClient] Connected to Redis.');
+    } catch (error) {
+      const message = error instanceof Error ? error.message : 'Unknown error';
+      console.error('[RedisClient] Failed to connect:', message);
+    }
+  }
+
+  async disconnect(): Promise<void> {
+    await this.client.disconnect();
+  }
+
+  async get(key: string): Promise<string | null> {
+    return this.client.get(key);
+  }
+
+  async set(key: string, value: string): Promise<void> {
+    await this.client.set(key, value);
+  }
+
+  async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; 
+    message?: string; 
+    latencyMs?: number }> {
+const key = `__healthcheck:${Date.now()}`;
+const start = Date.now();
+
+const withTimeout = <T>(action: Promise<T>, name: string): Promise<T> =>
+Promise.race([
+action,
+new Promise<T>((_, reject) =>
+setTimeout(() => reject(new Error(`${name} timed out after ${this.timeoutMs}ms`)), 
+this.timeoutMs)
+),
+]);
+
+try {
+const pong = await withTimeout(this.client.ping(), 'Redis PING');
+if (pong !== 'PONG') {
+throw new Error(`Unexpected PING response: ${pong}`);
+}
+const latency = Date.now() - start;
+console.log(`[RedisClient] Health check: UP (${latency}ms)`);
+return { status: 'UP', latencyMs: latency };
+
+} catch (err) {
+const message = (err as Error).message;
+console.error('[RedisClient] Health check: DOWN', message);
+return { status: 'DOWN', message };
+}
+}
+}
+export { RedisClientSingleton as RedisClient };
 
 
 
@@ -4203,18 +4532,43 @@ export { prisma };
 #express settings
 APP_HOST=*****
 APP_PORT=*****
-#redis settings
+
+# PostgreSQL / Prisma
+DATABASE_URL=*****
+
+# Redis Connection
 REDIS_HOST=*****
 REDIS_PORT=*****
 REDIS_PASSWORD=*****
-#database settings
-#use ipv4 if possible
-#DATABASE_URL="postgresql://postgres:K9z1OIGr6FERGO9i@db.xxwztdkwreeeqibqxbym.supabase.co:5432/postgres" 
-#alternative connection string for ipv6
-DATABASE_URL=*****
-#jwt settings
+
+# Kafka Connection
+KAFKA_BROKERS=*****
+KAFKA_CLIENT_ID=*****
+KAFKA_CONSUMER_GROUP=*****
+
+KAFKA_SASL_MECHANISM=*****
+KAFKA_SASL_USERNAME=*****
+KAFKA_SASL_PASSWORD=*****
+
+# (optional) disable legacy partitioner warning:
+KAFKAJS_NO_PARTITIONER_WARNING=*****
+
+KAFKA_USE_SSL=*****
+KAFKA_LOG_LEVEL=*****
+#Healthcheck timeout
+HEALTHCHECK_TIMEOUT_MS=*****
+
+
+
+
+
+
+
+
+# JWT Secrets
 JWT_ACCESS_SECRET=*****
 JWT_REFRESH_SECRET=*****
+
 
 
 
@@ -4227,47 +4581,19 @@ APP_PORT=*****
 REDIS_HOST=*****
 REDIS_PORT=*****
 REDIS_PASSWORD=*****
-#database settings
-#use ipv4 if possible
-#DATABASE_URL="postgresql://postgres:K9z1OIGr6FERGO9i@db.xxwztdkwreeeqibqxbym.supabase.co:5432/postgres" 
+# Kafka settings
+KAFKA_BROKERS=*****
+KAFKA_SASL_MECHANISM=*****
+KAFKA_SECURITY_PROTOCOL=*****
+KAFKA_SASL_USERNAME=*****
+KAFKA_SASL_PASSWORD=*****
+KAFKA_CLIENT_ID=*****
+
 #alternative connection string for ipv6
 DATABASE_URL=*****
 #jwt settings
 JWT_ACCESS_SECRET=*****
 JWT_REFRESH_SECRET=*****
-
-
-
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\Dockerfile.development ===
-
-# Usa una imagen base de Node (versi√≥n LTS recomendada)
-FROM node:18-alpine
-
-# Establece la variable de entorno para desarrollo antes de instalar dependencias
-ENV NODE_ENV=development
-
-# Directorio de trabajo en el contenedor: usamos la ra√≠z del monorepo
-WORKDIR /app
-
-# --- CAPA DE C√ìDIGO Y DEPENDENCIAS ---
-# Copia todo el c√≥digo del monorepo al contenedor
-COPY . .
-
-# Instala todas las dependencias (Yarn Berry instala devDependencies en modo desarrollo por defecto)
-RUN yarn install
-
-# Compila (build) todo el monorepo (esto se encargar√° de construir todos los paquetes, incluidos los internos)
-RUN yarn build
-
-# Establece el directorio de trabajo al servicio de autenticaci√≥n
-WORKDIR /app/services/service-authentication
-
-# Expone el puerto en el que el servicio escucha (aj√∫stalo seg√∫n corresponda)
-EXPOSE 5001
-
-# Ejecuta el comando de desarrollo definido en el package.json del servicio
-CMD ["yarn", "dev"]
-
 
 
 
@@ -4371,6 +4697,66 @@ startServer().catch((err) => {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\test.ts ===
+
+import { createClient } from 'redis';
+import { PrismaClient } from '@prisma/client';
+import { Kafka } from 'kafkajs';
+
+async function testConnections() {
+  console.log('üîÑ Iniciando prueba de conexiones...\n');
+
+  // PostgreSQL
+  try {
+    const prisma = new PrismaClient();
+    await prisma.$connect();
+    console.log('‚úÖ PostgreSQL conectado correctamente\n');
+    await prisma.$disconnect();
+  } catch (error) {
+    console.error('‚ùå Error conectando a PostgreSQL:', error);
+  }
+
+  // Redis
+  try {
+    const redis = createClient({
+      password: process.env.REDIS_PASSWORD,
+      socket: {
+        host: 'redis',
+        port: parseInt(process.env.REDIS_PORT || '6379'),
+      },
+    });
+
+    redis.on('error', err => console.error('‚ùå Redis error:', err));
+    await redis.connect();
+    console.log('‚úÖ Redis conectado correctamente\n');
+    await redis.disconnect();
+  } catch (error) {
+    console.error('‚ùå Error conectando a Redis:', error);
+  }
+
+  // Kafka
+  try {
+    const kafka = new Kafka({
+      clientId: 'auth-service',
+      brokers: ['kafka:9092'], // Ojo: esto asume que el contenedor Kafka se llama 'kafka'
+    });
+
+    const admin = kafka.admin();
+    await admin.connect();
+    console.log('‚úÖ Kafka conectado correctamente\n');
+    await admin.disconnect();
+  } catch (error) {
+    console.error('‚ùå Error conectando a Kafka:', error);
+  }
+
+  console.log('üîö Prueba de conexiones terminada.');
+}
+
+testConnections();
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\container.ts ===
 
 // services/service-authentication/src/bootstrap/container.ts
@@ -4392,10 +4778,6 @@ import {
    AuthenticationServiceToken
 } from '@kikerepo/authentication-infrastructure';
 
-import{
-  connectPrisma
-} from '@kikerepo/common-infrastructure';
-
 import { 
   RegisterCommandHandler, 
   RegisterCommandHandlerToken, 
@@ -4408,6 +4790,7 @@ import {
    UserControllerToken 
 } from '../controllers';
 
+import {initializeInfrastructureClients  } from './initClients'
 const container = new Container();
 
 // Bindear el repositorio (singleton)
@@ -4431,8 +4814,11 @@ container.bind<AuthenticationService>(AuthenticationServiceToken).toDynamicValue
 container.bind<UserController>(UserControllerToken).to(UserController);
 
 export async function buildContainer(): Promise<void> {
-  await connectPrisma();
+  console.log('[Container] Initializing infrastructure clients...');
+  await initializeInfrastructureClients(); // calls Prisma, Redis, Kafka
+  console.log('[Container] Infrastructure initialized ‚úÖ');
 }
+
 
 export { container };
 
@@ -4442,6 +4828,48 @@ export { container };
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\index.ts ===
 
 export * from './container';
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\initClients.ts ===
+
+// services/service-authentication/src/bootstrap/initClients.ts
+import {
+  PrismaClient,
+  KafkaClient,
+  RedisClient
+} from '@kikerepo/common-infrastructure';
+
+import { requireEnv } from '@kikerepo/utils-env';
+export async function initializeInfrastructureClients(): Promise<void> {
+  // Prisma
+  await PrismaClient.ins.connect();
+
+  // Redis
+  await RedisClient.init({
+    host: requireEnv('REDIS_HOST'),
+    port: Number(requireEnv('REDIS_PORT')),
+    password: requireEnv('REDIS_PASSWORD'),
+  });
+
+  await RedisClient.ins.connect();
+
+  // Kafka
+  await KafkaClient.init({
+   
+    brokers: requireEnv('KAFKA_BROKERS').split(','),
+    clientId: requireEnv('KAFKA_CLIENT_ID'),
+    ssl: requireEnv('KAFKA_USE_SSL') === 'true',
+    sasl: {
+      mechanism: requireEnv('KAFKA_SASL_MECHANISM') as any, // e.g. "plain"
+      username: requireEnv('KAFKA_SASL_USERNAME'),
+      password: requireEnv('KAFKA_SASL_PASSWORD'),
+    },
+    logLevel: requireEnv('KAFKA_LOG_LEVEL') as any,    // ‚Üê set your desired KafkaJS log level here
+  });
+
+  await KafkaClient.ins.connect();
+}
 
 
 
@@ -4495,6 +4923,61 @@ export class UserController {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\healthCheck.ts ===
+
+import { PrismaClient, RedisClient, KafkaClient } from '@kikerepo/common-infrastructure';
+
+const HEALTHCHECK_TIMEOUT_MS = parseInt(process.env.HEALTHCHECK_TIMEOUT_MS || '1000', 10);
+
+function withTimeout<T>(promise: Promise<T>, ms: number): Promise<T> {
+  return new Promise((resolve, reject) => {
+    const timer = setTimeout(() => {
+      reject(new Error(`healthCheck timed out after ${ms}ms`));
+    }, ms);
+
+    promise
+      .then(result => {
+        clearTimeout(timer);
+        resolve(result);
+      })
+      .catch(err => {
+        clearTimeout(timer);
+        reject(err);
+      });
+  });
+}
+
+export async function healthCheck(_req: any, res: any) {
+  const checks = [
+    { name: 'postgres', fn: withTimeout(PrismaClient.ins.healthCheck(), HEALTHCHECK_TIMEOUT_MS) },
+    { name: 'redis',    fn: withTimeout(RedisClient.ins.healthCheck(), HEALTHCHECK_TIMEOUT_MS) },
+    { name: 'kafka',    fn: withTimeout(KafkaClient.ins.healthCheck(), HEALTHCHECK_TIMEOUT_MS) },
+  ];
+
+  // run them all in parallel, but don‚Äôt let one hang forever
+  const settled = await Promise.allSettled(checks.map(c => c.fn));
+
+  // build a nice `services` object
+  const services = checks.reduce<Record<string, {status:string; message?:string}>>((acc, check, i) => {
+    const result = settled[i];
+    if (result.status === 'fulfilled') {
+      acc[check.name] = result.value;
+    } else {
+      acc[check.name] = { status: 'DOWN', message: (result.reason as Error).message };
+    }
+    return acc;
+  }, {});
+
+  const allUp = Object.values(services).every(s => s.status === 'UP');
+  res.status(allUp ? 200 : 503).json({
+    status: allUp ? 'UP' : 'DOWN',
+    services,
+  });
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\routes\index.ts ===
 
 export *from './UserRoutes';
@@ -4510,6 +4993,9 @@ import { ErrorHandlerMiddleware, ValidationMiddleware } from '@kikerepo/common-a
 import { NotFoundError } from '@kikerepo/common-contracts';
 
 import { LoginQuery, RegisterCommand } from '@kikerepo/authentication-application';
+
+import { healthCheck } from './healthCheck';
+
 // Aqu√≠ no importamos container ni resolvemos el controlador.
 // Simplemente exportamos una funci√≥n que recibe el controlador ya instanciado.
 export function CreateUserRoutes(userController: { 
@@ -4531,12 +5017,18 @@ export function CreateUserRoutes(userController: {
     ValidationMiddleware(LoginQuery),
     userController.login.bind(userController)
   );
-
+  
+    // Ruta de health
+  router.get('/health', async (_req, res) => {
+    healthCheck(_req, res);
+  });
+  
   // 404 Handler para rutas no definidas
   router.use((req: Request, res: Response, next: NextFunction) => {
     res.status(404).json(new NotFoundError());
   });
 
+  
   // Middleware de manejo de errores
   router.use(ErrorHandlerMiddleware);
 
@@ -4550,27 +5042,58 @@ export function CreateUserRoutes(userController: {
 
 version: '3.8'
 services:
-  authentication-service:
+  auth-service:
+    container_name: auth-service
     build:
-      context: ../../../../
-      dockerfile: services/service-authentication/Dockerfile.development
+      context: ../../../..
+      dockerfile: services/service-authentication/__docker/development/Dockerfile
+    env_file:
+      - ../../../../.env/development/.env
+    volumes:
+      - ../../../..:/app
     ports:
       - "${SERVICE_AUTHENTICATION_PORT}:5001"
-    volumes:
-      - ../../src:/app/src
-      - authentication_node_modules:/app/node_modules
-    env_file:
-      - ../../.env.development
-    command: yarn dev
-    depends_on:
-      - redis
-      - kafka
-      - postgres
+      - "9229:9229"
+    working_dir: /app/services/service-authentication
+    command: yarn workspace @kikerepo/service-authentication dev
 
 
 volumes:
   authentication_node_modules:
 
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\__docker\development\Dockerfile ===
+
+# Usa una imagen base de Node (versi√≥n LTS recomendada)
+FROM node:18-alpine
+
+# Establece la variable de entorno para desarrollo antes de instalar dependencias
+ENV NODE_ENV=development
+
+# Directorio de trabajo en el contenedor: usamos la ra√≠z del monorepo
+WORKDIR /app
+
+# --- CAPA DE C√ìDIGO Y DEPENDENCIAS ---
+# Copia todo el c√≥digo del monorepo al contenedor
+COPY . .
+
+# Instala todas las dependencias (Yarn Berry instala devDependencies en modo desarrollo por defecto)
+RUN yarn install
+
+# Compila (build) todo el monorepo (esto se encargar√° de construir todos los paquetes, incluidos los internos)
+RUN yarn build
+
+# Establece el directorio de trabajo al servicio de autenticaci√≥n
+WORKDIR /app/services/service-authentication
+
+# Expone el puerto en el que el servicio escucha (aj√∫stalo seg√∫n corresponda)
+EXPOSE 5001
+
+# Ejecuta el comando de desarrollo definido en el package.json del servicio
+CMD ["yarn", "dev"]
 
 
 
@@ -4586,34 +5109,79 @@ describe('Mailing Service test', () => {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\.env ===
+
+CLUSTER_ID=*****
+KAFKA_PROCESS_ROLES=*****
+KAFKA_NODE_ID=*****
+KAFKA_CONTROLLER_QUORUM_VOTERS=*****
+KAFKA_LISTENERS=*****
+KAFKA_ADVERTISED_LISTENERS=*****
+KAFKA_LISTENER_SECURITY_PROTOCOL_MAP=*****
+KAFKA_INTER_BROKER_LISTENER_NAME=*****
+KAFKA_CONTROLLER_LISTENER_NAMES=*****
+KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR=*****
+
+
+# (optional) override defaults if needed:
+KAFKA_SASL_ENABLED_MECHANISMS=*****
+KAFKA_SASL_MECHANISM_INTER_BROKER_PROTOCOL=*****
+KAFKA_SASL_MECHANISM_CONTROLLER_PROTOCOL=*****
+
+# Super-user creds:
+KAFKA_SUPER_USER_NAME=*****
+KAFKA_SUPER_USER_PASS=*****
+
+# Service users:
+SERVICE_1_USER=*****
+SERVICE_1_PASS=*****
+SERVICE_2_USER=*****
+SERVICE_2_PASS=*****
+SERVICE_3_USER=*****
+SERVICE_3_PASS=*****
+
+
+
+# (optional) tweak logging:
+KAFKA_LOG4J_ROOT_LOGLEVEL=*****
+KAFKA_LOG4J_LOGGERS=*****
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\docker-compose.yml ===
 
-version: '3.8'
+version: "3.8"
 
 services:
-  zookeeper:
-    image: wurstmeister/zookeeper:latest
-    container_name: zk
-    env_file:
-      - ../../.env/development/.env
-    ports:
-      - "${ZOOKEEPER_CLIENT_PORT}:2181"
-
   kafka:
-    image: wurstmeister/kafka:latest
+    build:
+      context: .
+      dockerfile: Dockerfile
     container_name: kafka
+    entrypoint: ["/etc/confluent/docker/init.sh"]
     env_file:
-      - ../../.env/development/.env
-    depends_on:
-      - zookeeper
+      - .env
     ports:
       - "9092:9092"
-    environment:
-      # Wurstmeister usa estas vars en lugar de KAFKA_CFG_*
-      KAFKA_BROKER_ID:     ${KAFKA_BROKER_ID}
-      KAFKA_ZOOKEEPER_CONNECT: ${KAFKA_ZOOKEEPER_CONNECT}
-      KAFKA_ADVERTISED_LISTENERS: ${KAFKA_ADVERTISED_LISTENERS}
-      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: ${KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR}
+    volumes:
+      - kafka-data:/var/lib/kafka/data
+volumes:
+  kafka-data:
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-kafka\Dockerfile ===
+
+FROM confluentinc/cp-kafka:7.6.0
+
+USER root
+
+# üëá This is where Confluent looks for init scripts!
+COPY ./scripts/init.sh /etc/confluent/docker/init.sh
+
+RUN chmod +x /etc/confluent/docker/init.sh
 
 
 
@@ -4721,27 +5289,72 @@ describe('Simple test in Authentication Service', () => {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-postgreSQL\docker-compose.yml ===
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-postgreSQL\.env ===
 
-# docker-compose.yml
-version: '3.8'
+# Root user de PostgreSQL (obligatorio para el contenedor)
+POSTGRES_USER=*****
+POSTGRES_PASSWORD=*****
+POSTGRES_DB=*****
+POSTGRES_PORT=*****
+POSTGRES_VOLUME=*****
+
+# Servicio 1: autenticaci√≥n
+SERVICE_1_DB=*****
+SERVICE_1_USER=*****
+SERVICE_1_PASSWORD=*****
+
+# Servicio 2: sesi√≥n
+SERVICE_2_DB=*****
+SERVICE_2_USER=*****
+SERVICE_2_PASSWORD=*****
+
+# Servicio 3: mailing (ejemplo adicional)
+SERVICE_3_DB=*****
+SERVICE_3_USER=*****
+SERVICE_3_PASSWORD=*****
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-postgreSQL\docker-compose.yml ===
 
 services:
   postgres:
-    image: postgres:15-alpine
-    container_name: service-postgreSQL
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: postgres
+    restart: unless-stopped
     env_file:
-      - ../../.env/development/.env
+      - .env
+    volumes:
+      - ${POSTGRES_VOLUME}:/var/lib/postgresql/data
     ports:
       - "${POSTGRES_PORT}:5432"
-    volumes:
-      # Aqu√≠ usa la clave literal `postgres_data`
-      - postgres_data:/var/lib/postgresql/data
 
 volumes:
-  # La clave debe ser fija; usamos `name:` para interpolar tu var
   postgres_data:
     name: ${POSTGRES_VOLUME}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-postgreSQL\Dockerfile ===
+
+FROM postgres:16.8
+
+COPY ./scripts/init.sh /docker-entrypoint-initdb.d/init.sh
+RUN chmod +x /docker-entrypoint-initdb.d/init.sh
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-redis\.env ===
+
+# Redis settings
+REDIS_PASSWORD=*****
+REDIS_PORT=*****
+REDIS_VOLUME=*****
 
 
 
@@ -4758,6 +5371,11 @@ services:
       - "${REDIS_PORT}:6379"
     volumes:
       - redis_data:/data
+    # ‚Üê this is the key bit:
+    command:
+      - redis-server
+      - --requirepass
+      - "${REDIS_PASSWORD}"
 
 volumes:
   redis_data:
@@ -4927,7 +5545,7 @@ import { Container } from 'inversify';
 import { ISessionRepository, ISessionRepositoryToken } from '@kikerepo/session-domain';
 import { SessionRepository } from '@kikerepo/session-infrastructure';
 import { UserLoggedInEventHandler } from '@kikerepo/session-application';
-import { connectPrisma } from '@kikerepo/common-infrastructure';
+import { PrismaClient} from '@kikerepo/common-infrastructure';
 
 const container = new Container();
 
@@ -4943,7 +5561,7 @@ container.bind<UserLoggedInEventHandler>(UserLoggedInEventHandler).toSelf();
  * Se conecta a la base de datos y ejecuta las migraciones de sesi√≥n.
  */
 export async function buildContainer(): Promise<void> {
-  await connectPrisma();
+  await PrismaClient.ins.connect();
 }
 
 export { container };
@@ -5091,7 +5709,7 @@ volumes:
 
 === DIRECTORY TREE ===
 Listado de rutas de carpetas
-El n˙mero de serie del volumen es 000000C9 EA56:DBC0
+El n˙mero de serie del volumen es 0000001E EA56:DBC0
 C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   .gitignore
 ¶   .yarnrc.yml
@@ -5106,8 +5724,32 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   
 +---.env
 ¶   +---development
-¶   ¶       .env
-¶   ¶       
+¶   ¶   ¶   service-authentication.env
+¶   ¶   ¶   service-kafka.env
+¶   ¶   ¶   service-redis.env
+¶   ¶   ¶   
+¶   ¶   +---kafka-client
+¶   ¶   ¶   ¶   package.json
+¶   ¶   ¶   ¶   tsconfig.json
+¶   ¶   ¶   ¶   
+¶   ¶   ¶   +---src
+¶   ¶   ¶   ¶       index.ts
+¶   ¶   ¶   ¶       KafkaClient.ts
+¶   ¶   ¶   ¶       
+¶   ¶   ¶   +---__tests__
+¶   ¶   ¶           kafkaclient.spec.ts
+¶   ¶   ¶           
+¶   ¶   +---redis-client
+¶   ¶       ¶   package.json
+¶   ¶       ¶   tsconfig.json
+¶   ¶       ¶   
+¶   ¶       +---src
+¶   ¶       ¶       index.ts
+¶   ¶       ¶       RedisClient.ts
+¶   ¶       ¶       
+¶   ¶       +---__tests__
+¶   ¶               redisclient.spec.ts
+¶   ¶               
 ¶   +---production
 ¶           .env
 ¶           
@@ -5347,28 +5989,6 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶   ¶   +---__tests__
 ¶   ¶   ¶           basic.spec.ts
 ¶   ¶   ¶           
-¶   ¶   +---kafka-client
-¶   ¶   ¶   ¶   package.json
-¶   ¶   ¶   ¶   tsconfig.json
-¶   ¶   ¶   ¶   
-¶   ¶   ¶   +---src
-¶   ¶   ¶   ¶       index.ts
-¶   ¶   ¶   ¶       KafkaClient.ts
-¶   ¶   ¶   ¶       
-¶   ¶   ¶   +---__tests__
-¶   ¶   ¶           kafkaclient.spec.ts
-¶   ¶   ¶           
-¶   ¶   +---redis-client
-¶   ¶   ¶   ¶   package.json
-¶   ¶   ¶   ¶   tsconfig.json
-¶   ¶   ¶   ¶   
-¶   ¶   ¶   +---src
-¶   ¶   ¶   ¶       index.ts
-¶   ¶   ¶   ¶       RedisClient.ts
-¶   ¶   ¶   ¶       
-¶   ¶   ¶   +---__tests__
-¶   ¶   ¶           redisclient.spec.ts
-¶   ¶   ¶           
 ¶   ¶   +---uuid6
 ¶   ¶       ¶   index.ts
 ¶   ¶       ¶   package.json
@@ -5436,6 +6056,7 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶       ¶       +---value-objects
 ¶       ¶               CreationDate.ts
 ¶       ¶               DeletionDate.ts
+¶       ¶               DomainEventId.ts
 ¶       ¶               ExpirationDate.ts
 ¶       ¶               index.ts
 ¶       ¶               
@@ -5446,6 +6067,10 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶           +---src
 ¶               ¶   index.ts
 ¶               ¶   
+¶               +---kafka
+¶               ¶       index.ts
+¶               ¶       KafkaClient.ts
+¶               ¶       
 ¶               +---logging
 ¶               ¶       index.ts
 ¶               ¶       logger.ts
@@ -5455,15 +6080,18 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶               ¶       index.ts
 ¶               ¶       RequestLoggerMiddleware.ts
 ¶               ¶       
-¶               +---persistance
+¶               +---prisma
+¶               ¶       index.ts
+¶               ¶       PrismaClient.ts
+¶               ¶       
+¶               +---redis
 ¶                       index.ts
-¶                       PrismaClient.ts
+¶                       RedisClient.ts
 ¶                       
 +---services
     +---service-authentication
     ¶   ¶   .env
     ¶   ¶   .env.development
-    ¶   ¶   Dockerfile.development
     ¶   ¶   package.json
     ¶   ¶   tsconfig.json
     ¶   ¶   
@@ -5481,25 +6109,30 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶   ¶               
     ¶   +---src
     ¶   ¶   ¶   index.ts
+    ¶   ¶   ¶   test.ts
     ¶   ¶   ¶   
     ¶   ¶   +---bootstrap
     ¶   ¶   ¶       container.ts
     ¶   ¶   ¶       index.ts
+    ¶   ¶   ¶       initClients.ts
     ¶   ¶   ¶       
     ¶   ¶   +---controllers
     ¶   ¶   ¶       index.ts
     ¶   ¶   ¶       UserController.ts
     ¶   ¶   ¶       
     ¶   ¶   +---routes
+    ¶   ¶           healthCheck.ts
     ¶   ¶           index.ts
     ¶   ¶           UserRoutes.ts
     ¶   ¶           
     ¶   +---__docker
     ¶   ¶   +---development
     ¶   ¶   ¶       docker-compose.yml
+    ¶   ¶   ¶       Dockerfile
     ¶   ¶   ¶       
     ¶   ¶   +---production
     ¶   +---__http__
+    ¶   ¶       health.http
     ¶   ¶       login.http
     ¶   ¶       register.http
     ¶   ¶       
@@ -5507,8 +6140,13 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶           basic.spec.ts
     ¶           
     +---service-kafka
-    ¶       docker-compose.yml
-    ¶       
+    ¶   ¶   .env
+    ¶   ¶   docker-compose.yml
+    ¶   ¶   Dockerfile
+    ¶   ¶   
+    ¶   +---scripts
+    ¶           init.sh
+    ¶           
     +---service-mailing
     ¶   ¶   .env.development
     ¶   ¶   Dockerfile.development
@@ -5522,9 +6160,15 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶           basic.spec.ts
     ¶           
     +---service-postgreSQL
-    ¶       docker-compose.yml
-    ¶       
+    ¶   ¶   .env
+    ¶   ¶   docker-compose.yml
+    ¶   ¶   Dockerfile
+    ¶   ¶   
+    ¶   +---scripts
+    ¶           init.sh
+    ¶           
     +---service-redis
+    ¶       .env
     ¶       docker-compose.yml
     ¶       
     +---service-session

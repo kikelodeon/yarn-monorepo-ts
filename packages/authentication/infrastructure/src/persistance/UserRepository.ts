@@ -30,7 +30,7 @@ export class UserRepository implements IUserRepository {
       logger.debug('[UserRepository] No user found', { id });
       return null;
     }
-    return User.map(
+    return User.rehydrate(
       userRecord.id,
       userRecord.email,
       userRecord.password,
@@ -47,7 +47,7 @@ export class UserRepository implements IUserRepository {
       logger.debug('[UserRepository] No user found', { email });
       return null;
     }
-    return User.map(
+    return User.rehydrate(
       userRecord.id,
       userRecord.email,
       userRecord.password,
