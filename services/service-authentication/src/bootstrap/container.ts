@@ -11,6 +11,7 @@ import {
 } from '@kikerepo/authentication-domain';
 
 import {
+  
    UserRepository,
    Argon2HashingService, 
    AuthenticationService, 
@@ -29,6 +30,7 @@ import {
    UserControllerToken 
 } from '../controllers';
 
+import { logger } from '@kikerepo/common-infrastructure';
 import {initializeInfrastructureClients  } from './initClients'
 const container = new Container();
 
@@ -53,9 +55,9 @@ container.bind<AuthenticationService>(AuthenticationServiceToken).toDynamicValue
 container.bind<UserController>(UserControllerToken).to(UserController);
 
 export async function buildContainer(): Promise<void> {
-  console.log('[Container] Initializing infrastructure clients...');
+  logger.debug('[Container] Initializing infrastructure clients...');
   await initializeInfrastructureClients(); // calls Prisma, Redis, Kafka
-  console.log('[Container] Infrastructure initialized ✅');
+  logger.info('[Container] Infrastructure initialized ✅');
 }
 
 

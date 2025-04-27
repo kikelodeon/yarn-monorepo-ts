@@ -46,7 +46,12 @@ class KafkaClientSingleton {
       this.producer = this.kafka.producer({
         allowAutoTopicCreation: true,
         idempotent: true,
-        retry: { retries: 5, initialRetryTime: 300, factor: 2 },
+        maxInFlightRequests: 1,
+        retry: {
+          retries: Number.MAX_SAFE_INTEGER,
+          initialRetryTime: 300,
+          factor: 2,
+        },
       });
     }
 
@@ -112,14 +117,11 @@ class KafkaClientSingleton {
     await Promise.all(tasks);
     logger.info('[KafkaClient] Connected');
 
-    // After connecting, ensure buffer is drained before normal operation
     try {
       await this.flushBuffer();
-      // Reset circuit to closed state
       this.publishBreaker.close();
       logger.info('[KafkaClient] Buffer drained on connect — circuit CLOSED');
     } catch (err: unknown) {
-      // If draining fails, open circuit to buffer subsequent publishes
       this.publishBreaker.open();
       logger.warn('[KafkaClient] Buffer drain on connect failed — circuit OPEN');
     }
@@ -133,9 +135,6 @@ class KafkaClientSingleton {
     logger.info('[KafkaClient] Disconnected');
   }
 
-  /**
-   * Publish via circuit-breaker; buffer if circuit open or on failure.
-   */
   public async publish(record: ProducerRecord): Promise<void> {
     if (this.buffering) {
       logger.warn('[KafkaClient] Buffering mode active — saving to fallback');
@@ -151,7 +150,6 @@ class KafkaClientSingleton {
     }
   }
 
-  /** Buffer a record to fallback store */
   private async bufferRecord(record: ProducerRecord): Promise<void> {
     const msg = record.messages[0];
     const data = JSON.parse(msg.value?.toString() ?? '{}');
@@ -162,7 +160,6 @@ class KafkaClientSingleton {
     await this.repository.save(fallback);
   }
 
-  /** Drain and replay all buffered events in strict order */
   private async flushBuffer(): Promise<void> {
     if (!this.producer) return;
     while (true) {
@@ -183,7 +180,6 @@ class KafkaClientSingleton {
     }
   }
 
-  /** Admin-based health check */
   public async healthCheck(): Promise<{ status: 'UP'|'DOWN'; message?: string; latencyMs?: number }> {
     const timeoutMs = 5000;
     const start = Date.now();

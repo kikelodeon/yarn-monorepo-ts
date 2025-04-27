@@ -15,7 +15,7 @@ export class UserController {
   ) {}
 
   public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    logger.info('Login endpoint called');
+    logger.debug('[UserController] Login endpoint called');
     try {
       // Se pasa el req.body directamente; el AuthenticationService se encarga de mapear internamente.
       const response = await this.authenticationService.login(req.body);
@@ -26,7 +26,7 @@ export class UserController {
   }
 
   public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
-    logger.info('Register endpoint called');
+    logger.debug('Register endpoint called');
     try {
       // Se delega en el servicio la transformación y el procesamiento.
       const response = await this.authenticationService.register(req.body);

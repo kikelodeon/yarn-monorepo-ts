@@ -1,5 +1,6 @@
 // packages/common/infrastructure/prismaClient.ts
 import { PrismaClient as Pc } from '@prisma/client';
+import { logger } from '../logging';
 
 class PrismaClient {
   private static _instance: PrismaClient;
@@ -29,9 +30,9 @@ class PrismaClient {
   async connect(): Promise<void> {
     try {
       await this.client.$connect();
-      console.log('[PrismaClient] Connected to PostgreSQL');
+      logger.info('[PrismaClient] Connected to PostgreSQL');
     } catch (error) {
-      console.error('[PrismaClient] Connection error:', error);
+      logger.error('[PrismaClient] Connection error:', error);
       process.exit(1);
     }
   }
@@ -39,9 +40,9 @@ class PrismaClient {
   async disconnect(): Promise<void> {
     try {
       await this.client.$disconnect();
-      console.log('[PrismaClient] Disconnected from PostgreSQL');
+      logger.info('[PrismaClient] Disconnected from PostgreSQL');
     } catch (error) {
-      console.error('[PrismaClient] Disconnection error:', error);
+      logger.error('[PrismaClient] Disconnection error:', error);
     }
   }
 
@@ -50,12 +51,12 @@ class PrismaClient {
     try {
       await this.client.$queryRaw`SELECT 1`;
       const latency = Date.now() - start;
-      console.log(`[PrismaClient] Health check: UP (${latency}ms)`);
+      logger.info(`[PrismaClient] Health check: UP (${latency}ms)`);
       return { status: 'UP', latencyMs: latency };
     } catch (error: any) {
       const latency = Date.now() - start;
       const message = error?.message ?? 'Unknown error';
-      console.error(`[PrismaClient] Health check: DOWN - ${message} (${latency}ms)`);
+      logger.error(`[PrismaClient] Health check: DOWN - ${message} (${latency}ms)`);
       return { status: 'DOWN', message, latencyMs: latency };
     }
   }

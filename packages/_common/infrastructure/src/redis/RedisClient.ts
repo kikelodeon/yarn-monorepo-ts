@@ -1,5 +1,6 @@
 // packages/common/infrastructure/redisClient.ts
 import { createClient, RedisClientType } from '@redis/client';
+import { logger } from '../logging';
 
 export interface RedisClientConfig {
   host?: string;
@@ -28,7 +29,7 @@ class RedisClientSingleton {
     this.client = createClient(options);
 
     this.client.on('error', (err) =>
-      console.error('[RedisClient] Error', err)
+      logger.error('[RedisClient] Error', err)
     );
   }
 
@@ -48,10 +49,10 @@ class RedisClientSingleton {
   async connect(): Promise<void> {
     try {
       await this.client.connect();
-      console.info('[RedisClient] Connected to Redis.');
+      logger.info('[RedisClient] Connected to Redis.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      console.error('[RedisClient] Failed to connect:', message);
+      logger.error('[RedisClient] Failed to connect:', message);
     }
   }
 
@@ -88,12 +89,12 @@ if (pong !== 'PONG') {
 throw new Error(`Unexpected PING response: ${pong}`);
 }
 const latency = Date.now() - start;
-console.log(`[RedisClient] Health check: UP (${latency}ms)`);
+logger.info(`[RedisClient] Health check: UP (${latency}ms)`);
 return { status: 'UP', latencyMs: latency };
 
 } catch (err) {
 const message = (err as Error).message;
-console.error('[RedisClient] Health check: DOWN', message);
+logger.error('[RedisClient] Health check: DOWN', message);
 return { status: 'DOWN', message };
 }
 }
