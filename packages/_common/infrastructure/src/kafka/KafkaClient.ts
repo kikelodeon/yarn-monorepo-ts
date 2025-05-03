@@ -1,4 +1,3 @@
-// packages/common/infrastructure/KafkaClient.ts
 import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions, ProducerRecord, Admin } from 'kafkajs';
 import CircuitBreaker from 'opossum';
 import { FallbackEventRepository } from './FallbackEventRepository';
@@ -23,6 +22,7 @@ export interface SubscriptionConfig {
   fromBeginning?: boolean;
 }
 
+// Opciones de inicialización de KafkaClient
 export interface KafkaClientConfig {
   brokers: string[];
   clientId: string;
@@ -32,6 +32,15 @@ export interface KafkaClientConfig {
   logLevel?: 'NOTHING' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
   ssl?: boolean;
   sasl?: SASLOptions;
+  // Parámetros de flushBuffer (pueden provenir de env)
+  flushBatchSize?: number;
+  flushRetryDelayMs?: number;
+}
+
+// Opciones para flushBuffer
+export interface FlushOptions {
+  batchSize?: number;      // nº de eventos a buscar cada vez
+  retryDelayMs?: number;   // milisegundos a esperar tras un fallo
 }
 
 export class KafkaClientSingleton {
@@ -44,10 +53,18 @@ export class KafkaClientSingleton {
   private publishBreaker: CircuitBreaker<[ProducerRecord], any>;
   private buffering = false;
   private serviceName: string;
+  private flushBatchSize: number;
+  private flushRetryDelayMs: number;
 
   private constructor(config: KafkaClientConfig) {
     this.serviceName = config.clientId;
-    logger.debug(`[KafkaClient] Initializing client for '${this.serviceName}' with brokers ${config.brokers}`);
+    this.flushBatchSize = config.flushBatchSize ?? 100;
+    this.flushRetryDelayMs = config.flushRetryDelayMs ?? 5000;
+
+    logger.debug(`[KafkaClient] Initializing client for '${this.serviceName}' with brokers ${config.brokers}`, {
+      flushBatchSize: this.flushBatchSize,
+      flushRetryDelayMs: this.flushRetryDelayMs
+    });
 
     this.kafka = new Kafka({
       clientId: config.clientId,
@@ -177,7 +194,6 @@ export class KafkaClientSingleton {
 
     // 3) Suscribir consumer a topics
     if (this.consumer) {
-
       for (const s of subscriptions) {
         logger.info(
           `[KafkaClient] Subscribing to topic '${s.topic}', fromBeginning=${s.fromBeginning}`
@@ -231,17 +247,30 @@ export class KafkaClientSingleton {
     });
   }
 
-  private async flushBuffer(): Promise<void> {
-    if (!this.producer) return;
-    logger.info('[KafkaClient] start flushBuffer loop');
+  private async delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
+  }
 
-    while (true) {
-      const pending = await this.repository.findPending(100);
+  /**
+   * Envía en bloques de eventos pendientes, reintentando TODO el bloque si falla cualquiera de ellos.
+   * @param options.batchSize    Tamaño de cada búsqueda (por defecto: flushBatchSize del config)
+   * @param options.retryDelayMs Retraso tras un fallo de cualquier evento (por defecto: flushRetryDelayMs del config)
+   */
+  public async flushBuffer(options: FlushOptions = {}): Promise<void> {
+    if (!this.producer) return;
+    const batchSize    = options.batchSize ?? this.flushBatchSize;
+    const retryDelayMs = options.retryDelayMs ?? this.flushRetryDelayMs;
+
+    logger.info('[KafkaClient] start flushBuffer loop', { batchSize, retryDelayMs });
+
+    outer: while (true) {
+      const pending = await this.repository.findPending(batchSize);
       logger.debug('[KafkaClient] Found pending events', { count: pending.length });
       if (!pending.length) break;
 
       for (const evt of pending) {
         try {
+          logger.debug('[KafkaClient] Flushing fallback event', { eventId: evt.id.value });
           await this.producer.send({
             topic: evt.name.value,
             messages: [{ key: evt.id.value, value: JSON.stringify(evt.payload.value) }],
@@ -250,11 +279,13 @@ export class KafkaClientSingleton {
           logger.info('[KafkaClient] Flushed fallback event', { eventId: evt.id.value });
         } catch (err: any) {
           await this.repository.incrementRetries(evt.id.value);
-          logger.warn('[KafkaClient] flushBuffer halted on failure', {
+          logger.warn('[KafkaClient] flushBuffer failed – will retry batch', {
             eventId: evt.id.value,
             error: err.message,
           });
-          return;
+          logger.info('[KafkaClient] Waiting before retrying batch', { retryDelayMs });
+          await this.delay(retryDelayMs);
+          continue outer;  // vuelve a buscar el mismo bloque completo
         }
       }
     }

@@ -19,7 +19,7 @@ export class EventDispatcher {
       const msg = event.toJson();
       await KafkaClient.ins.publish({
         topic: event.eventName().toLowerCase(),
-        messages: [{ key: event.id, value: JSON.stringify(msg) }],
+        messages: [{ key: event.id, value: msg }],
       });
       logger.debug(
         `[DomainEventsDispatcher] Dispatched ${event.eventName()}(${event.id})`

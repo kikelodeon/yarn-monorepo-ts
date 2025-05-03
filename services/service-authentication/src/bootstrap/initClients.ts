@@ -27,12 +27,15 @@ export async function initializeInfrastructureClients(): Promise<void> {
     clientId: requireEnv('KAFKA_CLIENT_ID'),
     ssl: requireEnv('KAFKA_USE_SSL') === 'true',
     sasl: {
-      mechanism: requireEnv('KAFKA_SASL_MECHANISM') as any, // e.g. "plain"
+      mechanism: requireEnv('KAFKA_SASL_MECHANISM') as any,
       username: requireEnv('KAFKA_SASL_USERNAME'),
       password: requireEnv('KAFKA_SASL_PASSWORD'),
     },
-    logLevel: requireEnv('KAFKA_LOG_LEVEL') as any,    // e.g. "INFO"
+    logLevel: requireEnv('KAFKA_LOG_LEVEL') as any,
+    flushBatchSize: Number(requireEnv('KAFKA_FLUSH_BATCH_SIZE')),
+    flushRetryDelayMs: Number(requireEnv('KAFKA_FLUSH_RETRY_DELAY_MS')),
   });
+  
 
   // 4) Define los tópicos que quieres crear al inicio
   const topicsToCreate: TopicConfig[] = [
