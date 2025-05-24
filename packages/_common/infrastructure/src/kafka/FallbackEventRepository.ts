@@ -33,7 +33,7 @@ export class FallbackEventRepository implements IFallbackEventRepository {
 
   async findPending(limit = 100): Promise<FallbackEvent[]> {
     logger.debug(`[FallbackEventRepository] Finding up to ${limit} pending events`);
-    const rows = await this.prisma.fallbackEvent.findMany({
+    const rows:FallbackEvent[] = await this.prisma.fallbackEvent.findMany({
       where: { status: FallbackEventStatusEnum.PENDING },
       orderBy: { createdAt: 'asc' },
       take: limit,
@@ -42,13 +42,13 @@ export class FallbackEventRepository implements IFallbackEventRepository {
 
     return rows.map(row => {
       const ev = FallbackEvent.rehydrate({
-        id: row.id,
-        name: row.name,
-        payload: row.payload as Record<string, any>,
-        status: row.status,
-        retries: row.retries,
-        creationDate: row.createdAt,
-        deletionDate: row.updatedAt ?? undefined,
+        id: row.id.value,
+        name: row.name.value,
+        payload: row.payload.value as Record<string, any>,
+        status: row.status.value,
+        retries: row.retries.value,
+        creationDate: row.creationDate.value,
+        deletionDate: row.deletionDate?.value ?? undefined,
       });
       logger.debug(`[FallbackEventRepository] Rehydrated event ${ev.id.value} with retries=${ev.retries.value}`);
       return ev;

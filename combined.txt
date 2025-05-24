@@ -762,7 +762,7 @@ import { User } from '@kikerepo/authentication-domain';
 import { EmailAlreadyInUseError } from '../errors';
 import { RegisterCommand } from '../commands/RegisterCommand';
 import { RegisterResult } from '../results/RegisterResult';
-import { logger } from '@kikerepo/common-infrastructure'; // <--- Importa tu logger
+import { EventDispatcher, logger } from '@kikerepo/common-infrastructure'; // <--- Importa tu logger
 export const RegisterCommandHandlerToken = Symbol('RegisterCommandHandlerToken');
 
 @injectable()
@@ -784,7 +784,7 @@ export class RegisterCommandHandler {
     const hashedpassword = await this.hashingService.hash(command.password);
     const user = User.createUnique(command.email, hashedpassword, command.phone);
     await this.userRepository.save(user);
-
+    EventDispatcher.dispatchAndClear(user);
     logger.info('[RegisterCommandHandler] User registered successfully', { userId: user.id.value });
     return new RegisterResult(user.id, user.email);
   }
@@ -1353,12 +1353,12 @@ export class User extends AggregateRoot<UserId> {
 
     // 3) Emitir evento de dominio para un user nuevo
     user.addDomainEvent(
-      UserCreatedEvent.createUnique(user)
+     new UserCreatedEvent(user.id.value, user.email.value, user.phone?.value,user.creationDate.value) 
     );
 
     return user;
   }
-  public static map(
+  public static rehydrate(
     id: string,
     email: string,
     password: string,
@@ -1426,47 +1426,23 @@ export { UserCreatedEvent } from './UserCreatedEvent';
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\authentication\domain\src\events\UserCreatedEvent.ts ===
 
-import { CreationDate, DeletionDate, DomainEvent,DomainEventId } from '@kikerepo/common-domain';
-import { User } from '../entities';
+import { DomainEvent } from '@kikerepo/common-domain';
 
 export class UserCreatedEvent extends DomainEvent {
-
   constructor(
-    id: DomainEventId,
-    private user: User,
-    creationDate?: CreationDate,
-    deletionDate?: DeletionDate,
+    public readonly userId: string,
+    public readonly email: string,
+    public readonly phone?: string ,// Optional phone
+    public readonly creationDate?: Date // Optional phone
   ) {
-    super(id,creationDate,deletionDate);
+    super();
   }
-
-  public eventName() {
-    return 'UserCreatedEvent'
+  toJson  (): string {
+    return  JSON.stringify(this);
   }
-  public toPrimitives(): Record<string, any> {
-    // pick only the fields you actually want to ship
-    return {
-      userId:    this.user.id.value,
-      email:     this.user.email.value,
-      phone:     this.user.phone?.value ?? null,
-      createdAt: this.user.creationDate.value.toISOString(),
-    }
+  eventName(): string {
+    return 'UserCreatedEvent';
   }
-  /**
-     * M√©todo est√°tico/factor√≠a para crear un "User" *nuevo*.
-     * Recibe valores primitivos, construye VO, llama al constructor
-     * y emite un evento.
-     */
-    public static createUnique(
-      user: User,
-    ): UserCreatedEvent {
-      // 1) Generar ID y crear Value Objects
-      const id = new DomainEventId(); // genera un UUIDv6 (por ejemplo)
-  
-      // 2) Llamar al constructor con VO
-      const userCreatedEvent = new UserCreatedEvent(id,user);
-      return userCreatedEvent;
-    }
 }
 
 
@@ -1682,6 +1658,8 @@ export class UserId extends ValueObject<string> {
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "outDir": "./dist", // Compiled files go to dist/
     "rootDir": "./src", // Only source files are included
     "composite": true, // Required for project references
@@ -1961,7 +1939,7 @@ export class UserRepository implements IUserRepository {
       logger.debug('[UserRepository] No user found', { id });
       return null;
     }
-    return User.map(
+    return User.rehydrate(
       userRecord.id,
       userRecord.email,
       userRecord.password,
@@ -1978,7 +1956,7 @@ export class UserRepository implements IUserRepository {
       logger.debug('[UserRepository] No user found', { email });
       return null;
     }
-    return User.map(
+    return User.rehydrate(
       userRecord.id,
       userRecord.email,
       userRecord.password,
@@ -3629,33 +3607,17 @@ export class DomainError extends Error {
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\DomainEvent.ts ===
 
-// domain-event.ts
-import { AggregateRoot } from './AggregateRoot'
-import { CreationDate,DeletionDate,DomainEventId } from './value-objects';
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+export abstract class DomainEvent {
+  public readonly occurredAt: Date;
+  public readonly id: string;
 
-export abstract class DomainEvent extends AggregateRoot<DomainEventId> {
-
-  protected constructor(id: DomainEventId, 
-    creationDate?: CreationDate,
-    deletionDate?: DeletionDate,) {
-    super(id,creationDate,deletionDate);
+  constructor() {
+    this.occurredAt = new Date();
+    this.id = generateUUIDv6();
   }
-
-
-  /** each subclass must give its own name */
-  public abstract eventName(): string
-
-  /** default payload is ‚Äúeverything else on the instance‚Äù */
-  public abstract toPrimitives(): Record<string, any>
-
-  public toMessage() {
-    return {
-      eventId:    this.id.value,
-      eventName:  this.eventName(),
-      occurredOn: this.creationDate.value.toISOString(),
-      data:       this.toPrimitives(),
-    }
-  }
+  abstract toJson(): string; // Each event should define its own name
+  abstract eventName(): string; // Each event should define its own name
 }
 
 
@@ -3723,14 +3685,110 @@ export abstract class Entity<TId extends ValueObject<string>> {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\FallbackEvent.ts ===
+
+// packages/common-domain/src/FallbackEvent.ts
+import { AggregateRoot } from './AggregateRoot';
+import {
+  CreationDate,
+  DeletionDate,
+  FallbackEventId,
+  FallbackEventRetries,
+  FallbackEventStatus,
+  FallbackEventName,
+  FallbackEventPayload,
+} from './value-objects';
+
+/**
+ * Domain event used for buffering failed Kafka publishes.
+ */
+export class FallbackEvent extends AggregateRoot<FallbackEventId> {
+  public readonly name: FallbackEventName;
+  public readonly payload: FallbackEventPayload;
+  public readonly status: FallbackEventStatus;
+  public readonly retries: FallbackEventRetries;
+
+  /**
+   * Private constructor: use static factories to create or rehydrate.
+   */
+  private constructor(
+    id: FallbackEventId,
+    name: FallbackEventName,
+    payload: FallbackEventPayload,
+    status: FallbackEventStatus,
+    retries: FallbackEventRetries,
+    creationDate?: CreationDate,
+    deletionDate?: DeletionDate,
+  ) {
+    super(id, creationDate, deletionDate);
+    this.name = name;
+    this.payload = payload;
+    this.status = status;
+    this.retries = retries;
+  }
+
+  /**
+   * Factory to create a brand-new pending event.
+   */
+  public static createUnique(
+    name: FallbackEventName,
+    payload: FallbackEventPayload,
+  ): FallbackEvent {
+    const id = new FallbackEventId();
+    const status = new FallbackEventStatus();           // defaults to PENDING
+    const retries = new FallbackEventRetries();         // defaults to 0
+    return new FallbackEvent(id, name, payload, status, retries, new CreationDate(), undefined);
+  }
+
+  /**
+   * Rehydrate an event from persisted data.
+   */
+  public static rehydrate(
+    raw: {
+      id: string;
+      name: string;
+      payload: Record<string, any>;
+      status: string;
+      retries: number;
+      creationDate: Date;
+      deletionDate?: Date;
+    }
+  ): FallbackEvent {
+    const id =  new FallbackEventId(raw.id);
+    const name = new FallbackEventName(raw.name);
+    const payload =  new FallbackEventPayload((raw.payload));
+    const status = FallbackEventStatus.fromString(raw.status);
+    const retries = FallbackEventRetries.fromNumber(raw.retries);
+    const creationDate = new CreationDate(raw.creationDate);
+    const deletionDate = raw.deletionDate ? new DeletionDate(raw.deletionDate) : undefined;
+    return new FallbackEvent(id, name, payload, status, retries, creationDate, deletionDate);
+  }
+
+  /**
+   * Convert domain event to primitives for persistence.
+   */
+  public toPrimitives(): Record<string, any> {
+    return {
+      id: this.id.value,
+      name: this.name.toString(),
+      payload: this.payload.toPrismaJson(),
+    };
+  }
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\index.ts ===
 
 export * from './ValueObject';
 export * from './Entity';
 export * from './AggregateRoot';
 export * from './DomainEvent';
+export * from './FallbackEvent';
 export * from './DomainError';
 export * from './value-objects';
+export * from './interfaces';
 
 
 
@@ -3811,11 +3869,30 @@ export interface IErrorResponse {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\interfaces\IFallbackEventRepository.ts ===
+
+import { FallbackEvent } from '../FallbackEvent';
+
+// 1) Declare a unique Symbol to represent the repository token.
+export const IFallbackEventRepositoryToken = Symbol('IFallbackEventRepository');
+
+// 2) Define the interface itself.
+export interface IFallbackEventRepository {
+  save(event: FallbackEvent): Promise<void>;
+  findPending(limit?: number): Promise<FallbackEvent[]>;
+  markProcessed(id: string): Promise<void>;
+  incrementRetries(id: string): Promise<void>;
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\interfaces\index.ts ===
 
 // shared/src/domain/interfaces/index.ts
 export * from './IEntityId';
 export * from './IErrorResponse';
+export * from './IFallbackEventRepository';
 // Export other interfaces as needed
 
 
@@ -3895,25 +3972,6 @@ export class DeletionDate {
 
 
 
-=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\DomainEventId.ts ===
-
-
-import { ValueObject } from '../ValueObject';
-import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
-
-/**
- * Value Object representing the ID of a User Entity.
- */
-export class DomainEventId extends ValueObject<string> {
-  constructor(id?: string) {
-    super(id ? id : generateUUIDv6());
-  }
-
-}
-
-
-
-
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\ExpirationDate.ts ===
 
 export class ExpirationDate {
@@ -3951,12 +4009,238 @@ export class ExpirationDate {
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\FallbackEventId.ts ===
+
+
+import { ValueObject } from '../ValueObject';
+import { generateUUIDv6 } from '@kikerepo/utils-uuid6';
+
+/**
+ * Value Object representing the ID of a User Entity.
+ */
+export class FallbackEventId extends ValueObject<string> {
+  constructor(id?: string) {
+    super(id ? id : generateUUIDv6());
+  }
+
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\FallbackEventName.ts ===
+
+// packages/common-domain/src/DomainEventName.ts
+import { ValueObject } from '../ValueObject';
+
+/**
+ * Value Object representing the name of a Domain Event.
+ */
+export class FallbackEventName extends ValueObject<string> {
+  /**
+   * Create a new DomainEventName.
+   * @param name The name of the domain event (e.g. 'UserCreatedEvent').
+   * @throws Error if the name is empty or not a valid string identifier.
+   */
+  constructor(name: string) {
+    if (typeof name !== 'string' || name.trim().length === 0) {
+      throw new Error(`Invalid DomainEventName: "${name}"`);
+    }
+    super(name);
+  }
+
+  /**
+   * Factory from raw string, trimming whitespace.
+   */
+  public static fromString(name: string): FallbackEventName {
+    return new FallbackEventName(name.trim());
+  }
+
+  /**
+   * Returns the event name.
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\FallbackEventPayload.ts ===
+
+// packages/common-domain/src/DomainEventPayload.ts
+import { ValueObject } from '../ValueObject';
+import { DomainEvent } from '../DomainEvent';
+
+/**
+ * Value Object representing the serialized payload of a Domain Event.
+ * Provides method to reconstruct the original DomainEvent instance.
+ */
+export class FallbackEventPayload extends ValueObject<Record<string, any>> {
+  /**
+   * @param payload A JSON-serializable object representing event data
+   * @throws if payload is null or not an object
+   * @remarks This payload will be stored in the database as a JSON field.
+   */
+  constructor(payload: Record<string, any>) {
+    if (payload === null || typeof payload !== 'object' || Array.isArray(payload)) {
+      throw new Error(
+        `Invalid DomainEventPayload: must be a non-null object, received ${typeof payload}`
+      );
+    }
+    super(payload);
+  }
+
+  /**
+   * Reconstructs a DomainEvent instance using a factory method from the event class.
+   * @param ctor The DomainEvent subclass with a static 'fromPrimitives' method
+   * @returns An instance of the specific DomainEvent
+   */
+  public toDomainEvent<T extends DomainEvent>(
+    ctor: { fromPrimitives(data: Record<string, any>): T }
+  ): T {
+    if (typeof ctor.fromPrimitives !== 'function') {
+      throw new Error(
+        'DomainEvent constructor must implement static fromPrimitives(data)'
+      );
+    }
+    return ctor.fromPrimitives(this.value);
+  }
+
+  /**
+   * Returns the raw payload object.
+   */
+  public toObject(): Record<string, any> {
+    // deep clone to prevent mutation
+    return JSON.parse(JSON.stringify(this.value));
+  }
+
+  /**
+   * Returns a value suitable for storing in a Prisma JSON column.
+   */
+  public toPrismaJson(): Record<string, any> {
+    return this.toObject();
+  }
+
+  /**
+   * Serializes the payload to JSON string.
+   */
+  public toJSON(): string {
+    return JSON.stringify(this.value);
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\FallbackEventRetries.ts ===
+
+// packages/common-domain/src/DomainEventRetries.ts
+import { ValueObject } from '../ValueObject';
+
+/**
+ * Value Object representing the retry count for a Domain Event.
+ */
+export class FallbackEventRetries extends ValueObject<number> {
+  /**
+   * Create a new DomainEventRetries.
+   * @param retries Number of retries (default 0).
+   * @throws Error if retries is not a non-negative integer.
+   */
+  constructor(retries: number = 0) {
+    if (!Number.isInteger(retries) || retries < 0) {
+      throw new Error(`Invalid retry count: ${retries}. Must be a non-negative integer.`);
+    }
+    super(retries);
+  }
+
+  /**
+   * Factory to create from any number, enforcing validation.
+   */
+  public static fromNumber(retries: number): FallbackEventRetries {
+    return new FallbackEventRetries(retries);
+  }
+
+  /**
+   * Return the retry count as a number.
+   */
+  public toNumber(): number {
+    return this.value;
+  }
+
+  /**
+   * Increment the retry count by 1.
+   * Returns a new DomainEventRetries instance.
+   */
+  public increment(): FallbackEventRetries {
+    return new FallbackEventRetries(this.value + 1);
+  }
+
+  /**
+   * String representation of the retry count.
+   */
+  public toString(): string {
+    return this.value.toString();
+  }
+}
+
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\FallbackEventStatus.ts ===
+
+// packages/common-domain/src/DomainEventStatus.ts
+import { ValueObject } from '../ValueObject';
+
+/**
+ * Enum for domain event processing status.
+ */
+export enum FallbackEventStatusEnum {
+  PENDING = 'PENDING',
+  PROCESSED = 'PROCESSED',
+  FAILED = 'FAILED',
+}
+
+/**
+ * Value Object representing the status of a Domain Event.
+ */
+export class FallbackEventStatus extends ValueObject<FallbackEventStatusEnum> {
+  constructor(status: FallbackEventStatusEnum = FallbackEventStatusEnum.PENDING) {
+    super(status);
+  }
+
+  /**
+   * Factory to create from string, with validation.
+   */
+  public static fromString(status: string): FallbackEventStatus {
+    if (!Object.values(FallbackEventStatusEnum).includes(status as FallbackEventStatusEnum)) {
+      throw new Error(`Invalid DomainEventStatus: ${status}`);
+    }
+    return new FallbackEventStatus(status as FallbackEventStatusEnum);
+  }
+ 
+  /**
+   * Return the raw enum value.
+   */
+  public toString(): string {
+    return this.value;
+  }
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\domain\src\value-objects\index.ts ===
 
 export * from './CreationDate';
 export * from './DeletionDate';
 export * from './ExpirationDate';
-export * from './DomainEventId';
+export * from './FallbackEventId';
+export * from './FallbackEventRetries';
+export * from './FallbackEventStatus';
+export * from './FallbackEventName';
+export * from './FallbackEventPayload';
 
 
 
@@ -3979,8 +4263,12 @@ export * from './DomainEventId';
     "dayjs": "^1.11.13",
     "jsonwebtoken": "^9.0.2",
     "kafkajs": "^2.2.4",
+    "opossum": "^8.4.0",
     "redis": "^4.6.7",
     "winston": "^3.17.0"
+  },
+  "devDependencies": {
+    "@types/opossum": "^8"
   }
 }
 
@@ -3992,6 +4280,8 @@ export * from './DomainEventId';
 {
   "extends": "../../../tsconfig.json",
   "compilerOptions": {
+    "experimentalDecorators": true,
+    "emitDecoratorMetadata": true,
     "outDir": "./dist",
     "rootDir": "./src",
     "composite": true,
@@ -4018,18 +4308,159 @@ export * from './kafka';
 
 
 
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\kafka\EventDispatcher.ts ===
+
+// packages/common/infrastructure/DomainEventsDispatcher.ts
+import { AggregateRoot } from '@kikerepo/common-domain';
+import { KafkaClient } from './KafkaClient';
+import { logger } from '../logging';
+
+/**
+ * Despacha todos los DomainEvents de un Aggregate y los limpia.
+ */
+export class EventDispatcher {
+  static async dispatchAndClear(aggregate: AggregateRoot<any>) {
+    const events = aggregate.domainEvents;
+    if (!events.length) return;
+
+    logger.info(
+      `[DomainEventsDispatcher] Dispatching ${events.length} events for aggregate ${aggregate.id.value}`
+    );
+
+    for (const event of [...events]) {
+      const msg = event.toJson();
+      await KafkaClient.ins.publish({
+        topic: event.eventName().toLowerCase(),
+        messages: [{ key: event.id, value: msg }],
+      });
+      logger.debug(
+        `[DomainEventsDispatcher] Dispatched ${event.eventName()}(${event.id})`
+      );
+    }
+
+    aggregate.clearDomainEvents();
+    logger.info('[DomainEventsDispatcher] Cleared domain events');
+  }
+}
+
+
+
+=== FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\kafka\FallbackEventRepository.ts ===
+
+import { logger } from '../logging';
+import { PrismaClient } from '../prisma';
+
+import {
+  IFallbackEventRepository,
+  FallbackEventStatusEnum,
+  FallbackEvent,
+} from '@kikerepo/common-domain';
+
+export class FallbackEventRepository implements IFallbackEventRepository {
+  constructor(private readonly prisma = PrismaClient.ins.prisma) {}
+
+  async save(event: FallbackEvent): Promise<void> {
+    logger.debug(`[FallbackEventRepository] Saving event ${event.id.value}`);
+    await this.prisma.fallbackEvent.upsert({
+      where: { id: event.id.value },
+      create: {
+        id: event.id.value,
+        name: event.name.value,
+        payload: event.payload.value,
+        status: event.status.value,
+        retries: event.retries.value,
+        createdAt: event.creationDate?.value,
+      },
+      update: {
+        payload: event.payload.value,
+        status: event.status.value,
+        retries: event.retries.value,
+      },
+    });
+    logger.info(`[FallbackEventRepository] Event ${event.id.value} saved/upserted with status=${event.status.value}`);
+  }
+
+  async findPending(limit = 100): Promise<FallbackEvent[]> {
+    logger.debug(`[FallbackEventRepository] Finding up to ${limit} pending events`);
+    const rows:FallbackEvent[] = await this.prisma.fallbackEvent.findMany({
+      where: { status: FallbackEventStatusEnum.PENDING },
+      orderBy: { createdAt: 'asc' },
+      take: limit,
+    });
+    logger.info(`[FallbackEventRepository] Retrieved ${rows.length} pending events`);
+
+    return rows.map(row => {
+      const ev = FallbackEvent.rehydrate({
+        id: row.id.value,
+        name: row.name.value,
+        payload: row.payload.value as Record<string, any>,
+        status: row.status.value,
+        retries: row.retries.value,
+        creationDate: row.creationDate.value,
+        deletionDate: row.deletionDate?.value ?? undefined,
+      });
+      logger.debug(`[FallbackEventRepository] Rehydrated event ${ev.id.value} with retries=${ev.retries.value}`);
+      return ev;
+    });
+  }
+
+  async markProcessed(id: string): Promise<void> {
+    logger.debug(`[FallbackEventRepository] Marking event ${id} as PROCESSED`);
+    await this.prisma.fallbackEvent.update({
+      where: { id },
+      data: { status: FallbackEventStatusEnum.PROCESSED },
+    });
+    logger.info(`[FallbackEventRepository] Event ${id} marked as PROCESSED`);
+  }
+
+  async incrementRetries(id: string): Promise<void> {
+    logger.debug(`[FallbackEventRepository] Incrementing retries for event ${id}`);
+    await this.prisma.fallbackEvent.update({
+      where: { id },
+      data: { retries: { increment: 1 } },
+    });
+    logger.warn(`[FallbackEventRepository] Retries incremented for event ${id}`);
+  }
+}
+
+
+
+
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\kafka\index.ts ===
 
 export * from './KafkaClient';
-
+export * from './FallbackEventRepository';
+export * from './EventDispatcher';
 
 
 
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\packages\_common\infrastructure\src\kafka\KafkaClient.ts ===
 
-// packages/common/infrastructure/kafkaClient.ts
-import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions } from 'kafkajs';
+import { Kafka, Producer, Consumer, logLevel as LogLevel, SASLOptions, ProducerRecord, Admin } from 'kafkajs';
+import CircuitBreaker from 'opossum';
+import { FallbackEventRepository } from './FallbackEventRepository';
+import {
+  FallbackEvent,
+  FallbackEventName,
+  FallbackEventPayload,
+} from '@kikerepo/common-domain';
+import { logger } from '../logging';
 
+// Configuraci√≥n para creaci√≥n de topics
+export interface TopicConfig {
+  topic: string;
+  numPartitions: number;
+  replicationFactor: number;
+  configEntries?: { name: string; value: string }[];
+}
+
+// Configuraci√≥n para suscripci√≥n de consumer
+export interface SubscriptionConfig {
+  topic: string;
+  fromBeginning?: boolean;
+}
+
+// Opciones de inicializaci√≥n de KafkaClient
 export interface KafkaClientConfig {
   brokers: string[];
   clientId: string;
@@ -4039,46 +4470,101 @@ export interface KafkaClientConfig {
   logLevel?: 'NOTHING' | 'DEBUG' | 'INFO' | 'WARN' | 'ERROR';
   ssl?: boolean;
   sasl?: SASLOptions;
+  // Par√°metros de flushBuffer (pueden provenir de env)
+  flushBatchSize?: number;
+  flushRetryDelayMs?: number;
 }
 
-class KafkaClientSingleton {
+// Opciones para flushBuffer
+export interface FlushOptions {
+  batchSize?: number;      // n¬∫ de eventos a buscar cada vez
+  retryDelayMs?: number;   // milisegundos a esperar tras un fallo
+}
+
+export class KafkaClientSingleton {
   private static _instance: KafkaClientSingleton;
   private kafka: Kafka;
   public producer?: Producer;
   public consumer?: Consumer;
+  private admin: Admin;
+  private repository = new FallbackEventRepository();
+  private publishBreaker: CircuitBreaker<[ProducerRecord], any>;
+  private buffering = false;
+  private serviceName: string;
+  private flushBatchSize: number;
+  private flushRetryDelayMs: number;
 
   private constructor(config: KafkaClientConfig) {
+    this.serviceName = config.clientId;
+    this.flushBatchSize = config.flushBatchSize ?? 100;
+    this.flushRetryDelayMs = config.flushRetryDelayMs ?? 5000;
+
+    logger.debug(`[KafkaClient] Initializing client for '${this.serviceName}' with brokers ${config.brokers}`, {
+      flushBatchSize: this.flushBatchSize,
+      flushRetryDelayMs: this.flushRetryDelayMs
+    });
+
     this.kafka = new Kafka({
       clientId: config.clientId,
       brokers: config.brokers,
       ssl: config.ssl ?? false,
       sasl: config.sasl,
-      logLevel:
-        config.logLevel === 'NOTHING' ? LogLevel.NOTHING :
-        config.logLevel === 'DEBUG'   ? LogLevel.DEBUG   :
-        config.logLevel === 'WARN'    ? LogLevel.WARN    :
-        config.logLevel === 'ERROR'   ? LogLevel.ERROR   :
-        LogLevel.INFO,
+      logLevel: config.logLevel ? LogLevel[config.logLevel] : LogLevel.INFO,
     });
 
     if (!config.useConsumerOnly) {
-      this.producer = this.kafka.producer();
-    }
-    if (!config.useProducerOnly) {
-      this.consumer = this.kafka.consumer({
-        groupId: config.consumerGroupId ?? `${config.clientId}-group`,
+      this.producer = this.kafka.producer({
+        allowAutoTopicCreation: false,
+        idempotent: true,
+        retry: { retries: 1, initialRetryTime: 300, factor: 2 },
       });
+      logger.debug('[KafkaClient] Producer initialized');
     }
+
+    const groupId = config.consumerGroupId ?? `${config.clientId}-group`;
+    if (!config.useProducerOnly) {
+      this.consumer = this.kafka.consumer({ groupId });
+      logger.debug(`[KafkaClient] Consumer initialized with group '${groupId}'`);
+    }
+
+    this.admin = this.kafka.admin();
+    logger.debug('[KafkaClient] Admin client initialized');
+
+    const sendAction = (record: ProducerRecord) => {
+      if (!this.producer) {
+        return Promise.reject(new Error('Producer not initialized'));
+      }
+      logger.debug(`[KafkaClient] Sending record to topic '${record.topic}'...`);
+      return this.producer.send(record);
+    };
+
+    this.publishBreaker = new CircuitBreaker(sendAction, {
+      timeout: 5000,
+      errorThresholdPercentage: 50,
+      resetTimeout: 30000,
+    });
+
+    this.publishBreaker.on('open', () => {
+      this.buffering = true;
+      logger.warn('[KafkaClient] Circuit OPEN ‚Äî buffering publishes');
+    });
+    this.publishBreaker.on('halfOpen', async () => {
+      logger.info('[KafkaClient] Circuit HALF-OPEN ‚Äî flushing buffer');
+      await this.flushBuffer();
+    });
+    this.publishBreaker.on('close', () => {
+      this.buffering = false;
+      logger.info('[KafkaClient] Circuit CLOSED ‚Äî resuming publishes');
+    });
   }
 
-  /** Initialize singleton (call once at startup) */
   public static init(config: KafkaClientConfig): void {
     if (!this._instance) {
       this._instance = new KafkaClientSingleton(config);
+      logger.info('[KafkaClient] Singleton instance created');
     }
   }
 
-  /** Retrieve the one instance */
   public static get ins(): KafkaClientSingleton {
     if (!this._instance) {
       throw new Error('[KafkaClient] Must call init(config) first');
@@ -4086,72 +4572,195 @@ class KafkaClientSingleton {
     return this._instance;
   }
 
-  /** Connect producer & consumer in parallel */
-  public async connect(): Promise<void> {
+  /**
+   * Conecta producer, consumer, crea topics y suscribe.
+   */
+  public async connect(
+    topicsToCreate: TopicConfig[] = [],
+    subscriptions: SubscriptionConfig[] = []
+  ): Promise<void> {
+    logger.info('[KafkaClient] Starting connect sequence');
+
+    // 1) Crear topics con AdminClient (idempotente)
+    if (topicsToCreate.length) {
+      logger.info('[KafkaClient] Checking existing topics for creation');
+      await this.admin.connect();
+      const metadata = await this.admin.fetchTopicMetadata();
+      const existing = metadata.topics.map(t => t.name);
+      const toCreate = topicsToCreate.filter(t => !existing.includes(t.topic));
+
+      if (toCreate.length) {
+        logger.info('[KafkaClient] Creating new topics:', JSON.stringify(toCreate));
+        try {
+          const created = await this.admin.createTopics({
+            topics: toCreate.map(t => ({
+              topic: t.topic,
+              numPartitions: t.numPartitions,
+              replicationFactor: t.replicationFactor,
+              configEntries: t.configEntries,
+            })),
+            waitForLeaders: true,
+          });
+          if (created) {
+            logger.info('[KafkaClient] Topics created successfully');
+          } else {
+            logger.warn('[KafkaClient] No topics were created');
+          }
+        } catch (err: any) {
+          logger.warn('[KafkaClient] Error creating topics (ignored):', { error: err.message });
+        }
+      } else {
+        logger.info('[KafkaClient] All topics already exist, skipping creation');
+      }
+      await this.admin.disconnect();
+    }
+
+    // 2) Conectar producer y consumer
     const tasks: Promise<any>[] = [];
-    if (this.producer) tasks.push(this.producer.connect());
-    if (this.consumer) tasks.push(this.consumer.connect());
-    await Promise.all(tasks).then(() => {console.log('[KafkaClient] Connected to Kafka')});
+    if (this.producer) {
+      tasks.push(
+        this.producer.connect().then(() => logger.info('[KafkaClient] Producer connected'))
+      );
+    }
+    if (this.consumer) {
+      tasks.push(
+        this.consumer.connect().then(() => logger.info('[KafkaClient] Consumer connected'))
+      );
+    }
+    await Promise.all(tasks);
+    logger.info('[KafkaClient] Connected');
+
+    // 3) Suscribir consumer a topics
+    if (this.consumer) {
+      for (const s of subscriptions) {
+        logger.info(
+          `[KafkaClient] Subscribing to topic '${s.topic}', fromBeginning=${s.fromBeginning}`
+        );
+        await this.consumer.subscribe({ topic: s.topic, fromBeginning: !!s.fromBeginning });
+      }
+      logger.info('[KafkaClient] Subscriptions completed');
+    }
+
+    // 4) Flushear buffer y cerrar circuito
+    try {
+      logger.info('[KafkaClient] Draining buffer');
+      await this.flushBuffer();
+      this.publishBreaker.close();
+      logger.info('[KafkaClient] Buffer drained on connect ‚Äî circuit CLOSED');
+    } catch (err: any) {
+      this.publishBreaker.open();
+      logger.warn('[KafkaClient] Buffer drain failed ‚Äî circuit OPEN', { error: err.message });
+    }
   }
 
-  /** Disconnect producer & consumer in parallel */
-  public async disconnect(): Promise<void> {
-    const tasks: Promise<any>[] = [];
-    if (this.producer) tasks.push(this.producer.disconnect());
-    if (this.consumer) tasks.push(this.consumer.disconnect());
-    await Promise.all(tasks);
+  public async publish(record: ProducerRecord): Promise<void> {
+    if (this.buffering) {
+      logger.warn('[KafkaClient] Buffering mode active ‚Äî saving to fallback', { topic: record.topic });
+      await this.bufferRecord(record);
+      return;
+    }
+
+    try {
+      await this.publishBreaker.fire(record);
+      logger.debug('[KafkaClient] Record published successfully', { topic: record.topic });
+    } catch (error: unknown) {
+      const msg = error instanceof Error ? error.message : String(error);
+      logger.error(`[KafkaClient] publish failed, buffering: ${msg}`, { topic: record.topic });
+      await this.bufferRecord(record);
+    }
+  }
+
+  private async bufferRecord(record: ProducerRecord): Promise<void> {
+    const message = record.messages[0];
+    const raw = message.value?.toString() ?? '{}';
+    const payload = JSON.parse(raw);
+    const fallback = FallbackEvent.createUnique(
+      new FallbackEventName(record.topic),
+      new FallbackEventPayload(payload)
+    );
+    await this.repository.save(fallback);
+    logger.info('[KafkaClient] Record buffered to fallback repository', {
+      topic: record.topic,
+      eventId: fallback.id.value,
+    });
+  }
+
+  private async delay(ms: number): Promise<void> {
+    return new Promise(resolve => setTimeout(resolve, ms));
   }
 
   /**
-   * Health check: simply connect() ‚Üí [optional metadata] ‚Üí disconnect()
-   * Measures round-trip latency, and returns UP or DOWN.
-   *
-   * If you really want to probe the broker metadata, set
-   * KAFKA_HEALTH_CHECK_FULL=true in your env.
+   * Env√≠a en bloques de eventos pendientes, reintentando TODO el bloque si falla cualquiera de ellos.
+   * @param options.batchSize    Tama√±o de cada b√∫squeda (por defecto: flushBatchSize del config)
+   * @param options.retryDelayMs Retraso tras un fallo de cualquier evento (por defecto: flushRetryDelayMs del config)
    */
-  public async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; message?: string; latencyMs?: number }> {
-    const timeoutMs = 5_000;
-    const start = Date.now();
+  public async flushBuffer(options: FlushOptions = {}): Promise<void> {
+    if (!this.producer) return;
+    const batchSize    = options.batchSize ?? this.flushBatchSize;
+    const retryDelayMs = options.retryDelayMs ?? this.flushRetryDelayMs;
 
-    const withTimeout = <T>(action: Promise<T>, name: string): Promise<T> =>
+    logger.info('[KafkaClient] start flushBuffer loop', { batchSize, retryDelayMs });
+
+    outer: while (true) {
+      const pending = await this.repository.findPending(batchSize);
+      logger.debug('[KafkaClient] Found pending events', { count: pending.length });
+      if (!pending.length) break;
+
+      for (const evt of pending) {
+        try {
+          logger.debug('[KafkaClient] Flushing fallback event', { eventId: evt.id.value });
+          await this.producer.send({
+            topic: evt.name.value,
+            messages: [{ key: evt.id.value, value: JSON.stringify(evt.payload.value) }],
+          });
+          await this.repository.markProcessed(evt.id.value);
+          logger.info('[KafkaClient] Flushed fallback event', { eventId: evt.id.value });
+        } catch (err: any) {
+          await this.repository.incrementRetries(evt.id.value);
+          logger.warn('[KafkaClient] flushBuffer failed ‚Äì will retry batch', {
+            eventId: evt.id.value,
+            error: err.message,
+          });
+          logger.info('[KafkaClient] Waiting before retrying batch', { retryDelayMs });
+          await this.delay(retryDelayMs);
+          continue outer;  // vuelve a buscar el mismo bloque completo
+        }
+      }
+    }
+
+    logger.info('[KafkaClient] flushBuffer completed, no more pending events');
+  }
+
+  public async healthCheck(): Promise<{ status: 'UP' | 'DOWN'; message?: string; latencyMs?: number }> {
+    const admin = this.kafka.admin();
+    const timeoutMs = 5000;
+    const start = Date.now();
+    logger.debug('[KafkaClient] Running healthCheck');
+
+    const withTimeout = <T>(action: Promise<T>, name: string) =>
       Promise.race([
         action,
         new Promise<T>((_, reject) =>
-          setTimeout(() => reject(new Error(`${name} timed out after ${timeoutMs}ms`)), timeoutMs)
+          setTimeout(() => reject(new Error(`${name} timed out`)), timeoutMs)
         ),
       ]);
-    const admin = this.kafka.admin();
+
     try {
-      // 1) connect producer+consumer
-      await withTimeout(admin.connect(), 'KafkaClient.connect');
-
-      // 2) optional metadata probe
-      if (process.env.KAFKA_HEALTH_CHECK_FULL === 'true') {
-        const admin = this.kafka.admin();
-        await withTimeout(admin.connect(), 'Kafka admin.connect');
-        await withTimeout(admin.fetchTopicMetadata(), 'Kafka admin.fetchTopicMetadata');
-        await admin.disconnect();
-      }
-
-      // 3) clean disconnect
-      await withTimeout(admin.disconnect(), 'KafkaClient.disconnect');
-
+      await withTimeout(admin.connect(), 'admin.connect');
+      await withTimeout(admin.disconnect(), 'admin.disconnect');
       const latency = Date.now() - start;
-      console.log(`[KafkaClient] Health check: UP (${latency}ms)`);
+      logger.info('[KafkaClient] Health check UP', { latencyMs: latency });
       return { status: 'UP', latencyMs: latency };
-    } catch (err) {
-      const latency = Date.now() - start;
-      const message = (err as Error).message;
-      console.error(`[KafkaClient] Health check: DOWN - ${message} (${latency}ms)`);
-      // best effort cleanup
+    } catch (err: any) {
       try { await admin.disconnect(); } catch {}
-      return { status: 'DOWN', message, latencyMs: latency };
+      const latency = Date.now() - start;
+      logger.error('[KafkaClient] Health check DOWN', { error: err.message, latencyMs: latency });
+      return { status: 'DOWN', message: err.message, latencyMs: latency };
     }
   }
 }
 
 export { KafkaClientSingleton as KafkaClient };
-
 
 
 
@@ -4346,6 +4955,7 @@ export * from './PrismaClient';
 
 // packages/common/infrastructure/prismaClient.ts
 import { PrismaClient as Pc } from '@prisma/client';
+import { logger } from '../logging';
 
 class PrismaClient {
   private static _instance: PrismaClient;
@@ -4375,9 +4985,9 @@ class PrismaClient {
   async connect(): Promise<void> {
     try {
       await this.client.$connect();
-      console.log('[PrismaClient] Connected to PostgreSQL');
+      logger.info('[PrismaClient] Connected to PostgreSQL');
     } catch (error) {
-      console.error('[PrismaClient] Connection error:', error);
+      logger.error('[PrismaClient] Connection error:', error);
       process.exit(1);
     }
   }
@@ -4385,9 +4995,9 @@ class PrismaClient {
   async disconnect(): Promise<void> {
     try {
       await this.client.$disconnect();
-      console.log('[PrismaClient] Disconnected from PostgreSQL');
+      logger.info('[PrismaClient] Disconnected from PostgreSQL');
     } catch (error) {
-      console.error('[PrismaClient] Disconnection error:', error);
+      logger.error('[PrismaClient] Disconnection error:', error);
     }
   }
 
@@ -4396,12 +5006,12 @@ class PrismaClient {
     try {
       await this.client.$queryRaw`SELECT 1`;
       const latency = Date.now() - start;
-      console.log(`[PrismaClient] Health check: UP (${latency}ms)`);
+      logger.info(`[PrismaClient] Health check: UP (${latency}ms)`);
       return { status: 'UP', latencyMs: latency };
     } catch (error: any) {
       const latency = Date.now() - start;
       const message = error?.message ?? 'Unknown error';
-      console.error(`[PrismaClient] Health check: DOWN - ${message} (${latency}ms)`);
+      logger.error(`[PrismaClient] Health check: DOWN - ${message} (${latency}ms)`);
       return { status: 'DOWN', message, latencyMs: latency };
     }
   }
@@ -4424,6 +5034,7 @@ export  *  from './RedisClient';
 
 // packages/common/infrastructure/redisClient.ts
 import { createClient, RedisClientType } from '@redis/client';
+import { logger } from '../logging';
 
 export interface RedisClientConfig {
   host?: string;
@@ -4452,7 +5063,7 @@ class RedisClientSingleton {
     this.client = createClient(options);
 
     this.client.on('error', (err) =>
-      console.error('[RedisClient] Error', err)
+      logger.error('[RedisClient] Error', err)
     );
   }
 
@@ -4472,10 +5083,10 @@ class RedisClientSingleton {
   async connect(): Promise<void> {
     try {
       await this.client.connect();
-      console.info('[RedisClient] Connected to Redis.');
+      logger.info('[RedisClient] Connected to Redis.');
     } catch (error) {
       const message = error instanceof Error ? error.message : 'Unknown error';
-      console.error('[RedisClient] Failed to connect:', message);
+      logger.error('[RedisClient] Failed to connect:', message);
     }
   }
 
@@ -4512,12 +5123,12 @@ if (pong !== 'PONG') {
 throw new Error(`Unexpected PING response: ${pong}`);
 }
 const latency = Date.now() - start;
-console.log(`[RedisClient] Health check: UP (${latency}ms)`);
+logger.info(`[RedisClient] Health check: UP (${latency}ms)`);
 return { status: 'UP', latencyMs: latency };
 
 } catch (err) {
 const message = (err as Error).message;
-console.error('[RedisClient] Health check: DOWN', message);
+logger.error('[RedisClient] Health check: DOWN', message);
 return { status: 'DOWN', message };
 }
 }
@@ -4552,6 +5163,11 @@ KAFKA_SASL_PASSWORD=*****
 
 # (optional) disable legacy partitioner warning:
 KAFKAJS_NO_PARTITIONER_WARNING=*****
+
+
+#CUSTOM
+KAFKA_FLUSH_BATCH_SIZE=*****
+KAFKA_FLUSH_RETRY_DELAY_MS=*****
 
 KAFKA_USE_SSL=*****
 KAFKA_LOG_LEVEL=*****
@@ -4668,7 +5284,7 @@ import express from 'express';
 import { buildContainer, container } from './bootstrap/container';
 import { CreateUserRoutes } from './routes'; // Importamos la funci√≥n, no el controlador directamente
 import { UserControllerToken } from './controllers';
-
+import { logger } from '@kikerepo/common-infrastructure';
 dotenv.config();
 
 async function startServer() {
@@ -4686,11 +5302,11 @@ async function startServer() {
   app.use('/users', userRoutes);
 
   const port = process.env.APP_PORT || 3000;
-  app.listen(port, () => console.log(`[Auth] Listening on port ${port}`));
+  app.listen(port, () => logger.info(`[Index] Listening on port ${port}`));
 }
 
 startServer().catch((err) => {
-  console.error('[Auth] Startup error:', err);
+  logger.error('[Index] Startup error:', err);
   process.exit(1);
 });
 
@@ -4762,63 +5378,83 @@ testConnections();
 // services/service-authentication/src/bootstrap/container.ts
 
 import 'reflect-metadata';
-import {
-  Container 
-} from 'inversify';
+import { Container } from 'inversify';
 
 import {
-  IUserRepository, IUserRepositoryToken,
-  IHashingService, IHashingServiceToken
+  IUserRepository,
+  IUserRepositoryToken,
+  IHashingService,
+  IHashingServiceToken,
 } from '@kikerepo/authentication-domain';
 
 import {
-   UserRepository,
-   Argon2HashingService, 
-   AuthenticationService, 
-   AuthenticationServiceToken
+  UserRepository,
+  Argon2HashingService,
+  AuthenticationService,
+  AuthenticationServiceToken,
 } from '@kikerepo/authentication-infrastructure';
 
-import { 
-  RegisterCommandHandler, 
-  RegisterCommandHandlerToken, 
-  LoginQueryHandler, 
-  LoginQueryHandlerToken 
-}from '@kikerepo/authentication-application';
-
 import {
-   UserController, 
-   UserControllerToken 
-} from '../controllers';
+  RegisterCommandHandler,
+  RegisterCommandHandlerToken,
+  LoginQueryHandler,
+  LoginQueryHandlerToken,
+} from '@kikerepo/authentication-application';
 
-import {initializeInfrastructureClients  } from './initClients'
+import { UserController, UserControllerToken } from '../controllers';
+
+import { logger } from '@kikerepo/common-infrastructure';
+import { initializeInfrastructureClients } from './initClients';
+
 const container = new Container();
 
-// Bindear el repositorio (singleton)
-container.bind<IUserRepository>(IUserRepositoryToken).to(UserRepository).inSingletonScope();
+// 1) (request‚Äìscoped)
 
-// Bindear el servicio de hashing (singleton)
-container.bind<IHashingService>(IHashingServiceToken).to(Argon2HashingService).inSingletonScope();
+container
+  .bind<IUserRepository>(IUserRepositoryToken)
+  .to(UserRepository)
+  .inRequestScope(); //inSingletonScope ??
 
-// Bindear los handlers (por defecto, transient)
-container.bind<RegisterCommandHandler>(RegisterCommandHandlerToken).to(RegisterCommandHandler);
-container.bind<LoginQueryHandler>(LoginQueryHandlerToken).to(LoginQueryHandler);
+// 2) (singletons)
 
-// Bindear el AuthenticationService (inyectando los handlers necesarios)
-container.bind<AuthenticationService>(AuthenticationServiceToken).toDynamicValue((context) => {
-  const loginHandler = context.container.get<LoginQueryHandler>(LoginQueryHandlerToken);
-  const registerHandler = context.container.get<RegisterCommandHandler>(RegisterCommandHandlerToken);
-  return new AuthenticationService(loginHandler, registerHandler);
-});
 
-// Bindear el UserController (aseg√∫rate de usar el mismo s√≠mbolo)
-container.bind<UserController>(UserControllerToken).to(UserController);
+container
+  .bind<IHashingService>(IHashingServiceToken)
+  .to(Argon2HashingService)
+  .inSingletonScope();
+
+// 3) Handlers (transient by default)
+container
+  .bind<RegisterCommandHandler>(RegisterCommandHandlerToken)
+  .to(RegisterCommandHandler);
+
+container
+  .bind<LoginQueryHandler>(LoginQueryHandlerToken)
+  .to(LoginQueryHandler);
+
+// 4) AuthenticationService ‚Äì now with 3 injected dependencies
+container
+  .bind<AuthenticationService>(AuthenticationServiceToken)
+  .toDynamicValue((ctx) => {
+
+    const registerHandler = ctx.container.get<RegisterCommandHandler>(RegisterCommandHandlerToken);
+    const loginHandler = ctx.container.get<LoginQueryHandler>(LoginQueryHandlerToken);
+    return new AuthenticationService(  loginHandler,registerHandler);
+  })
+  // Scope it as you see fit; request-scoped ensures a fresh UoW per request
+  .inRequestScope();
+
+// 5) Controller
+container
+  .bind<UserController>(UserControllerToken)
+  .to(UserController)
+  .inSingletonScope();
 
 export async function buildContainer(): Promise<void> {
-  console.log('[Container] Initializing infrastructure clients...');
-  await initializeInfrastructureClients(); // calls Prisma, Redis, Kafka
-  console.log('[Container] Infrastructure initialized ‚úÖ');
+  logger.debug('[Container] Initializing infrastructure clients...');
+  await initializeInfrastructureClients();
+  logger.info('[Container] Infrastructure initialized ‚úÖ');
 }
-
 
 export { container };
 
@@ -4834,42 +5470,70 @@ export * from './container';
 === FILE: C:\Users\kikelo\Documents\GitHub\yarn-monorepo-ts\services\service-authentication\src\bootstrap\initClients.ts ===
 
 // services/service-authentication/src/bootstrap/initClients.ts
+
 import {
   PrismaClient,
   KafkaClient,
-  RedisClient
+  RedisClient,
+  TopicConfig,
+  SubscriptionConfig,
 } from '@kikerepo/common-infrastructure';
-
 import { requireEnv } from '@kikerepo/utils-env';
+
 export async function initializeInfrastructureClients(): Promise<void> {
-  // Prisma
+  // 1) Prisma
   await PrismaClient.ins.connect();
 
-  // Redis
+  // 2) Redis
   await RedisClient.init({
     host: requireEnv('REDIS_HOST'),
     port: Number(requireEnv('REDIS_PORT')),
     password: requireEnv('REDIS_PASSWORD'),
   });
-
   await RedisClient.ins.connect();
 
-  // Kafka
+  // 3) Kafka: init singleton
   await KafkaClient.init({
-   
     brokers: requireEnv('KAFKA_BROKERS').split(','),
     clientId: requireEnv('KAFKA_CLIENT_ID'),
     ssl: requireEnv('KAFKA_USE_SSL') === 'true',
     sasl: {
-      mechanism: requireEnv('KAFKA_SASL_MECHANISM') as any, // e.g. "plain"
+      mechanism: requireEnv('KAFKA_SASL_MECHANISM') as any,
       username: requireEnv('KAFKA_SASL_USERNAME'),
       password: requireEnv('KAFKA_SASL_PASSWORD'),
     },
-    logLevel: requireEnv('KAFKA_LOG_LEVEL') as any,    // ‚Üê set your desired KafkaJS log level here
+    logLevel: requireEnv('KAFKA_LOG_LEVEL') as any,
+    flushBatchSize: Number(requireEnv('KAFKA_FLUSH_BATCH_SIZE')),
+    flushRetryDelayMs: Number(requireEnv('KAFKA_FLUSH_RETRY_DELAY_MS')),
   });
+  
 
-  await KafkaClient.ins.connect();
+  // 4) Define los t√≥picos que quieres crear al inicio
+  const topicsToCreate: TopicConfig[] = [
+    {
+      topic: 'user-events',
+      numPartitions: 3,
+      replicationFactor: 2,            // en prod al menos 2‚Äì3
+      configEntries: [
+        { name: 'cleanup.policy', value: 'compact' },
+      ],
+    },
+    // a√±ade m√°s t√≥picos aqu√≠ si los necesitas...
+  ];
+
+  // 5) Define las suscripciones del consumer
+  const subscriptions: SubscriptionConfig[] = [
+    //{
+    //  topic: 'user-events',
+    //  fromBeginning: false,           // s√≥lo nuevos mensajes
+    //},
+    // a√±ade m√°s suscripciones si tu servicio also consume otros t√≥picos...
+  ];
+
+  // 6) Conecta producer, consumer, crea t√≥picos y suscribe
+  await KafkaClient.ins.connect(topicsToCreate, subscriptions);
 }
+
 
 
 
@@ -4898,7 +5562,7 @@ export class UserController {
   ) {}
 
   public async login(req: Request, res: Response, next: NextFunction): Promise<void> {
-    logger.info('Login endpoint called');
+    logger.debug('[UserController] Login endpoint called');
     try {
       // Se pasa el req.body directamente; el AuthenticationService se encarga de mapear internamente.
       const response = await this.authenticationService.login(req.body);
@@ -4909,7 +5573,7 @@ export class UserController {
   }
 
   public async register(req: Request, res: Response, next: NextFunction): Promise<void> {
-    logger.info('Register endpoint called');
+    logger.debug('Register endpoint called');
     try {
       // Se delega en el servicio la transformaci√≥n y el procesamiento.
       const response = await this.authenticationService.register(req.body);
@@ -5709,7 +6373,7 @@ volumes:
 
 === DIRECTORY TREE ===
 Listado de rutas de carpetas
-El n˙mero de serie del volumen es 0000001E EA56:DBC0
+El n˙mero de serie del volumen es 000000FA EA56:DBC0
 C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   .gitignore
 ¶   .yarnrc.yml
@@ -5877,6 +6541,8 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶   ¶           ¶           TokenGenerationError.ts
 ¶   ¶           ¶           TokenVerificationError.ts
 ¶   ¶           ¶           
+¶   ¶           +---dtos
+¶   ¶           +---errors
 ¶   ¶           +---persistance
 ¶   ¶           ¶       index.ts
 ¶   ¶           ¶       UserRepository.ts
@@ -6045,19 +6711,25 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶       ¶       ¶   DomainError.ts
 ¶       ¶       ¶   DomainEvent.ts
 ¶       ¶       ¶   Entity.ts
+¶       ¶       ¶   FallbackEvent.ts
 ¶       ¶       ¶   index.ts
 ¶       ¶       ¶   ValueObject.ts
 ¶       ¶       ¶   
 ¶       ¶       +---interfaces
 ¶       ¶       ¶       IEntityId.ts
 ¶       ¶       ¶       IErrorResponse.ts
+¶       ¶       ¶       IFallbackEventRepository.ts
 ¶       ¶       ¶       index.ts
 ¶       ¶       ¶       
 ¶       ¶       +---value-objects
 ¶       ¶               CreationDate.ts
 ¶       ¶               DeletionDate.ts
-¶       ¶               DomainEventId.ts
 ¶       ¶               ExpirationDate.ts
+¶       ¶               FallbackEventId.ts
+¶       ¶               FallbackEventName.ts
+¶       ¶               FallbackEventPayload.ts
+¶       ¶               FallbackEventRetries.ts
+¶       ¶               FallbackEventStatus.ts
 ¶       ¶               index.ts
 ¶       ¶               
 ¶       +---infrastructure
@@ -6068,6 +6740,8 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
 ¶               ¶   index.ts
 ¶               ¶   
 ¶               +---kafka
+¶               ¶       EventDispatcher.ts
+¶               ¶       FallbackEventRepository.ts
 ¶               ¶       index.ts
 ¶               ¶       KafkaClient.ts
 ¶               ¶       
@@ -6101,10 +6775,7 @@ C:\USERS\KIKELO\DOCUMENTS\GITHUB\YARN-MONOREPO-TS
     ¶   ¶   +---migrations
     ¶   ¶       ¶   migration_lock.toml
     ¶   ¶       ¶   
-    ¶   ¶       +---20250120232605_init
-    ¶   ¶       ¶       migration.sql
-    ¶   ¶       ¶       
-    ¶   ¶       +---20250122200614_add_deleted
+    ¶   ¶       +---20250427021824_init
     ¶   ¶               migration.sql
     ¶   ¶               
     ¶   +---src
